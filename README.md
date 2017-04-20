@@ -23,7 +23,7 @@ Currently only Windows is supported, however this may change in the future.
 
 * Download the source with "Clone or Download" -> "Download ZIP", or via command line:
 ```
-git clone https://github.com/emskye96/chameleon-ng.git
+git clone https://github.com/namazso/nSkinz.git
 ```
 * Compile using your preferred compiler
 * Inject the resulting library into the game
