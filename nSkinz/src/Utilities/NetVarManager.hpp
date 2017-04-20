@@ -26,21 +26,21 @@ private:
 
 #define PNETVAR(funcname, type, netvarname) type* funcname() \
 { \
-	constexpr auto hash = FnvHash(netvarname); \
+	constexpr fnv_t hash = FnvHash(netvarname); \
 	static auto offset = NetVarManager::Get().GetOffset(hash); \
 	return reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
 #define NETVAR(funcname, type, netvarname) type& funcname() \
 { \
-	constexpr auto hash = FnvHash(netvarname); \
+	constexpr fnv_t hash = FnvHash(netvarname); \
 	static auto offset = NetVarManager::Get().GetOffset(hash); \
 	return *reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
 #define NETPROP(funcname, netvarname) static RecvProp* funcname() \
 { \
-	constexpr auto hash = FnvHash(netvarname); \
+	constexpr fnv_t hash = FnvHash(netvarname); \
 	static auto pProp = NetVarManager::Get().GetPropPtr(hash); \
 	return pProp; \
 }
