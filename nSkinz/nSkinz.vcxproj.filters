@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Configuration.cpp" />
+    <ClCompile Include="src\nSkinz.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Skins.cpp" />
+    <ClCompile Include="deps\imgui\imgui.cpp">
+      <Filter>Dependency\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\imgui\imgui_draw.cpp">
+      <Filter>Dependency\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\imgui\imgui_impl_dx9.cpp">
+      <Filter>Dependency\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hooks\FrameStageNotify.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hooks\FireEventClientSide.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hooks\Sequence.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utilities\NetVarManager.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utilities\Platform.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Configuration.hpp" />
+    <ClInclude Include="src\Interface.hpp" />
+    <ClInclude Include="src\nSkinz.hpp" />
+    <ClInclude Include="src\RecvProxyHook.hpp" />
+    <ClInclude Include="src\Renderer.hpp" />
+    <ClInclude Include="src\Skins.hpp" />
+    <ClInclude Include="deps\imgui\imconfig.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\imgui.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\imgui_impl_dx9.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\imgui_internal.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\stb_truetype.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\stb_textedit.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\imgui\stb_rect_pack.h">
+      <Filter>Dependency\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\vdf_parser.hpp">
+      <Filter>Dependency</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hooks\Hooks.hpp">
+      <Filter>Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\Interface.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\NetVarManager.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\Virtuals.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\CBaseClientState.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\CBaseEntity.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\ClientClass.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\DataTable.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IClientEntity.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IGameEvent.hpp">
+      <Filter>SDK\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IAppSystem.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IBaseClientDLL.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IClientEntityList.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IGameEventManager2.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\ILocalize.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IVEngineClient.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK\IVModelInfoClient.hpp">
+      <Filter>SDK\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\VMTHook.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\Platform.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SDK.hpp">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities\FnvHash.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ItemDefinitions.cpp" />
+    <ClInclude Include="src\ItemDefinitions.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{65eccfc5-d06e-4ad9-9c4d-d85d8442d680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\Interface">
+      <UniqueIdentifier>{51010c84-be5b-452b-a3a4-2e1d7be8f8b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependency">
+      <UniqueIdentifier>{ea773f6e-6f49-4132-8b2f-e1cd313697d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependency\ImGui">
+      <UniqueIdentifier>{2c17dc14-62e6-4a2d-ac8b-640b207eea54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks">
+      <UniqueIdentifier>{4edde6e6-abf1-4097-8ca9-8ac78f0312a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\Class">
+      <UniqueIdentifier>{dcbb33bc-5f9f-45d0-9c1c-4cca665c10d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{220d34fa-499b-4bce-9e4f-493421f1b61d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

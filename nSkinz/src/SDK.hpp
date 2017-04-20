@@ -1,0 +1,20 @@
+#pragma once
+#include "SDK/DataTable.hpp"
+#include "SDK/CBaseClientState.hpp"
+#include "SDK/ClientClass.hpp"
+#include "SDK/IGameEvent.hpp"
+#include "SDK/IClientEntity.hpp"
+#include "SDK/CBaseEntity.hpp"
+
+#include "SDK/IBaseClientDLL.hpp"
+#include "SDK/IClientEntityList.hpp"
+#include "SDK/IGameEventManager2.hpp"
+#include "SDK/IVEngineClient.hpp"
+#include "SDK/IVModelInfoClient.hpp"
+#include "SDK/ILocalize.hpp"
+
+#include "Utilities/VMTHook.hpp"
+#include "Utilities/Platform.hpp"
+#include "Utilities/Interface.hpp"
+#include "Utilities/Virtuals.hpp"
+#include "Utilities/NetVarManager.hpp"
