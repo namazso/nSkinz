@@ -29,6 +29,7 @@
     <ClCompile Include="src\Utilities\Platform.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\ItemDefinitions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Configuration.hpp" />
@@ -124,7 +125,6 @@
     <ClInclude Include="src\Utilities\FnvHash.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\ItemDefinitions.cpp" />
     <ClInclude Include="src\ItemDefinitions.hpp" />
   </ItemGroup>
   <ItemGroup>
