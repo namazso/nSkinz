@@ -37,6 +37,9 @@ HRESULT __stdcall hkReset(IDirect3DDevice9* thisptr, D3DPRESENT_PARAMETERS* para
 
 HRESULT __stdcall hkEndScene(IDirect3DDevice9* thisptr)
 {
+	//fix drawing without cl_showfps
+	thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
+	
 	static auto fnEndScene = l_D3D9Hook->GetOriginalFunction<EndScene_t>(42);
 	static auto bMouseEnabled = true;
 
