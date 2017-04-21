@@ -35,9 +35,6 @@ void __stdcall Initialize(void* pInstance)
 
 	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 1);
 
-	// Make sure our gui renders. Should probably use better method.
-	g_pEngine->ClientCmd_Unrestricted("cl_showfps 1");
-
 	g_pRenderer = std::make_unique<Renderer>();
 
 	g_ClientHook = std::make_unique<VMTHook>(g_pClient);
