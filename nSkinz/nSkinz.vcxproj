@@ -126,14 +126,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\local\boost_1_63_0;C:\Users\Administrator\Desktop\nSkinz\nSkinz\deps;C:\Users\Administrator\Desktop\nSkinz\nSkinz\deps\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>C:\local\boost_1_63_0;$(ProjectDir)deps;$(ProjectDir)deps\imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\local\boost_1_63_0;C:\Users\Administrator\Desktop\nSkinz\nSkinz\deps;C:\Users\Administrator\Desktop\nSkinz\nSkinz\deps\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>C:\local\boost_1_63_0;$(ProjectDir)deps;$(ProjectDir)deps\imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
