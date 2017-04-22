@@ -45,7 +45,10 @@ uintptr_t platform::FindPattern(const char* szModule, const char* szPattern, con
 	return ret == address + size ? 0 : reinterpret_cast<uintptr_t>(ret);
 }
 
-bool platform::IsCodePtr(void * p)
+bool platform::IsCodePtr(void* p)
 {
-	return !IsBadCodePtr(reinterpret_cast<FARPROC>(p));
+	MEMORY_BASIC_INFORMATION out;
+	VirtualQuery(p, &out, sizeof(out));
+
+	return (out.AllocationBase && out.Type && out.Protect & PAGE_EXECUTE);
 }
