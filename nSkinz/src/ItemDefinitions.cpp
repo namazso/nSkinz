@@ -1,4 +1,3 @@
-#pragma once
 #include "ItemDefinitions.hpp"
 
 const std::map<size_t, Item_t> k_WeaponInfo =
