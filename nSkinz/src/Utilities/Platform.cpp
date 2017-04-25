@@ -67,5 +67,5 @@ bool platform::IsCodePtr(void* p)
 	}*/
 
 	// Ok fuck this randomly crashing shit
-	return !IsBadCodePtr(reinterpret_cast<FARPROC>(p));
+	return !IS_INTRESOURCE(reinterpret_cast<FARPROC>(p));
 }
