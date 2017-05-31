@@ -39,7 +39,7 @@ HRESULT __stdcall hkEndScene(IDirect3DDevice9* thisptr)
 {
 	//fix drawing without cl_showfps
 	thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
-	
+
 	static auto fnEndScene = l_D3D9Hook->GetOriginalFunction<EndScene_t>(42);
 	static auto bMouseEnabled = true;
 
@@ -78,14 +78,14 @@ bool HandleInputMessage(UINT uMessageType, WPARAM wParam, LPARAM lParam)
 		g_pRenderer->GetActive() ^= true;
 
 	if (g_pRenderer->GetActive())
-		return ImGui_ImplDX9_WndProcHandler(l_hwnd, uMessageType, wParam, lParam);
+		return ImGui_ImplDX9_WndProcHandler(l_hwnd, uMessageType, wParam, lParam) != 0;
 
 	return false;
 }
 
 LRESULT __stdcall hkWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if(HandleInputMessage(message, wParam, lParam))
+	if (HandleInputMessage(message, wParam, lParam))
 		return true;
 
 	return CallWindowProc(l_WndProcOriginal, hWnd, message, wParam, lParam);
@@ -112,7 +112,7 @@ Renderer::Renderer()
 	l_D3D9Hook->HookFunction(hkReset, 16);
 	l_D3D9Hook->HookFunction(hkEndScene, 42);
 
-	if(ImGui_ImplDX9_Init(l_hwnd, pD3D9Device))
+	if (ImGui_ImplDX9_Init(l_hwnd, pD3D9Device))
 		m_bReady = true;
 
 	{

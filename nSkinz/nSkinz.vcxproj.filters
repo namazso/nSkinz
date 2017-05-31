@@ -2,9 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\Configuration.cpp" />
-    <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Skins.cpp" />
     <ClCompile Include="deps\imgui\imgui.cpp">
       <Filter>Dependency\ImGui</Filter>
     </ClCompile>
@@ -30,14 +28,14 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\ItemDefinitions.cpp" />
+    <ClCompile Include="src\PaintKitParser.cpp" />
+    <ClCompile Include="src\nSkinz.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Configuration.hpp" />
     <ClInclude Include="src\Interface.hpp" />
-    <ClInclude Include="src\nSkinz.hpp" />
     <ClInclude Include="src\RecvProxyHook.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
-    <ClInclude Include="src\Skins.hpp" />
     <ClInclude Include="deps\imgui\imconfig.h">
       <Filter>Dependency\ImGui</Filter>
     </ClInclude>
@@ -58,9 +56,6 @@
     </ClInclude>
     <ClInclude Include="deps\imgui\stb_rect_pack.h">
       <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\vdf_parser.hpp">
-      <Filter>Dependency</Filter>
     </ClInclude>
     <ClInclude Include="src\Hooks\Hooks.hpp">
       <Filter>Hooks</Filter>
@@ -126,6 +121,8 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\ItemDefinitions.hpp" />
+    <ClInclude Include="src\PaintKitParser.hpp" />
+    <ClInclude Include="src\nSkinz.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">
