@@ -1,4 +1,4 @@
-![Screenshot](http://puu.sh/vqzGO/93fd646593.png)
+![Screenshot](https://puu.sh/vw4Pk/fda5d8f17e.png)
 
 ### nSkinz
 
@@ -12,14 +12,13 @@ nSkinz is a fully featured internal skin & knife changer for Counter-Strike: Glo
 * Uses signature scanning and NetVar manager for dynamic offsets
 * Primitive configuration saving & loading support
 
-## Dependencies
+## Requirements
 
-* Boost, for dynamic skin parsing
 * C++11 compilant compiler
 
 ## Usage
 
-Currently only Windows is supported, however this may change in the future.
+Currently only Windows is supported, however this may change ~~in the future~~ if you submit a PR because I'm lazy.
 
 * Download the source with "Clone or Download" -> "Download ZIP", or via command line:
 ```
