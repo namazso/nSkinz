@@ -2,13 +2,13 @@
 #include "Configuration.hpp"
 #include "ItemDefinitions.hpp"
 #include "SDK.hpp"
-#include "Skins.hpp"
+#include "PaintKitParser.hpp"
 #include <imgui.h>
 
 inline void DrawGUI()
 {
 	ImGui::SetNextWindowSize(ImVec2(600, 300));
-	if(ImGui::Begin("nSkinz", nullptr,
+	if (ImGui::Begin("nSkinz", nullptr,
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_AlwaysAutoResize))
@@ -18,16 +18,16 @@ inline void DrawGUI()
 		auto& vItems = Config::Get()->GetItems();
 		std::vector<char*> vpszItemNames;
 
-		if(vItems.size() == 0)
+		if (vItems.size() == 0)
 			vItems.push_back(EconomyItem_t());
 
-		for(auto& x : vItems)
+		for (auto& x : vItems)
 			vpszItemNames.push_back(x.szName);
 
 		static auto iSelected = 0;
 
 		// If the user deleted the last element or loaded a config
-		if(static_cast<size_t>(iSelected) >= vpszItemNames.size())
+		if (static_cast<size_t>(iSelected) >= vpszItemNames.size())
 			iSelected = 0;
 
 		ImGui::PushItemWidth(-1);
@@ -43,10 +43,10 @@ inline void DrawGUI()
 
 		// Item to change skins for
 		ImGui::Combo("Item", &SelectedItem.iDefinitionId, [](void* data, int idx, const char** out_text)
-			{
-				*out_text = k_WeaponNames[idx].szName;
-				return true;
-			}, nullptr, k_WeaponNames.size(), 5);
+		{
+			*out_text = k_WeaponNames[idx].szName;
+			return true;
+		}, nullptr, k_WeaponNames.size(), 5);
 
 		// Enabled
 		ImGui::Checkbox("Enabled", &SelectedItem.bEnabled);
@@ -66,7 +66,7 @@ inline void DrawGUI()
 		// Paint kit
 		ImGui::Combo("Paint Kit", &SelectedItem.iPaintKitId, [](void* data, int idx, const char** out_text)
 		{
-			*out_text = k_Skins[idx].strName.c_str();
+			*out_text = k_Skins[idx].name.c_str();
 			return true;
 		}, nullptr, k_Skins.size(), 10);
 
@@ -81,13 +81,13 @@ inline void DrawGUI()
 		SelectedItem.UpdateValues();
 
 		// Item defindex override
-		if(IsKnife(SelectedItem.iDefinitionIndex))
+		if (IsKnife(SelectedItem.iDefinitionIndex))
 		{
 			ImGui::Combo("Knife", &SelectedItem.iDefinitionOverrideId, [](void* data, int idx, const char** out_text)
-				{
-					*out_text = k_KniveNames[idx].szName;
-					return true;
-				}, nullptr, k_KniveNames.size(), 5);
+			{
+				*out_text = k_KniveNames[idx].szName;
+				return true;
+			}, nullptr, k_KniveNames.size(), 5);
 		}
 		else
 		{
@@ -109,26 +109,26 @@ inline void DrawGUI()
 
 		auto vSize = ImVec2(ImGui::GetColumnWidth(), 20);
 
-		if(ImGui::Button("Add", vSize))
+		if (ImGui::Button("Add", vSize))
 		{
 			vItems.push_back(EconomyItem_t());
 			iSelected = vItems.size() - 1;
 		}
 		ImGui::NextColumn();
 
-		if(ImGui::Button("Remove", vSize))
+		if (ImGui::Button("Remove", vSize))
 			vItems.erase(vItems.begin() + iSelected);
 		ImGui::NextColumn();
 
-		if(ImGui::Button("Update", vSize))
+		if (ImGui::Button("Update", vSize))
 			(*g_ppClientState)->ForceFullUpdate();
 		ImGui::NextColumn();
 
-		if(ImGui::Button("Save", vSize))
+		if (ImGui::Button("Save", vSize))
 			Config::Get()->Save();
 		ImGui::NextColumn();
 
-		if(ImGui::Button("Load", vSize))
+		if (ImGui::Button("Load", vSize))
 			Config::Get()->Load();
 		ImGui::NextColumn();
 

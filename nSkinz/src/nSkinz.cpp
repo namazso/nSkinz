@@ -2,7 +2,7 @@
 #include "Hooks/Hooks.hpp"
 #include "Utilities/Platform.hpp"
 #include "Renderer.hpp"
-#include "Skins.hpp"
+#include "PaintKitParser.hpp"
 
 IBaseClientDLL*		g_pClient;
 IClientEntityList*	g_pEntityList;
@@ -23,17 +23,17 @@ std::unique_ptr<RecvPropHook> g_SequenceHook;
 
 void __stdcall Initialize(void* pInstance)
 {
-	g_pClient		= CaptureInterface<IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
-	g_pEntityList	= CaptureInterface<IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
-	g_pEngine		= CaptureInterface<IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
-	g_pModelInfo	= CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
-	g_pGameEvents	= CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
-	g_pLocalize		= CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
+	g_pClient = CaptureInterface<IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
+	g_pEntityList = CaptureInterface<IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
+	g_pEngine = CaptureInterface<IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
+	g_pModelInfo = CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
+	g_pGameEvents = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	g_pLocalize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
 
 	// Get skins
-	GetSkins(k_Skins, k_Gloves, "csgo");
+	GetPaintKits();
 
-	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 1);
+	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 16);
 
 	g_pRenderer = std::make_unique<Renderer>();
 
@@ -52,7 +52,7 @@ void __stdcall Initialize(void* pInstance)
 
 bool __stdcall DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pReserved)
 {
-	if(dwReason == DLL_PROCESS_ATTACH)
+	if (dwReason == DLL_PROCESS_ATTACH)
 		CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(Initialize), hInstance, 0, nullptr);
 
 	return true;
