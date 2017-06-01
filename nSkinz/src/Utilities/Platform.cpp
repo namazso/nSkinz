@@ -47,25 +47,12 @@ uintptr_t platform::FindPattern(const char* szModule, const char* szPattern, con
 
 bool platform::IsCodePtr(void* p)
 {
-	/*constexpr auto flags = (PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY);
+	constexpr const DWORD protect_flags = PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;
 
-	MEMORY_BASIC_INFORMATION mbi{};
-	if (VirtualQuery(p, &mbi, sizeof(mbi)))
-		return (mbi.Protect & flags) && !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS));
+	MEMORY_BASIC_INFORMATION out;
+	VirtualQuery(p, &out, sizeof out);
 
-	return false;*/
-
-	/*__try
-	{
-		auto x = *reinterpret_cast<uint8_t*>(p);
-		return true;
-	}
-	__except (_exception_code() == EXCEPTION_ACCESS_VIOLATION ?
-		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		return false;
-	}*/
-
-	// Ok fuck this randomly crashing shit
-	return !IsBadCodePtr(reinterpret_cast<FARPROC>(p));
+	return out.Type
+		&& !(out.Protect & (PAGE_GUARD | PAGE_NOACCESS))
+		&& out.Protect & protect_flags;
 }

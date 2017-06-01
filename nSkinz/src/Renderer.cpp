@@ -23,7 +23,7 @@ HRESULT __stdcall hkReset(IDirect3DDevice9* thisptr, D3DPRESENT_PARAMETERS* para
 {
 	static auto fnReset = l_D3D9Hook->GetOriginalFunction<Reset_t>(16);
 
-	if (!g_pRenderer->IsReady())
+	if(!g_pRenderer || !g_pRenderer->IsReady())
 		return fnReset(thisptr, params);
 
 	ImGui_ImplDX9_InvalidateDeviceObjects();
@@ -43,9 +43,9 @@ HRESULT __stdcall hkEndScene(IDirect3DDevice9* thisptr)
 	static auto fnEndScene = l_D3D9Hook->GetOriginalFunction<EndScene_t>(42);
 	static auto bMouseEnabled = true;
 
-	if (g_pRenderer->GetActive())
+	if(g_pRenderer && g_pRenderer->GetActive())
 	{
-		if (bMouseEnabled)
+		if(bMouseEnabled)
 		{
 			// We could do this with cvars, but too much work to implement a whole cvar interface just for this.
 			g_pEngine->ClientCmd_Unrestricted("cl_mouseenable 0");
@@ -62,7 +62,7 @@ HRESULT __stdcall hkEndScene(IDirect3DDevice9* thisptr)
 	}
 	else
 	{
-		if (!bMouseEnabled)
+		if(!bMouseEnabled)
 		{
 			g_pEngine->ClientCmd_Unrestricted("cl_mouseenable 1");
 			bMouseEnabled = true;
@@ -74,10 +74,13 @@ HRESULT __stdcall hkEndScene(IDirect3DDevice9* thisptr)
 
 bool HandleInputMessage(UINT uMessageType, WPARAM wParam, LPARAM lParam)
 {
-	if (uMessageType == WM_KEYUP && wParam == VK_INSERT)
+	if(!g_pRenderer)
+		return false;
+
+	if(uMessageType == WM_KEYUP && wParam == VK_INSERT)
 		g_pRenderer->GetActive() ^= true;
 
-	if (g_pRenderer->GetActive())
+	if(g_pRenderer->GetActive())
 		return ImGui_ImplDX9_WndProcHandler(l_hwnd, uMessageType, wParam, lParam) != 0;
 
 	return false;
@@ -85,7 +88,7 @@ bool HandleInputMessage(UINT uMessageType, WPARAM wParam, LPARAM lParam)
 
 LRESULT __stdcall hkWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (HandleInputMessage(message, wParam, lParam))
+	if(HandleInputMessage(message, wParam, lParam))
 		return true;
 
 	return CallWindowProc(l_WndProcOriginal, hWnd, message, wParam, lParam);
@@ -112,7 +115,7 @@ Renderer::Renderer()
 	l_D3D9Hook->HookFunction(hkReset, 16);
 	l_D3D9Hook->HookFunction(hkEndScene, 42);
 
-	if (ImGui_ImplDX9_Init(l_hwnd, pD3D9Device))
+	if(ImGui_ImplDX9_Init(l_hwnd, pD3D9Device))
 		m_bReady = true;
 
 	{
