@@ -112,8 +112,8 @@ Renderer::Renderer()
 	auto pD3D9Device = **reinterpret_cast<IDirect3DDevice9***>(platform::FindPattern("shaderapidx9.dll", "\xA1\x00\x00\x00\x00\x50\x8B\x08\xFF\x51\x0C", "x????xxxxxx") + 1);
 
 	l_D3D9Hook = std::make_unique<VMTHook>(pD3D9Device);
-	l_D3D9Hook->HookFunction(hkReset, 16);
-	l_D3D9Hook->HookFunction(hkEndScene, 42);
+	l_D3D9Hook->HookFunction(reinterpret_cast<void*>(hkReset), 16);
+	l_D3D9Hook->HookFunction(reinterpret_cast<void*>(hkEndScene), 42);
 
 	if(ImGui_ImplDX9_Init(l_hwnd, pD3D9Device))
 		m_bReady = true;

@@ -1,4 +1,3 @@
-#pragma once
 #include "Hooks.hpp"
 #include "../ItemDefinitions.hpp"
 #include "../nSkinz.hpp"

@@ -27,7 +27,7 @@ public:
 
 	void* HookFunction(void* pfn, size_t iIndex) const
 	{
-		if(iIndex <= m_iSize && iIndex >= 0)
+		if(iIndex <= m_iSize)
 		{
 			m_pNewVMT[iIndex] = pfn;
 			return m_pOldVMT[iIndex];

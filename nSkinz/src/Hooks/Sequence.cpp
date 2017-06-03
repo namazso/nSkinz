@@ -1,4 +1,3 @@
-#pragma once
 #include "Hooks.hpp"
 #include "../nSkinz.hpp"
 #include <unordered_map>

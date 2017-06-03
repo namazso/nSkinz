@@ -38,10 +38,10 @@ void __stdcall Initialize(void* pInstance)
 	g_pRenderer = std::make_unique<Renderer>();
 
 	g_ClientHook = std::make_unique<VMTHook>(g_pClient);
-	g_ClientHook->HookFunction(hooks::FrameStageNotify, 36);
+	g_ClientHook->HookFunction(reinterpret_cast<void*>(hooks::FrameStageNotify), 36);
 
 	g_GameEventsHook = std::make_unique<VMTHook>(g_pGameEvents);
-	g_GameEventsHook->HookFunction(hooks::FireEventClientSide, 9);
+	g_GameEventsHook->HookFunction(reinterpret_cast<void*>(hooks::FireEventClientSide), 9);
 
 	auto pSequenceProp = C_BaseViewModel::GetSequenceProp();
 
