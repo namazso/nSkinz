@@ -14,4 +14,4 @@ private:
 	mutable bool m_bActive = false;
 };
 
-extern std::unique_ptr<Renderer> g_pRenderer;
+extern Renderer* g_pRenderer;

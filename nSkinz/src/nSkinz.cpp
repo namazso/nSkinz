@@ -13,13 +13,12 @@ ILocalize*			g_pLocalize;
 
 CBaseClientState**	g_ppClientState;
 
-std::unique_ptr<Renderer> g_pRenderer;
+Renderer* g_pRenderer;
 
-std::unique_ptr<VMTHook> g_ClientHook;
-std::unique_ptr<VMTHook> g_GameEventsHook;
-std::unique_ptr<VMTHook> g_D3D9Hook;
+VMTHook* g_ClientHook;
+VMTHook* g_GameEventsHook;
 
-std::unique_ptr<RecvPropHook> g_SequenceHook;
+RecvPropHook* g_SequenceHook;
 
 void __stdcall Initialize(void* pInstance)
 {
@@ -35,17 +34,30 @@ void __stdcall Initialize(void* pInstance)
 
 	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 16);
 
-	g_pRenderer = std::make_unique<Renderer>();
+	g_pRenderer = new Renderer();
 
-	g_ClientHook = std::make_unique<VMTHook>(g_pClient);
+	g_ClientHook = new VMTHook(g_pClient);
 	g_ClientHook->HookFunction(reinterpret_cast<void*>(hooks::FrameStageNotify), 36);
 
-	g_GameEventsHook = std::make_unique<VMTHook>(g_pGameEvents);
+	g_GameEventsHook = new VMTHook(g_pGameEvents);
 	g_GameEventsHook->HookFunction(reinterpret_cast<void*>(hooks::FireEventClientSide), 9);
 
 	auto pSequenceProp = C_BaseViewModel::GetSequenceProp();
 
-	g_SequenceHook = std::make_unique<RecvPropHook>(pSequenceProp, hooks::SequenceProxyFn);
+	g_SequenceHook = new RecvPropHook(pSequenceProp, hooks::SequenceProxyFn);
+}
+
+// If we aren't unloaded correctly (like when you close csgo)
+// we should just leak the hooks, since the hooked instances
+// might be already destroyed
+void __stdcall UnInitialize()
+{
+	delete g_pRenderer;
+
+	delete g_ClientHook;
+	delete g_GameEventsHook;
+
+	delete g_SequenceHook;
 }
 
 #include <windows.h>

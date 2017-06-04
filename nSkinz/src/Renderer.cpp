@@ -17,7 +17,7 @@ extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 static HWND l_hwnd;
 static WNDPROC l_WndProcOriginal = nullptr;
-static std::unique_ptr<VMTHook> l_D3D9Hook;
+static VMTHook* l_D3D9Hook;
 
 HRESULT __stdcall hkReset(IDirect3DDevice9* thisptr, D3DPRESENT_PARAMETERS* params)
 {
@@ -97,7 +97,7 @@ LRESULT __stdcall hkWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 Renderer::~Renderer()
 {
 	SetWindowLongPtr(l_hwnd, GWLP_WNDPROC, LONG_PTR(l_WndProcOriginal));
-	l_D3D9Hook.release();
+	delete l_D3D9Hook;
 
 	// In case our hooks are still running
 	Sleep(100);
@@ -111,7 +111,7 @@ Renderer::Renderer()
 
 	auto pD3D9Device = **reinterpret_cast<IDirect3DDevice9***>(platform::FindPattern("shaderapidx9.dll", "\xA1\x00\x00\x00\x00\x50\x8B\x08\xFF\x51\x0C", "x????xxxxxx") + 1);
 
-	l_D3D9Hook = std::make_unique<VMTHook>(pD3D9Device);
+	l_D3D9Hook = new VMTHook(pD3D9Device);
 	l_D3D9Hook->HookFunction(reinterpret_cast<void*>(hkReset), 16);
 	l_D3D9Hook->HookFunction(reinterpret_cast<void*>(hkEndScene), 42);
 
