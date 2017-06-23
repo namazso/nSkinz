@@ -32,7 +32,7 @@ void __stdcall Initialize(void* pInstance)
 	// Get skins
 	GetPaintKits();
 
-	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 16);
+	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 0x10);
 
 	g_pRenderer = new Renderer();
 
