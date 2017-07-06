@@ -5,42 +5,56 @@
 
 class NetVarManager
 {
+private:
+	struct StoredPropData
+	{
+		RecvProp* prop_ptr;
+		uint16_t class_relative_offset;
+	};
+
 public:
 	static NetVarManager& Get()
 	{
-		static NetVarManager Instance;
-		return Instance;
+		static NetVarManager instance;
+		return instance;
 	}
 
-	unsigned short GetOffset(unsigned int wHash) { return m_mapOffsets[wHash]; }
-	RecvProp* GetPropPtr(unsigned int wHash) { return m_mapProps[wHash]; }
+	unsigned short GetOffset(unsigned int hash) { return m_props[hash].class_relative_offset; }
+	RecvProp* GetPropPtr(unsigned int hash) { return m_props[hash].prop_ptr; }
+
+	// Prevent instruction cache pollution caused by automatic
+	// inlining of Get and GetOffset every netvar usage when there
+	// are a lot of netvars
+	__declspec(noinline) static uint16_t GetOffsetByHash(fnv_t hash)
+	{
+		return Get().GetOffset(hash);
+	}
 
 private:
 	NetVarManager();
-	void DumpRecursive(const char* szBaseClass, RecvTable* pTable, uint16_t wOffset);
+	void DumpRecursive(const char* base_class, RecvTable* table, uint16_t offset);
 
 private:
-	std::map<fnv_t, RecvProp*> m_mapProps;
-	std::map<fnv_t, uint16_t> m_mapOffsets;
+	std::map<fnv_t, StoredPropData> m_props;
 };
 
 #define PNETVAR(funcname, type, netvarname) type* funcname() \
 { \
 	constexpr fnv_t hash = FnvHash(netvarname); \
-	static auto offset = NetVarManager::Get().GetOffset(hash); \
+	static auto offset = NetVarManager::GetOffsetByHash(hash); \
 	return reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
 #define NETVAR(funcname, type, netvarname) type& funcname() \
 { \
 	constexpr fnv_t hash = FnvHash(netvarname); \
-	static auto offset = NetVarManager::Get().GetOffset(hash); \
+	static auto offset = NetVarManager::GetOffsetByHash(hash); \
 	return *reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
 #define NETPROP(funcname, netvarname) static RecvProp* funcname() \
 { \
 	constexpr fnv_t hash = FnvHash(netvarname); \
-	static auto pProp = NetVarManager::Get().GetPropPtr(hash); \
-	return pProp; \
+	static auto prop_ptr = NetVarManager::Get().GetPropPtr(hash); \
+	return prop_ptr; \
 }

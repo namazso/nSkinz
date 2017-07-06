@@ -4,7 +4,7 @@
 using CreateInterfaceFn = void* (*)(const char*, int*);
 
 template <class T>
-T* CaptureInterface(const char* szModule, const char* szName)
+T* CaptureInterface(const char* module, const char* name)
 {
-	return reinterpret_cast<T*>(platform::CaptureInterface(szModule, szName));
+	return reinterpret_cast<T*>(platform::CaptureInterface(module, name));
 }

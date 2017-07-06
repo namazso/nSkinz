@@ -15,6 +15,7 @@ nSkinz is a fully featured internal skin & knife changer for Counter-Strike: Glo
 ## Requirements
 
 * C++11 compilant compiler
+* Tested under: clang 4.0, MSVC 2017
 
 ## Usage
 

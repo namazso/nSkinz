@@ -1,6 +1,6 @@
 #include "ItemDefinitions.hpp"
 
-const std::map<size_t, Item_t> k_WeaponInfo =
+const std::map<size_t, Item_t> k_weapon_info =
 {
 	{1, {"Desert Eagle", "WEAPON_DEAGLE", "models/weapons/v_pist_deagle.mdl", "deagle"}},
 	{2, {"Dual Berettas", "WEAPON_ELITE", "models/weapons/v_pist_elite.mdl", "elite"}},
@@ -57,7 +57,7 @@ const std::map<size_t, Item_t> k_WeaponInfo =
 	{516, {"Shadow Daggers", "WEAPON_KNIFE_PUSH", "models/weapons/v_knife_push.mdl", "knife_push"}}
 };
 
-const std::vector<WeaponName_s> k_KniveNames =
+const std::vector<WeaponName_t> k_knife_names =
 {
 	{0, "Default"},
 	{500, "Bayonet"},
@@ -72,45 +72,45 @@ const std::vector<WeaponName_s> k_KniveNames =
 	{516, "Shadow Daggers"}
 };
 
-const std::vector<WeaponName_t> k_WeaponNames =
- {
-    {42, "Knife"},
-    {7,  "AK-47"},
-    {8,  "AUG"},
-    {9,  "AWP"},
-    {63, "CZ75 Auto"},
-    {1,  "Desert Eagle"},
-    {2,  "Dual Berettas"},
-    {10, "FAMAS"},
-	{3,  "Five-SeveN" },
-    {11, "G3SG1"},
-    {13, "Galil AR"},
-    {4,  "Glock-18"},
-    {14, "M249"},
-    {60, "M4A1-S"},
-    {16, "M4A4"},
-    {17, "MAC-10"},
-    {27, "MAG-7"},
-    {33, "MP7"},
-    {34, "MP9"},
-    {28, "Negev"},
-    {35, "Nova"},
-    {32, "P2000"},
-    {36, "P250"},
-    {19, "P90"},
-    {26, "PP-Bizon"},
-    {64, "R8 Revolver"},
-    {29, "Sawed-Off"},
-    {38, "SCAR-20"},
-    {40, "SSG 08"},
-    {39, "SG 553"},
-    {30, "Tec-9"},
-    {24, "UMP-45"},
-    {61, "USP-S"},
-    {25, "XM1014"},
+const std::vector<WeaponName_t> k_weapon_names =
+{
+	{42, "Knife"},
+	{7, "AK-47"},
+	{8, "AUG"},
+	{9, "AWP"},
+	{63, "CZ75 Auto"},
+	{1, "Desert Eagle"},
+	{2, "Dual Berettas"},
+	{10, "FAMAS"},
+	{3, "Five-SeveN"},
+	{11, "G3SG1"},
+	{13, "Galil AR"},
+	{4, "Glock-18"},
+	{14, "M249"},
+	{60, "M4A1-S"},
+	{16, "M4A4"},
+	{17, "MAC-10"},
+	{27, "MAG-7"},
+	{33, "MP7"},
+	{34, "MP9"},
+	{28, "Negev"},
+	{35, "Nova"},
+	{32, "P2000"},
+	{36, "P250"},
+	{19, "P90"},
+	{26, "PP-Bizon"},
+	{64, "R8 Revolver"},
+	{29, "Sawed-Off"},
+	{38, "SCAR-20"},
+	{40, "SSG 08"},
+	{39, "SG 553"},
+	{30, "Tec-9"},
+	{24, "UMP-45"},
+	{61, "USP-S"},
+	{25, "XM1014"},
 };
 
-const std::vector<QualityName_t> k_QualityNames =
+const std::vector<QualityName_t> k_quality_names =
 {
 	{0, "Default"},
 	{1, "Genuine"},
@@ -124,4 +124,3 @@ const std::vector<QualityName_t> k_QualityNames =
 	{10, "Completed"},
 	{12, "Tournament"}
 };
-

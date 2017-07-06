@@ -4,68 +4,46 @@
 
 inline bool IsKnife(int i) { return i >= 500 || i == 59 || i == 42; }
 
-typedef struct Item_s
+// Stupid MSVC requires separate constexpr constructors for any initialization
+
+struct Item_t
 {
-	constexpr Item_s(const char* szDisplayName, const char* szEntityName, const char* szModel, const char* szIcon = nullptr) :
-		szDisplayName(szDisplayName),
-		szEntityName(szEntityName),
-		szModel(szModel),
-		szIcon(szIcon)
+	constexpr Item_t(const char* display_name, const char* entity_name, const char* model, const char* icon = nullptr) :
+		//display_name(display_name),
+		//entity_name(entity_name),
+		model(model),
+		icon(icon)
 	{}
 
-	const char* szDisplayName = nullptr;
-	const char* szEntityName = nullptr;
-	const char* szModel = nullptr;
-	const char* szIcon = nullptr;
-} Item_t;
+	//const char* display_name = nullptr;
+	//const char* entity_name = nullptr;
+	const char* model;
+	const char* icon;
+};
 
-typedef struct WeaponName_s
+struct WeaponName_t
 {
-	constexpr WeaponName_s(int iDefinitionIndex, const char* szName) :
-		iDefinitionIndex(iDefinitionIndex),
-		szName(szName)
+	constexpr WeaponName_t(int definition_index, const char* name) :
+		definition_index(definition_index),
+		name(name)
 	{}
 
-	int iDefinitionIndex = 0;
-	const char* szName = nullptr;
-} WeaponName_t;
+	int definition_index = 0;
+	const char* name = nullptr;
+};
 
-typedef struct QualityName_s
+struct QualityName_t
 {
-	constexpr QualityName_s(int iIndex, const char* szName) :
-		iIndex(iIndex),
-		szName(szName)
+	constexpr QualityName_t(int index, const char* name) :
+		index(index),
+		name(name)
 	{}
 
-	int iIndex = 0;
-	const char* szName = nullptr;
-} QualityName_t;
+	int index = 0;
+	const char* name = nullptr;
+};
 
-/*typedef struct Weapon_s
-{
-	constexpr Weapon_s(int iOrderId, int iDefIndex, int iOverrideFor, bool bDisplayInMenu, const char* szDisplayName, const char* szEntityName, const char* szModel, const char* szIcon = nullptr) :
-		iOrderId(iOrderId),
-		iDefIndex(iDefIndex),
-		iOverrideFor(iOverrideFor),
-		bDisplayInMenu(bDisplayInMenu),
-		szDisplayName(szDisplayName),
-		szEntityName(szEntityName),
-		szModel(szModel),
-		szIcon(szIcon)
-	{}
-
-	int iOrderId = 0;
-	int iDefIndex = 0;
-	int iOverrideFor = 0;
-	bool bDisplayInMenu = false;
-	const char* szDisplayName = nullptr;
-	const char* szEntityName = nullptr;
-	const char* szModel = nullptr;
-	const char* szIcon = nullptr;
-}
-Weapon_t;*/
-
-extern const std::map<size_t, Item_t> k_WeaponInfo;
-extern const std::vector<WeaponName_s> k_KniveNames;
-extern const std::vector<WeaponName_t> k_WeaponNames;
-extern const std::vector<QualityName_t> k_QualityNames;
+extern const std::map<size_t, Item_t> k_weapon_info;
+extern const std::vector<WeaponName_t> k_knife_names;
+extern const std::vector<WeaponName_t> k_weapon_names;
+extern const std::vector<QualityName_t> k_quality_names;

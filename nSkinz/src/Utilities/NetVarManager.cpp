@@ -4,36 +4,42 @@
 
 NetVarManager::NetVarManager()
 {
-	for (auto pClass = g_pClient->GetAllClasses(); pClass; pClass = pClass->m_pNext)
-		if (pClass->m_pRecvTable)
-			DumpRecursive(pClass->m_pNetworkName, pClass->m_pRecvTable, 0);
+	for (auto clazz = g_client->GetAllClasses(); clazz; clazz = clazz->m_pNext)
+		if (clazz->m_pRecvTable)
+			DumpRecursive(clazz->m_pNetworkName, clazz->m_pRecvTable, 0);
 }
 
-void NetVarManager::DumpRecursive(const char* szBaseClass, RecvTable* pTable, uint16_t wOffset)
+void NetVarManager::DumpRecursive(const char* base_class, RecvTable* table, uint16_t offset)
 {
-	for (auto i = 0; i < pTable->m_nProps; ++i)
+	for (auto i = 0; i < table->m_nProps; ++i)
 	{
-		auto pProperty = &pTable->m_pProps[i];
+		auto prop_ptr = &table->m_pProps[i];
 
 		//Skip trash array items
-		if (!pProperty || isdigit(pProperty->m_pVarName[0]))
+		if (!prop_ptr || isdigit(prop_ptr->m_pVarName[0]))
 			continue;
 
 		//We dont care about the base class, we already know that
-		if (strcmp(pProperty->m_pVarName, "baseclass") == 0)
+		if (strcmp(prop_ptr->m_pVarName, "baseclass") == 0)
 			continue;
 
-		if (pProperty->m_RecvType == DPT_DataTable &&
-			pProperty->m_pDataTable != nullptr &&
-			pProperty->m_pDataTable->m_pNetTableName[0] == 'D') // Skip shitty tables
+		if (prop_ptr->m_RecvType == DPT_DataTable &&
+			prop_ptr->m_pDataTable != nullptr &&
+			prop_ptr->m_pDataTable->m_pNetTableName[0] == 'D') // Skip shitty tables
 		{
-			DumpRecursive(szBaseClass, pProperty->m_pDataTable, wOffset + pProperty->m_Offset);
+			DumpRecursive(base_class, prop_ptr->m_pDataTable, offset + prop_ptr->m_Offset);
 		}
 
-		auto strHash = std::string(szBaseClass) + "->" + pProperty->m_pVarName;
-		auto dwHash = FnvHash(strHash.c_str());
+		char hash_name[256];
 
-		m_mapProps[dwHash] = pProperty;
-		m_mapOffsets[dwHash] = wOffset + pProperty->m_Offset;
+		strcpy_s(hash_name, base_class);
+		strcat_s(hash_name, "->");
+		strcat_s(hash_name, prop_ptr->m_pVarName);
+
+		// Need to cast it to prevent FnvHash using the recursive hasher
+		// which would hash all 256 bytes
+		auto hash = FnvHash(static_cast<const char*>(hash_name));
+
+		m_props[hash] = { prop_ptr,  uint16_t(offset + prop_ptr->m_Offset) };
 	}
 }

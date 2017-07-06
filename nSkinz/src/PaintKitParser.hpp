@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 
 struct PaintKit_t
@@ -10,7 +9,7 @@ struct PaintKit_t
 	bool operator < (const PaintKit_t& other) const { return (name < other.name); }
 };
 
-extern std::vector<PaintKit_t> k_Skins;
-extern std::vector<PaintKit_t> k_Gloves;
+extern std::vector<PaintKit_t> k_skins;
+extern std::vector<PaintKit_t> k_gloves;
 
 extern void GetPaintKits();

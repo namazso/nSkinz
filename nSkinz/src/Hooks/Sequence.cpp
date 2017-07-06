@@ -41,23 +41,24 @@ inline int RandomSequence(int low, int high)
 }
 
 // Map of animation fixes
-const static std::unordered_map<std::string, std::function<int(int)>> mapAnimFixes
+// unfortunately can't be constexpr
+const static std::unordered_map<std::string, int(*)(int)> animation_fix_map
 {
-	{"models/weapons/v_knife_butterfly.mdl", [](int nSequence) -> int
+	{"models/weapons/v_knife_butterfly.mdl", [](int sequence) -> int
 		{
-			switch(nSequence)
+			switch(sequence)
 			{
 			case SEQUENCE_DEFAULT_DRAW:
 				return RandomSequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
 			case SEQUENCE_DEFAULT_LOOKAT01:
 				return RandomSequence(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03);
 			default:
-				return nSequence + 1;
+				return sequence + 1;
 			}
 		}},
-	{"models/weapons/v_knife_falchion_advanced.mdl", [](int nSequence) -> int
+	{"models/weapons/v_knife_falchion_advanced.mdl", [](int sequence) -> int
 		{
-			switch(nSequence)
+			switch(sequence)
 			{
 			case SEQUENCE_DEFAULT_IDLE2:
 				return SEQUENCE_FALCHION_IDLE1;
@@ -67,14 +68,14 @@ const static std::unordered_map<std::string, std::function<int(int)>> mapAnimFix
 				return RandomSequence(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02);
 			case SEQUENCE_DEFAULT_DRAW:
 			case SEQUENCE_DEFAULT_IDLE1:
-				return nSequence;
+				return sequence;
 			default:
-				return nSequence - 1;
+				return sequence - 1;
 			}
 		}},
-	{"models/weapons/v_knife_push.mdl", [](int nSequence) -> int
+	{"models/weapons/v_knife_push.mdl", [](int sequence) -> int
 		{
-			switch(nSequence)
+			switch(sequence)
 			{
 			case SEQUENCE_DEFAULT_IDLE2:
 				return SEQUENCE_DAGGERS_IDLE1;
@@ -86,25 +87,25 @@ const static std::unordered_map<std::string, std::function<int(int)>> mapAnimFix
 			case SEQUENCE_DEFAULT_HEAVY_HIT1:
 			case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
 			case SEQUENCE_DEFAULT_LOOKAT01:
-				return nSequence + 3;
+				return sequence + 3;
 			case SEQUENCE_DEFAULT_DRAW:
 			case SEQUENCE_DEFAULT_IDLE1:
-				return nSequence;
+				return sequence;
 			default:
-				return nSequence + 2;
+				return sequence + 2;
 			}
 		}},
-	{"models/weapons/v_knife_survival_bowie.mdl", [](int nSequence) -> int
+	{"models/weapons/v_knife_survival_bowie.mdl", [](int sequence) -> int
 		{
-			switch(nSequence)
+			switch(sequence)
 			{
 			case SEQUENCE_DEFAULT_DRAW:
 			case SEQUENCE_DEFAULT_IDLE1:
-				return nSequence;
+				return sequence;
 			case SEQUENCE_DEFAULT_IDLE2:
 				return SEQUENCE_BOWIE_IDLE1;
 			default:
-				return nSequence - 1;
+				return sequence - 1;
 			}
 		}}
 };
@@ -112,36 +113,33 @@ const static std::unordered_map<std::string, std::function<int(int)>> mapAnimFix
 // Replacement function that will be called when the view model animation sequence changes.
 void __cdecl hooks::SequenceProxyFn(const CRecvProxyData* proxy_data_const, void* entity, void* output)
 {
-	static auto fnSequenceProxy = g_SequenceHook->GetOriginalFunction();
+	static auto original_fn = g_sequence_hook->GetOriginalFunction();
 
-	auto pLocal = static_cast<C_BasePlayer*>(g_pEntityList->GetClientEntity(g_pEngine->GetLocalPlayer()));
+	auto local = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntity(g_engine->GetLocalPlayer()));
 
-	if(!pLocal || pLocal->GetLifeState() != LifeState::ALIVE)
-		return fnSequenceProxy(proxy_data_const, entity, output);
+	if(!local || local->GetLifeState() != LifeState::ALIVE)
+		return original_fn(proxy_data_const, entity, output);
 
 	// Remove the constness from the proxy data allowing us to make changes.
-	auto pData = const_cast<CRecvProxyData*>(proxy_data_const);
+	auto proxy_data = const_cast<CRecvProxyData*>(proxy_data_const);
 	
-	auto pViewModel = static_cast<C_BaseViewModel*>(entity);
+	auto view_model = static_cast<C_BaseViewModel*>(entity);
 
-	if(pViewModel && pViewModel->GetOwner())
+	if(view_model && view_model->GetOwner() && view_model->GetOwner() != INVALID_EHANDLE_INDEX)
 	{
-		if(pViewModel->GetOwner() == INVALID_EHANDLE_INDEX)
-			return fnSequenceProxy(proxy_data_const, entity, output);
+		auto owner = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntityFromHandle(view_model->GetOwner()));
 
-		auto pOwner = static_cast<C_BasePlayer*>(g_pEntityList->GetClientEntityFromHandle(pViewModel->GetOwner()));
-
-		if(pOwner == g_pEntityList->GetClientEntity(g_pEngine->GetLocalPlayer()))
+		if(owner == g_entity_list->GetClientEntity(g_engine->GetLocalPlayer()))
 		{
 			// Get the filename of the current view model.
-			auto pKnifeModel = g_pModelInfo->GetModel(pViewModel->GetModelIndex());
-			auto szModel = g_pModelInfo->GetModelName(pKnifeModel);
+			auto knife_model = g_model_info->GetModel(view_model->GetModelIndex());
+			auto model_name = g_model_info->GetModelName(knife_model);
 
-			if(mapAnimFixes.count(szModel))
-				pData->m_Value.m_Int = mapAnimFixes.at(szModel)(pData->m_Value.m_Int);
+			if(animation_fix_map.count(model_name))
+				proxy_data->m_Value.m_Int = animation_fix_map.at(model_name)(proxy_data->m_Value.m_Int);
 		}
 	}
 
 	// Call the original function with our edited data.
-	fnSequenceProxy(pData, entity, output);
+	original_fn(proxy_data, entity, output);
 }

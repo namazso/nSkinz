@@ -2,15 +2,15 @@
 #include "../Configuration.hpp"
 #include "../nSkinz.hpp"
 
-bool __fastcall hooks::FireEventClientSide(IGameEventManager2* thisptr, void* edx_, IGameEvent* pEvent)
+bool __fastcall hooks::FireEventClientSide(IGameEventManager2* thisptr, void*, IGameEvent* event)
 {
-	static auto fnFireEventClientSide = g_GameEventsHook->GetOriginalFunction<FireEventClientSide_t>(9);
+	static auto original_fn = g_game_event_manager_hook->GetOriginalFunction<FireEventClientSide_t>(9);
 
 	// Filter to only the events we're interested in.
-	if(!strcmp(pEvent->GetName(), "player_death")
-		&& g_pEngine->GetPlayerForUserID(pEvent->GetInt("attacker")) == g_pEngine->GetLocalPlayer())
-		if(auto szOverride = Config::Get()->GetIconOverride(pEvent->GetString("weapon")))
-			pEvent->SetString("weapon", szOverride);
+	if(!strcmp(event->GetName(), "player_death")
+		&& g_engine->GetPlayerForUserID(event->GetInt("attacker")) == g_engine->GetLocalPlayer())
+		if(auto icon_override = Config::Get()->GetIconOverride(event->GetString("weapon")))
+			event->SetString("weapon", icon_override);
 
-	return fnFireEventClientSide(thisptr, pEvent);
+	return original_fn(thisptr, event);
 }

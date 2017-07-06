@@ -1,50 +1,47 @@
 #include "nSkinz.hpp"
 #include "Hooks/Hooks.hpp"
-#include "Utilities/Platform.hpp"
 #include "Renderer.hpp"
 #include "PaintKitParser.hpp"
 
-IBaseClientDLL*		g_pClient;
-IClientEntityList*	g_pEntityList;
-IVEngineClient*		g_pEngine;
-IVModelInfoClient*	g_pModelInfo;
-IGameEventManager2*	g_pGameEvents;
-ILocalize*			g_pLocalize;
+IBaseClientDLL*		g_client;
+IClientEntityList*	g_entity_list;
+IVEngineClient*		g_engine;
+IVModelInfoClient*	g_model_info;
+IGameEventManager2*	g_game_event_manager;
+ILocalize*			g_localize;
 
-CBaseClientState**	g_ppClientState;
+CBaseClientState**	g_client_state;
 
-Renderer* g_pRenderer;
+VMTHook* g_client_hook;
+VMTHook* g_game_event_manager_hook;
 
-VMTHook* g_ClientHook;
-VMTHook* g_GameEventsHook;
+RecvPropHook* g_sequence_hook;
 
-RecvPropHook* g_SequenceHook;
-
-void __stdcall Initialize(void* pInstance)
+void __stdcall Initialize(void* instance)
 {
-	g_pClient = CaptureInterface<IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
-	g_pEntityList = CaptureInterface<IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
-	g_pEngine = CaptureInterface<IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
-	g_pModelInfo = CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
-	g_pGameEvents = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
-	g_pLocalize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
+	g_client = CaptureInterface<IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
+	g_entity_list = CaptureInterface<IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
+	g_engine = CaptureInterface<IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
+	g_model_info = CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
+	g_game_event_manager = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	g_localize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
 
 	// Get skins
 	GetPaintKits();
 
-	g_ppClientState = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_pEngine, 12) + 0x10);
+	g_client_state = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_engine, 12) + 0x10);
 
-	g_pRenderer = new Renderer();
+	Render::Initialize();
 
-	g_ClientHook = new VMTHook(g_pClient);
-	g_ClientHook->HookFunction(reinterpret_cast<void*>(hooks::FrameStageNotify), 36);
+	g_client_hook = new VMTHook(g_client);
+	g_client_hook->HookFunction(reinterpret_cast<void*>(hooks::FrameStageNotify), 36);
 
-	g_GameEventsHook = new VMTHook(g_pGameEvents);
-	g_GameEventsHook->HookFunction(reinterpret_cast<void*>(hooks::FireEventClientSide), 9);
+	g_game_event_manager_hook = new VMTHook(g_game_event_manager);
+	g_game_event_manager_hook->HookFunction(reinterpret_cast<void*>(hooks::FireEventClientSide), 9);
 
-	auto pSequenceProp = C_BaseViewModel::GetSequenceProp();
+	auto sequence_prop = C_BaseViewModel::GetSequenceProp();
 
-	g_SequenceHook = new RecvPropHook(pSequenceProp, hooks::SequenceProxyFn);
+	g_sequence_hook = new RecvPropHook(sequence_prop, hooks::SequenceProxyFn);
 }
 
 // If we aren't unloaded correctly (like when you close csgo)
@@ -52,20 +49,20 @@ void __stdcall Initialize(void* pInstance)
 // might be already destroyed
 void __stdcall UnInitialize()
 {
-	delete g_pRenderer;
+	Render::Uninitialize();
 
-	delete g_ClientHook;
-	delete g_GameEventsHook;
+	delete g_client_hook;
+	delete g_game_event_manager_hook;
 
-	delete g_SequenceHook;
+	delete g_sequence_hook;
 }
 
 #include <windows.h>
 
-bool __stdcall DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pReserved)
+bool WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 {
-	if (dwReason == DLL_PROCESS_ATTACH)
-		CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(Initialize), hInstance, 0, nullptr);
+	if (reason == DLL_PROCESS_ATTACH)
+		CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(Initialize), instance, 0, nullptr);
 
 	return true;
 }

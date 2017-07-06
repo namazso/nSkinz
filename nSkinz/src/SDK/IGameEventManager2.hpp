@@ -35,4 +35,4 @@ public:
 };
 
 #define INTERFACEVERSION_GAMEEVENTSMANAGER2 "GAMEEVENTSMANAGER002"
-extern IGameEventManager2* g_pGameEvents;
+extern IGameEventManager2* g_game_event_manager;

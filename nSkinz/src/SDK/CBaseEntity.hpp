@@ -54,6 +54,6 @@ class C_BaseViewModel: public C_BaseEntity
 {
 public:
 	NETVAR(GetOwner, CBaseHandle, "CBaseViewModel->m_hOwner")
-	NETVAR(GetWeapon, int, "CBaseViewModel->m_hWeapon")
+	NETVAR(GetWeapon, unsigned, "CBaseViewModel->m_hWeapon")
 	NETPROP(GetSequenceProp, "CBaseViewModel->m_nSequence")
 };

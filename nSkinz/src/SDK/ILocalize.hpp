@@ -31,4 +31,4 @@ public:
 };
 
 #define ILOCALIZE_CLIENT_INTERFACE_VERSION "Localize_001"
-extern ILocalize* g_pLocalize;
+extern ILocalize* g_localize;

@@ -66,4 +66,4 @@ public:
 };
 
 #define VENGINE_CLIENT_INTERFACE_VERSION "VEngineClient014"
-extern IVEngineClient* g_pEngine;
+extern IVEngineClient* g_engine;

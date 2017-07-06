@@ -3,7 +3,7 @@
 #include "RecvProxyHook.hpp"
 #include <memory>
 
-extern VMTHook* g_ClientHook;
-extern VMTHook* g_GameEventsHook;
+extern VMTHook* g_client_hook;
+extern VMTHook* g_game_event_manager_hook;
 
-extern RecvPropHook* g_SequenceHook;
+extern RecvPropHook* g_sequence_hook;

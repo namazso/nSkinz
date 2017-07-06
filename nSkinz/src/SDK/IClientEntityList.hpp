@@ -19,4 +19,4 @@ public:
 };
 
 #define VCLIENTENTITYLIST_INTERFACE_VERSION "VClientEntityList003"
-extern IClientEntityList* g_pEntityList;
+extern IClientEntityList* g_entity_list;

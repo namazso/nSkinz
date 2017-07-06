@@ -1,17 +1,8 @@
 #pragma once
-#include <memory>
 
-class Renderer
+// Other parts don't need to know what goes behind the scenes
+namespace Render
 {
-public:
-	Renderer();
-	~Renderer();
-
-	bool IsReady() const { return m_bReady; }
-	bool& GetActive() const { return m_bActive; }
-private:
-	bool m_bReady = false;
-	mutable bool m_bActive = false;
-};
-
-extern Renderer* g_pRenderer;
+	extern void Initialize();
+	extern void Uninitialize();
+}

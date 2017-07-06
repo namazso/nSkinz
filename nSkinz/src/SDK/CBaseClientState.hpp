@@ -10,4 +10,4 @@ public:
 	};
 };
 
-extern CBaseClientState** g_ppClientState;
+extern CBaseClientState** g_client_state;

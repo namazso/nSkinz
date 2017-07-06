@@ -5,42 +5,37 @@
 class VMTHook
 {
 public:
-	VMTHook(void* pClass)
+	VMTHook(void* class_base)
 	{
-		m_pClass = reinterpret_cast<void***>(pClass);
-		m_pOldVMT = *m_pClass;
+		m_class = reinterpret_cast<void***>(class_base);
+		m_old_vmt = *m_class;
 
-		m_iSize = 0;
-		while(m_pOldVMT[m_iSize] && platform::IsCodePtr(m_pOldVMT[m_iSize]))
-			++m_iSize;
+		size_t size = 0;
+		while(m_old_vmt[size] && platform::IsCodePtr(m_old_vmt[size]))
+			++size;
 
-		m_pNewVMT = new void*[m_iSize];
-		memcpy(m_pNewVMT, m_pOldVMT, sizeof(void*) * m_iSize);
-		*m_pClass = m_pNewVMT;
+		m_new_vmt = new void*[size];
+		memcpy(m_new_vmt, m_old_vmt, sizeof(void*) * size);
+		*m_class = m_new_vmt;
 	}
 
 	~VMTHook()
 	{
-		*m_pClass = m_pOldVMT;
-		delete[] m_pNewVMT;
+		*m_class = m_old_vmt;
+		delete[] m_new_vmt;
 	}
 
-	void* HookFunction(void* pfn, size_t iIndex) const
+	void* HookFunction(void* hooked_fn, size_t index)
 	{
-		if(iIndex <= m_iSize)
-		{
-			m_pNewVMT[iIndex] = pfn;
-			return m_pOldVMT[iIndex];
-		}
-		return nullptr;
+		m_new_vmt[index] = hooked_fn;
+		return m_old_vmt[index];
 	}
 
-	template <typename Fn>
-	Fn GetOriginalFunction(int iIndex) { return reinterpret_cast<Fn>(m_pOldVMT[iIndex]); }
+	template <typename Fn = uintptr_t>
+	Fn GetOriginalFunction(int index) { return reinterpret_cast<Fn>(m_old_vmt[index]); }
 
 private:
-	void*** m_pClass = nullptr;
-	void** m_pNewVMT = nullptr;
-	void** m_pOldVMT = nullptr;
-	size_t m_iSize = 0;
+	void*** m_class = nullptr;
+	void** m_new_vmt = nullptr;
+	void** m_old_vmt = nullptr;
 };

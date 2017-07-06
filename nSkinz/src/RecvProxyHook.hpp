@@ -4,29 +4,29 @@
 class RecvPropHook
 {
 public:
-	RecvPropHook(RecvProp* pProperty, RecvVarProxyFn pProxyFn) :
-		m_pProperty(pProperty),
-		m_pOriginalProxyFn(pProperty->m_ProxyFn)
+	RecvPropHook(RecvProp* prop, RecvVarProxyFn proxy_fn) :
+		m_property(prop),
+		m_original_proxy_fn(prop->m_ProxyFn)
 	{
-		SetProxyFunction(pProxyFn);
+		SetProxyFunction(proxy_fn);
 	}
 
 	~RecvPropHook()
 	{
-		m_pProperty->m_ProxyFn = m_pOriginalProxyFn;
+		m_property->m_ProxyFn = m_original_proxy_fn;
 	}
 
 	RecvVarProxyFn GetOriginalFunction() const
 	{
-		return m_pOriginalProxyFn;
+		return m_original_proxy_fn;
 	}
 
-	void SetProxyFunction(RecvVarProxyFn pProxyFn) const
+	void SetProxyFunction(RecvVarProxyFn proxy_fn) const
 	{
-		m_pProperty->m_ProxyFn = pProxyFn;
+		m_property->m_ProxyFn = proxy_fn;
 	}
 
 private:
-	RecvProp* m_pProperty;
-	RecvVarProxyFn m_pOriginalProxyFn;
+	RecvProp* m_property;
+	RecvVarProxyFn m_original_proxy_fn;
 };

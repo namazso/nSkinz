@@ -9,33 +9,33 @@ struct EconomyItem_t
 {
 	void UpdateValues()
 	{
-		iDefinitionIndex = k_WeaponNames[iDefinitionId].iDefinitionIndex;
-		iEntityQualityIndex = k_QualityNames[iEntityQualityId].iIndex;
-		iPaintKitIndex = k_Skins[iPaintKitId].id;
-		iDefinitionOverrideIndex = k_KniveNames[iDefinitionOverrideId].iDefinitionIndex;
+		iDefinitionIndex = k_weapon_names[iDefinitionId].definition_index;
+		iEntityQualityIndex = k_quality_names[iEntityQualityId].index;
+		iPaintKitIndex = k_skins[iPaintKitId].id;
+		iDefinitionOverrideIndex = k_knife_names[iDefinitionOverrideId].definition_index;
 	}
 
 	void UpdateIds()
 	{
-		iDefinitionId = find_if(k_WeaponNames.begin(), k_WeaponNames.end(), [this](const WeaponName_t& x)
+		iDefinitionId = find_if(k_weapon_names.begin(), k_weapon_names.end(), [this](const WeaponName_t& x)
 		{
-			return this->iDefinitionIndex == x.iDefinitionIndex;
-		}) - k_WeaponNames.begin();
+			return this->iDefinitionIndex == x.definition_index;
+		}) - k_weapon_names.begin();
 
-		iEntityQualityId = find_if(k_QualityNames.begin(), k_QualityNames.end(), [this](const QualityName_t& x)
+		iEntityQualityId = find_if(k_quality_names.begin(), k_quality_names.end(), [this](const QualityName_t& x)
 		{
-			return this->iEntityQualityIndex == x.iIndex;
-		}) - k_QualityNames.begin();
+			return this->iEntityQualityIndex == x.index;
+		}) - k_quality_names.begin();
 
-		iPaintKitId = find_if(k_Skins.begin(), k_Skins.end(), [this](const PaintKit_t& x)
+		iPaintKitId = find_if(k_skins.begin(), k_skins.end(), [this](const PaintKit_t& x)
 		{
 			return this->iPaintKitIndex == x.id;
-		}) - k_Skins.begin();
+		}) - k_skins.begin();
 
-		iDefinitionOverrideId = find_if(k_KniveNames.begin(), k_KniveNames.end(), [this](const WeaponName_t& x)
+		iDefinitionOverrideId = find_if(k_knife_names.begin(), k_knife_names.end(), [this](const WeaponName_t& x)
 		{
-			return this->iDefinitionOverrideIndex == x.iDefinitionIndex;
-		}) - k_KniveNames.begin();
+			return this->iDefinitionOverrideIndex == x.definition_index;
+		}) - k_knife_names.begin();
 	}
 
 	char szName[32] = "Default";

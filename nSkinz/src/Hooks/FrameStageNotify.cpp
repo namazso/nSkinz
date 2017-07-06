@@ -5,105 +5,105 @@
 
 void inline PostDataUpdateStart()
 {
-	auto iLocal = g_pEngine->GetLocalPlayer();
-	auto pLocal = static_cast<C_BasePlayer*>(g_pEntityList->GetClientEntity(iLocal));
+	auto local_index = g_engine->GetLocalPlayer();
+	auto local = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
 
 	Config::Get()->EmptyIconOverrides();
 
-	if(!pLocal || pLocal->GetLifeState() != LifeState::ALIVE)
+	if(!local || local->GetLifeState() != LifeState::ALIVE)
 		return;
 
-	player_info_t PlayerInfo;
+	player_info_t player_info;
 
-	if(!g_pEngine->GetPlayerInfo(iLocal, &PlayerInfo))
+	if(!g_engine->GetPlayerInfo(local_index, &player_info))
 		return;
 
-	auto hWeapons = pLocal->GetWeapons();
+	auto weapons = local->GetWeapons();
 
-	for(size_t i = 0; hWeapons[i] != INVALID_EHANDLE_INDEX; i++)
+	for(size_t i = 0; weapons[i] != INVALID_EHANDLE_INDEX; i++)
 	{
-		auto pWeapon = static_cast<C_BaseAttributableItem*>(g_pEntityList->GetClientEntityFromHandle(hWeapons[i]));
+		auto weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapons[i]));
 
-		if(!pWeapon)
+		if(!weapon)
 			continue;
 
-		auto& iDefIndex = pWeapon->GetItemDefinitionIndex();
+		auto& definition_index = weapon->GetItemDefinitionIndex();
 
 		// All knives are terrorist knives.
-		if(auto pActive = Config::Get()->GetByDefinitionIndex(IsKnife(iDefIndex) ? 42 : iDefIndex))
+		if(auto active_conf = Config::Get()->GetByDefinitionIndex(IsKnife(definition_index) ? 42 : definition_index))
 		{
 			// Force fallback values to be used.
-			pWeapon->GetItemIDHigh() = -1;
+			weapon->GetItemIDHigh() = -1;
 
 			// Set the owner of the weapon to our lower XUID. (fixes StatTrak)
-			pWeapon->GetAccountID() = PlayerInfo.xuid_low;
+			weapon->GetAccountID() = player_info.xuid_low;
 
-			if(pActive->iDefinitionOverrideIndex && k_WeaponInfo.count(pActive->iDefinitionOverrideIndex) && k_WeaponInfo.count(iDefIndex))
+			if(active_conf->iDefinitionOverrideIndex && k_weapon_info.count(active_conf->iDefinitionOverrideIndex) && k_weapon_info.count(definition_index))
 			{
 				// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
-				pWeapon->GetModelIndex() = g_pModelInfo->GetModelIndex(k_WeaponInfo.at(pActive->iDefinitionOverrideIndex).szModel);
+				weapon->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(active_conf->iDefinitionOverrideIndex).model);
 
-				auto& OriginalItem = k_WeaponInfo.at(iDefIndex);
-				auto& ReplacementItem = k_WeaponInfo.at(pActive->iDefinitionOverrideIndex);
+				auto& original_item = k_weapon_info.at(definition_index);
+				auto& replacement_item = k_weapon_info.at(active_conf->iDefinitionOverrideIndex);
 
-				if(OriginalItem.szIcon && ReplacementItem.szIcon)
-					Config::Get()->AddIconOverride(OriginalItem.szIcon, ReplacementItem.szIcon);
+				if(original_item.icon && replacement_item.icon)
+					Config::Get()->AddIconOverride(original_item.icon, replacement_item.icon);
 
-				iDefIndex = pActive->iDefinitionOverrideIndex;
+				definition_index = active_conf->iDefinitionOverrideIndex;
 			}
 
-			if(pActive->iEntityQualityIndex)
-				pWeapon->GetEntityQuality() = pActive->iEntityQualityIndex;
+			if(active_conf->iEntityQualityIndex)
+				weapon->GetEntityQuality() = active_conf->iEntityQualityIndex;
 
-			if(pActive->szCustomName[0])
-				strcpy_s(pWeapon->GetCustomName(), 32, pActive->szCustomName);
+			if(active_conf->szCustomName[0])
+				strcpy_s(weapon->GetCustomName(), 32, active_conf->szCustomName);
 
-			if(pActive->iPaintKitIndex && (iDefIndex != 42 && iDefIndex != 59))
-				pWeapon->GetFallbackPaintKit() = pActive->iPaintKitIndex;
+			if(active_conf->iPaintKitIndex && (definition_index != 42 && definition_index != 59))
+				weapon->GetFallbackPaintKit() = active_conf->iPaintKitIndex;
 
-			if(pActive->iSeed)
-				pWeapon->GetFallbackSeed() = pActive->iSeed;
+			if(active_conf->iSeed)
+				weapon->GetFallbackSeed() = active_conf->iSeed;
 
-			if(pActive->iStatTrak)
-				pWeapon->GetFallbackStatTrak() = pActive->iStatTrak;
+			if(active_conf->iStatTrak)
+				weapon->GetFallbackStatTrak() = active_conf->iStatTrak;
 
-			pWeapon->GetFallbackWear() = pActive->flWear;
+			weapon->GetFallbackWear() = active_conf->flWear;
 		}
 	}
 
-	auto hViewModel = pLocal->GetViewModel();
+	auto view_model_handle = local->GetViewModel();
 
-	if(hViewModel == INVALID_EHANDLE_INDEX)
+	if(view_model_handle == INVALID_EHANDLE_INDEX)
 		return;
 
-	auto pViewModel = static_cast<C_BaseViewModel*>(g_pEntityList->GetClientEntityFromHandle(hViewModel));
+	auto view_model = static_cast<C_BaseViewModel*>(g_entity_list->GetClientEntityFromHandle(view_model_handle));
 
-	if(!pViewModel)
+	if(!view_model)
 		return;
 
-	auto hViewModelWeapon = pViewModel->GetWeapon();
+	auto view_model_weapon_handle = view_model->GetWeapon();
 
-	if(hViewModelWeapon == INVALID_EHANDLE_INDEX)
+	if(view_model_weapon_handle == INVALID_EHANDLE_INDEX)
 		return;
 
-	auto pViewModelWeapon = static_cast<C_BaseAttributableItem*>(g_pEntityList->GetClientEntityFromHandle(hViewModelWeapon));
+	auto view_model_weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(view_model_weapon_handle));
 
-	if(!pViewModelWeapon)
+	if(!view_model_weapon)
 		return;
 
-	if(k_WeaponInfo.count(pViewModelWeapon->GetItemDefinitionIndex()))
+	if(k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
 	{
-		auto& OverrideWeapon = k_WeaponInfo.at(pViewModelWeapon->GetItemDefinitionIndex());
-		pViewModel->GetModelIndex() = g_pModelInfo->GetModelIndex(OverrideWeapon.szModel);
+		auto& OverrideWeapon = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex());
+		view_model->GetModelIndex() = g_model_info->GetModelIndex(OverrideWeapon.model);
 	}
 }
 
-void __fastcall hooks::FrameStageNotify(IBaseClientDLL* thisptr, void* edx_, ClientFrameStage_t stage)
+void __fastcall hooks::FrameStageNotify(IBaseClientDLL* thisptr, void*, ClientFrameStage_t stage)
 {
-	static auto fnFrameStageNotify = g_ClientHook->GetOriginalFunction<FrameStageNotify_t>(36);
+	static auto original_fn = g_client_hook->GetOriginalFunction<FrameStageNotify_t>(36);
 
 	if(stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 		PostDataUpdateStart();
 
-	return fnFrameStageNotify(thisptr, stage);
+	return original_fn(thisptr, stage);
 }

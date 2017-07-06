@@ -12,4 +12,4 @@ public:
 };
 
 #define VMODELINFO_CLIENT_INTERFACE_VERSION "VModelInfoClient004"
-extern IVModelInfoClient* g_pModelInfo;
+extern IVModelInfoClient* g_model_info;

@@ -31,7 +31,7 @@ void Config::Load()
 	delete[] pItems;
 	fclose(fp);
 
-	(*g_ppClientState)->ForceFullUpdate();
+	(*g_client_state)->ForceFullUpdate();
 }
 
 EconomyItem_t* Config::GetByDefinitionIndex(int iDefinitionIndex)

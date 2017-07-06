@@ -24,4 +24,4 @@ public:
 };
 
 #define CLIENT_DLL_INTERFACE_VERSION "VClient018"
-extern IBaseClientDLL* g_pClient;
+extern IBaseClientDLL* g_client;
