@@ -38,12 +38,14 @@ public:
 
 class C_BaseAttributableItem: public C_BaseCombatWeapon
 {
+private:
+	using str_32 = char[32];
 public:
 	NETVAR(GetAccountID, unsigned, "CBaseAttributableItem->m_iAccountID")
 	NETVAR(GetItemDefinitionIndex, unsigned, "CBaseAttributableItem->m_iItemDefinitionIndex")
 	NETVAR(GetItemIDHigh, unsigned, "CBaseAttributableItem->m_iItemIDHigh")
 	NETVAR(GetEntityQuality, int, "CBaseAttributableItem->m_iEntityQuality")
-	PNETVAR(GetCustomName, char, "CBaseAttributableItem->m_szCustomName")
+	NETVAR(GetCustomName, str_32, "CBaseAttributableItem->m_szCustomName")
 	NETVAR(GetFallbackPaintKit, unsigned, "CBaseAttributableItem->m_nFallbackPaintKit")
 	NETVAR(GetFallbackSeed, unsigned, "CBaseAttributableItem->m_nFallbackSeed")
 	NETVAR(GetFallbackWear, float, "CBaseAttributableItem->m_flFallbackWear")
