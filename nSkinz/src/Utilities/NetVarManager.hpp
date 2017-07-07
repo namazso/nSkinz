@@ -41,14 +41,16 @@ private:
 #define PNETVAR(funcname, type, netvarname) type* funcname() \
 { \
 	constexpr fnv_t hash = FnvHash(netvarname); \
-	static auto offset = NetVarManager::GetOffsetByHash(hash); \
+	static uint16_t offset = 0; \
+	if(!offset) offset = NetVarManager::GetOffsetByHash(hash); \
 	return reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
 #define NETVAR(funcname, type, netvarname) type& funcname() \
 { \
 	constexpr fnv_t hash = FnvHash(netvarname); \
-	static auto offset = NetVarManager::GetOffsetByHash(hash); \
+	static uint16_t offset = 0; \
+	if(!offset) offset = NetVarManager::GetOffsetByHash(hash); \
 	return *reinterpret_cast<type*>(uintptr_t(this) + offset); \
 }
 
