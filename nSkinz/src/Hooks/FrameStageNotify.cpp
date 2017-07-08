@@ -97,10 +97,27 @@ void inline PostDataUpdateStart()
 	{
 		auto wearables = local->GetWearables();
 
-		auto glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(wearables[0] & 0xFFF));
+		auto glove_config = Config::Get()->GetByDefinitionIndex(GLOVE_T_SIDE);
+
+		static CBaseHandle glove_handle = 0;
+
+		auto glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(wearables[0]));
+
+		if(!glove) // There is no glove
+		{
+			// Try to get our last created glove
+			auto our_glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(glove_handle));
+
+			if(our_glove) // Our glove still exists
+			{
+				wearables[0] = glove_handle;
+				glove = our_glove;
+			}
+		}
 
 		if(local->GetLifeState() != LifeState::ALIVE)
 		{
+			// We are dead but we have a glove, destroy it
 			if(glove)
 			{
 				glove->GetClientNetworkable()->SetDestroyedOnRecreateEntities();
@@ -110,10 +127,9 @@ void inline PostDataUpdateStart()
 			return;
 		}
 
-		auto glove_config = Config::Get()->GetByDefinitionIndex(GLOVE_T_SIDE);
-
 		if(glove_config && glove_config->definition_override_index)
 		{
+			// We don't have a glove, but we should
 			if(!glove)
 			{
 				static auto create_wearable_fn = GetWearableCreateFn();
@@ -126,6 +142,9 @@ void inline PostDataUpdateStart()
 				glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
 
 				wearables[0] = entry | serial << 16;
+
+				// Let's store it in case we somehow lose it.
+				glove_handle = wearables[0];
 			}
 
 			// Thanks, Beakers
