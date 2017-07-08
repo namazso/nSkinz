@@ -128,6 +128,9 @@ void inline PostDataUpdateStart()
 				wearables[0] = entry | serial << 16;
 			}
 
+			// Thanks, Beakers
+			*reinterpret_cast<int*>(uintptr_t(glove) + 0x64) = -1;
+
 			ApplyConfigOnAttributableItem(glove, glove_config, player_info.xuid_low);
 		}
 	}
