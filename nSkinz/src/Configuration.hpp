@@ -9,49 +9,59 @@ struct EconomyItem_t
 {
 	void UpdateValues()
 	{
-		iDefinitionIndex = k_weapon_names[iDefinitionId].definition_index;
-		iEntityQualityIndex = k_quality_names[iEntityQualityId].index;
-		iPaintKitIndex = k_skins[iPaintKitId].id;
-		iDefinitionOverrideIndex = k_knife_names[iDefinitionOverrideId].definition_index;
+		definition_index = k_weapon_names.at(definition_vector_index).definition_index;
+		entity_quality_index = k_quality_names.at(entity_quality_vector_index).index;
+
+		paint_kit_index = definition_index == GLOVE_T_SIDE ?
+			k_gloves.at(paint_kit_vector_index).id :
+			k_skins.at(paint_kit_vector_index).id;
+
+		definition_override_index = definition_index == GLOVE_T_SIDE ?
+			k_glove_names.at(definition_override_vector_index).definition_index :
+			k_knife_names.at(definition_override_vector_index).definition_index;
 	}
 
 	void UpdateIds()
 	{
-		iDefinitionId = find_if(k_weapon_names.begin(), k_weapon_names.end(), [this](const WeaponName_t& x)
+		definition_vector_index = find_if(k_weapon_names.begin(), k_weapon_names.end(), [this](const WeaponName_t& x)
 		{
-			return this->iDefinitionIndex == x.definition_index;
+			return this->definition_index == x.definition_index;
 		}) - k_weapon_names.begin();
 
-		iEntityQualityId = find_if(k_quality_names.begin(), k_quality_names.end(), [this](const QualityName_t& x)
+		entity_quality_vector_index = find_if(k_quality_names.begin(), k_quality_names.end(), [this](const QualityName_t& x)
 		{
-			return this->iEntityQualityIndex == x.index;
+			return this->entity_quality_index == x.index;
 		}) - k_quality_names.begin();
 
-		iPaintKitId = find_if(k_skins.begin(), k_skins.end(), [this](const PaintKit_t& x)
-		{
-			return this->iPaintKitIndex == x.id;
-		}) - k_skins.begin();
+		const auto& skin_set = definition_index == GLOVE_T_SIDE ? k_gloves : k_skins;
 
-		iDefinitionOverrideId = find_if(k_knife_names.begin(), k_knife_names.end(), [this](const WeaponName_t& x)
+		paint_kit_vector_index = find_if(skin_set.begin(), skin_set.end(), [this](const PaintKit_t& x)
 		{
-			return this->iDefinitionOverrideIndex == x.definition_index;
-		}) - k_knife_names.begin();
+			return this->paint_kit_index == x.id;
+		}) - skin_set.begin();
+
+		const auto& override_set = definition_index == GLOVE_T_SIDE ? k_glove_names : k_knife_names;
+
+		definition_override_vector_index = find_if(override_set.begin(), override_set.end(), [this](const WeaponName_t& x)
+		{
+			return this->definition_override_index == x.definition_index;
+		}) - override_set.begin();
 	}
 
-	char szName[32] = "Default";
-	bool bEnabled = false;
-	int iDefinitionId = 0;
-	int iDefinitionIndex = 1;
-	int iEntityQualityId = 0;
-	int iEntityQualityIndex = 0;
-	int iPaintKitId = 0;
-	int iPaintKitIndex = 0;
-	int iDefinitionOverrideId = 0;
-	int iDefinitionOverrideIndex = 0;
-	int iSeed = 0;
-	int iStatTrak = 0;
-	float flWear = FLT_MIN;
-	char szCustomName[32] = "";
+	char name[32] = "Default";
+	bool enabled = false;
+	int definition_vector_index = 0;
+	int definition_index = 1;
+	int entity_quality_vector_index = 0;
+	int entity_quality_index = 0;
+	int paint_kit_vector_index = 0;
+	int paint_kit_index = 0;
+	int definition_override_vector_index = 0;
+	int definition_override_index = 0;
+	int seed = 0;
+	int stat_trak = 0;
+	float wear = FLT_MIN;
+	char custom_name[32] = "";
 
 	// In case of adding more bullshit
 	uint64_t _reserved1 = 0xFFFFFFFFFFFFFFFF;
@@ -65,22 +75,21 @@ class Config
 public:
 	static Config* Get()
 	{
-		static Config Instance;
+		static Config instance;
 
-		return &Instance;
+		return &instance;
 	}
 
 	void Save();
 	void Load();
 
-	EconomyItem_t* GetByDefinitionIndex(int iDefinitionIndex);
+	EconomyItem_t* GetByDefinitionIndex(int definition_index);
 
-	std::vector<EconomyItem_t>& GetItems() { return m_vItems; }
+	std::vector<EconomyItem_t>& GetItems() { return m_items; }
 
-	void AddIconOverride(std::string sOriginal, std::string sOverride) { m_mapIconOverrides[sOriginal] = sOverride; }
-	void EmptyIconOverrides() { m_mapIconOverrides.clear(); }
-	const char* GetIconOverride(std::string sOriginal) { return m_mapIconOverrides.count(sOriginal) ? m_mapIconOverrides[sOriginal].c_str() : nullptr; }
+	std::unordered_map<std::string, std::string>& GetIconOverrideMap() { return m_icon_overrides; }
+	const char* GetIconOverride(const std::string& original) { return m_icon_overrides.count(original) ? m_icon_overrides.at(original).c_str() : nullptr; }
 private:
-	std::vector<EconomyItem_t> m_vItems;
-	std::unordered_map<std::string, std::string> m_mapIconOverrides;
+	std::vector<EconomyItem_t> m_items;
+	std::unordered_map<std::string, std::string> m_icon_overrides;
 };

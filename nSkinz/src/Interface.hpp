@@ -8,31 +8,34 @@
 inline void DrawGUI()
 {
 	ImGui::SetNextWindowSize(ImVec2(600, 300));
-	if (ImGui::Begin("nSkinz", nullptr,
+	if(ImGui::Begin("nSkinz", nullptr,
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_AlwaysAutoResize))
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Columns(2, nullptr, false);
 
 		auto& entries = Config::Get()->GetItems();
-		std::vector<const char*> entry_names;
 
 		// If the user deleted the only config let's add one
-		if (entries.size() == 0)
+		if(entries.size() == 0)
 			entries.push_back(EconomyItem_t());
-
-		for (auto& x : entries)
-			entry_names.push_back(x.szName);
 
 		static auto selected_id = 0;
 
 		// If the user deleted the last element or loaded a config
-		if (static_cast<size_t>(selected_id) >= entry_names.size())
-			selected_id = 0;
+		//if(size_t(selected_id) >= entries.size())
+		//	selected_id = 0;
+		// ImGui clamps this anyways
 
 		ImGui::PushItemWidth(-1);
-		ImGui::ListBox("", &selected_id, const_cast<const char**>(entry_names.data()), entry_names.size(), 13);
+		ImGui::ListBox("", &selected_id, [](void* data, int idx, const char** out_text)
+		{
+			auto& entries = *reinterpret_cast<std::vector<EconomyItem_t>*>(data);
+			*out_text = entries.at(idx).name;
+			return true;
+		}, &entries, entries.size(), 13);
 		ImGui::PopItemWidth();
 
 		ImGui::NextColumn();
@@ -40,39 +43,50 @@ inline void DrawGUI()
 		auto& selected_entry = entries[selected_id];
 
 		// Name
-		ImGui::InputText("Name", selected_entry.szName, 32);
+		ImGui::InputText("Name", selected_entry.name, 32);
 
 		// Item to change skins for
-		ImGui::Combo("Item", &selected_entry.iDefinitionId, [](void* data, int idx, const char** out_text)
+		ImGui::Combo("Item", &selected_entry.definition_vector_index, [](void* data, int idx, const char** out_text)
 		{
 			*out_text = k_weapon_names[idx].name;
 			return true;
 		}, nullptr, k_weapon_names.size(), 5);
 
 		// Enabled
-		ImGui::Checkbox("Enabled", &selected_entry.bEnabled);
+		ImGui::Checkbox("Enabled", &selected_entry.enabled);
 
 		// Paint kit ID
 		//ImGui::InputInt("Paint Kit", &SelectedItem.iPaintKitIndex);
 
 		// Pattern Seed
-		ImGui::InputInt("Seed", &selected_entry.iSeed);
+		ImGui::InputInt("Seed", &selected_entry.seed);
 
 		// Custom StatTrak number
-		ImGui::InputInt("StatTrak", &selected_entry.iStatTrak);
+		ImGui::InputInt("StatTrak", &selected_entry.stat_trak);
 
 		// Wear Float
-		ImGui::SliderFloat("Wear", &selected_entry.flWear, FLT_MIN, 1.f, "%.10f", 5);
+		ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
 
 		// Paint kit
-		ImGui::Combo("Paint Kit", &selected_entry.iPaintKitId, [](void* data, int idx, const char** out_text)
+		if(selected_entry.definition_index != GLOVE_T_SIDE)
 		{
-			*out_text = k_skins[idx].name.c_str();
-			return true;
-		}, nullptr, k_skins.size(), 10);
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_skins[idx].name.c_str();
+				return true;
+			}, nullptr, k_skins.size(), 10);
+		}
+		else
+		{
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_gloves[idx].name.c_str();
+				return true;
+			}, nullptr, k_gloves.size(), 10);
+		}
 
 		// Quality
-		ImGui::Combo("Quality", &selected_entry.iEntityQualityId, [](void* data, int idx, const char** out_text)
+		ImGui::Combo("Quality", &selected_entry.entity_quality_vector_index, [](void* data, int idx, const char** out_text)
 		{
 			*out_text = k_quality_names[idx].name;
 			return true;
@@ -82,26 +96,34 @@ inline void DrawGUI()
 		selected_entry.UpdateValues();
 
 		// Item defindex override
-		if (IsKnife(selected_entry.iDefinitionIndex))
+		if(selected_entry.definition_index == WEAPON_KNIFE)
 		{
-			ImGui::Combo("Knife", &selected_entry.iDefinitionOverrideId, [](void* data, int idx, const char** out_text)
+			ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
 			{
-				*out_text = k_knife_names[idx].name;
+				*out_text = k_knife_names.at(idx).name;
 				return true;
 			}, nullptr, k_knife_names.size(), 5);
 		}
+		else if(selected_entry.definition_index == GLOVE_T_SIDE)
+		{
+			ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_glove_names.at(idx).name;
+				return true;
+			}, nullptr, k_glove_names.size(), 5);
+		}
 		else
 		{
-			// We don't want to override non-knives
+			// We don't want to override weapons other than knives or gloves
 			static auto unused_value = 0;
-			selected_entry.iDefinitionOverrideId = 0;
-			ImGui::Combo("Unavailable", &unused_value, "Only for knives\0");
+			selected_entry.definition_override_vector_index = 0;
+			ImGui::Combo("Unavailable", &unused_value, "Only for knives or gloves\0");
 		}
 
 		selected_entry.UpdateValues();
 
 		// Custom Name tag
-		ImGui::InputText("Name Tag", selected_entry.szCustomName, 32);
+		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
 
 		ImGui::NextColumn();
 

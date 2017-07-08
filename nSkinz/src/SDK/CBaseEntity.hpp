@@ -1,6 +1,7 @@
 #pragma once
 #include "IClientEntity.hpp"
 #include "../Utilities/NetVarManager.hpp"
+#include "../Utilities/Virtuals.hpp"
 
 enum class LifeState
 {
@@ -14,13 +15,19 @@ enum class LifeState
 class C_BaseEntity: public IClientEntity
 {
 public:
-	NETVAR(GetModelIndex, int, "CBaseEntity->m_nModelIndex")
+	NETVAR(GetModelIndex, unsigned, "CBaseEntity->m_nModelIndex")
+
+	void SetModelIndex(int index)
+	{
+		GetVirtualFunction<void(__thiscall*)(C_BaseEntity*, int)>(this, 75)(this, index);
+	}
 };
 
 class C_BaseCombatCharacter : public C_BaseEntity
 {
 public:
 	PNETVAR(GetWeapons, CBaseHandle, "CBaseCombatCharacter->m_hMyWeapons")
+	PNETVAR(GetWearables, CBaseHandle, "CBaseCombatCharacter->m_hMyWearables")
 };
 
 class C_BasePlayer: public C_BaseCombatCharacter
@@ -41,21 +48,21 @@ class C_BaseAttributableItem: public C_BaseCombatWeapon
 private:
 	using str_32 = char[32];
 public:
-	NETVAR(GetAccountID, unsigned, "CBaseAttributableItem->m_iAccountID")
-	NETVAR(GetItemDefinitionIndex, unsigned, "CBaseAttributableItem->m_iItemDefinitionIndex")
-	NETVAR(GetItemIDHigh, unsigned, "CBaseAttributableItem->m_iItemIDHigh")
+	NETVAR(GetAccountID, int, "CBaseAttributableItem->m_iAccountID")
+	NETVAR(GetItemDefinitionIndex, int, "CBaseAttributableItem->m_iItemDefinitionIndex")
+	NETVAR(GetItemIDHigh, int, "CBaseAttributableItem->m_iItemIDHigh")
 	NETVAR(GetEntityQuality, int, "CBaseAttributableItem->m_iEntityQuality")
 	NETVAR(GetCustomName, str_32, "CBaseAttributableItem->m_szCustomName")
 	NETVAR(GetFallbackPaintKit, unsigned, "CBaseAttributableItem->m_nFallbackPaintKit")
 	NETVAR(GetFallbackSeed, unsigned, "CBaseAttributableItem->m_nFallbackSeed")
 	NETVAR(GetFallbackWear, float, "CBaseAttributableItem->m_flFallbackWear")
-	NETVAR(GetFallbackStatTrak, int, "CBaseAttributableItem->m_nFallbackStatTrak")
+	NETVAR(GetFallbackStatTrak, unsigned, "CBaseAttributableItem->m_nFallbackStatTrak")
 };
 
 class C_BaseViewModel: public C_BaseEntity
 {
 public:
 	NETVAR(GetOwner, CBaseHandle, "CBaseViewModel->m_hOwner")
-	NETVAR(GetWeapon, unsigned, "CBaseViewModel->m_hWeapon")
+	NETVAR(GetWeapon, CBaseHandle, "CBaseViewModel->m_hWeapon")
 	NETPROP(GetSequenceProp, "CBaseViewModel->m_nSequence")
 };

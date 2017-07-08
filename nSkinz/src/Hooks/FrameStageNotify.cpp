@@ -3,14 +3,89 @@
 #include "../nSkinz.hpp"
 #include "../Configuration.hpp"
 
+void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
+{
+	// Force fallback values to be used.
+	item->GetItemIDHigh() = -1;
+
+	// Set the owner of the weapon to our lower XUID. (fixes StatTrak)
+	item->GetAccountID() = xuid_low;
+
+	if(config->entity_quality_index)
+		item->GetEntityQuality() = config->entity_quality_index;
+
+	if(config->custom_name[0])
+		strcpy_s(item->GetCustomName(), config->custom_name);
+
+	if(config->paint_kit_index)
+		item->GetFallbackPaintKit() = config->paint_kit_index;
+
+	if(config->seed)
+		item->GetFallbackSeed() = config->seed;
+
+	if(config->stat_trak)
+		item->GetFallbackStatTrak() = config->stat_trak;
+
+	item->GetFallbackWear() = config->wear;
+
+	auto& definition_index = item->GetItemDefinitionIndex();
+
+	auto& icon_override_map = Config::Get()->GetIconOverrideMap();
+
+	if(config->definition_override_index // We need to override defindex
+		&& config->definition_override_index != definition_index // It is not yet overridden
+		&& k_weapon_info.count(config->definition_override_index)) // We have info about what we gonna override it to
+	{
+		unsigned old_definition_index = definition_index;
+
+		definition_index = config->definition_override_index;
+
+		const auto& replacement_item = k_weapon_info.at(config->definition_override_index);
+
+		// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
+		//item->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(config->definition_override_index).model);
+		item->SetModelIndex(g_model_info->GetModelIndex(replacement_item.model));
+		item->GetClientNetworkable()->PreDataUpdate(0);
+
+		// We didn't override 0, but some actual weapon, that we have data for
+		if(old_definition_index && k_weapon_info.count(old_definition_index))
+		{
+			const auto& original_item = k_weapon_info.at(old_definition_index);
+
+			if(original_item.icon && replacement_item.icon)
+				icon_override_map[original_item.icon] = replacement_item.icon;
+		}
+	}
+	else
+	{
+		// We have info about the item not needed to be overridden
+		if(k_weapon_info.count(definition_index))
+		{
+			const auto& original_item = k_weapon_info.at(definition_index);
+
+			// We are overriding its icon when not needed
+			if(original_item.icon && icon_override_map.count(original_item.icon))
+				icon_override_map.erase(icon_override_map.at(original_item.icon)); // Remove the leftover override
+		}
+	}
+}
+
+CreateClientClassFn GetWearableCreateFn()
+{
+	auto clazz = g_client->GetAllClasses();
+
+	while(strcmp(clazz->m_pNetworkName, "CEconWearable"))
+		clazz = clazz->m_pNext;
+
+	return clazz->m_pCreateFn;
+}
+
 void inline PostDataUpdateStart()
 {
 	auto local_index = g_engine->GetLocalPlayer();
 	auto local = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
 
-	Config::Get()->EmptyIconOverrides();
-
-	if(!local || local->GetLifeState() != LifeState::ALIVE)
+	if(!local)
 		return;
 
 	player_info_t player_info;
@@ -18,56 +93,61 @@ void inline PostDataUpdateStart()
 	if(!g_engine->GetPlayerInfo(local_index, &player_info))
 		return;
 
-	auto weapons = local->GetWeapons();
-
-	for(size_t i = 0; weapons[i] != INVALID_EHANDLE_INDEX; i++)
+	// Handle glove config
 	{
-		auto weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapons[i]));
+		auto wearables = local->GetWearables();
 
-		if(!weapon)
-			continue;
+		auto glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(wearables[0] & 0xFFF));
 
-		auto& definition_index = weapon->GetItemDefinitionIndex();
-
-		// All knives are terrorist knives.
-		if(auto active_conf = Config::Get()->GetByDefinitionIndex(IsKnife(definition_index) ? 42 : definition_index))
+		if(local->GetLifeState() != LifeState::ALIVE)
 		{
-			// Force fallback values to be used.
-			weapon->GetItemIDHigh() = -1;
-
-			// Set the owner of the weapon to our lower XUID. (fixes StatTrak)
-			weapon->GetAccountID() = player_info.xuid_low;
-
-			if(active_conf->iDefinitionOverrideIndex && k_weapon_info.count(active_conf->iDefinitionOverrideIndex) && k_weapon_info.count(definition_index))
+			if(glove)
 			{
-				// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
-				weapon->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(active_conf->iDefinitionOverrideIndex).model);
-
-				auto& original_item = k_weapon_info.at(definition_index);
-				auto& replacement_item = k_weapon_info.at(active_conf->iDefinitionOverrideIndex);
-
-				if(original_item.icon && replacement_item.icon)
-					Config::Get()->AddIconOverride(original_item.icon, replacement_item.icon);
-
-				definition_index = active_conf->iDefinitionOverrideIndex;
+				glove->GetClientNetworkable()->SetDestroyedOnRecreateEntities();
+				glove->GetClientNetworkable()->Release();
 			}
 
-			if(active_conf->iEntityQualityIndex)
-				weapon->GetEntityQuality() = active_conf->iEntityQualityIndex;
+			return;
+		}
 
-			if(active_conf->szCustomName[0])
-				strcpy_s(weapon->GetCustomName(), 32, active_conf->szCustomName);
+		auto glove_config = Config::Get()->GetByDefinitionIndex(GLOVE_T_SIDE);
 
-			if(active_conf->iPaintKitIndex && (definition_index != 42 && definition_index != 59))
-				weapon->GetFallbackPaintKit() = active_conf->iPaintKitIndex;
+		if(glove_config && glove_config->definition_override_index)
+		{
+			if(!glove)
+			{
+				static auto create_wearable_fn = GetWearableCreateFn();
 
-			if(active_conf->iSeed)
-				weapon->GetFallbackSeed() = active_conf->iSeed;
+				auto entry = g_entity_list->GetHighestEntityIndex() + 1;
+				auto serial = rand() % 0x1000;
 
-			if(active_conf->iStatTrak)
-				weapon->GetFallbackStatTrak() = active_conf->iStatTrak;
+				//glove = static_cast<C_BaseAttributableItem*>(create_wearable_fn(entry, serial));
+				create_wearable_fn(entry, serial);
+				glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
 
-			weapon->GetFallbackWear() = active_conf->flWear;
+				wearables[0] = entry | serial << 16;
+			}
+
+			ApplyConfigOnAttributableItem(glove, glove_config, player_info.xuid_low);
+		}
+	}
+
+	// Handle weapon configs
+	{
+		auto weapons = local->GetWeapons();
+
+		for(size_t i = 0; weapons[i] != INVALID_EHANDLE_INDEX; i++)
+		{
+			auto weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapons[i]));
+
+			if(!weapon)
+				continue;
+
+			auto& definition_index = weapon->GetItemDefinitionIndex();
+
+			// All knives are terrorist knives.
+			if(auto active_conf = Config::Get()->GetByDefinitionIndex(IsKnife(definition_index) ? WEAPON_KNIFE : definition_index))
+				ApplyConfigOnAttributableItem(weapon, active_conf, player_info.xuid_low);
 		}
 	}
 
@@ -93,8 +173,8 @@ void inline PostDataUpdateStart()
 
 	if(k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
 	{
-		auto& OverrideWeapon = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex());
-		view_model->GetModelIndex() = g_model_info->GetModelIndex(OverrideWeapon.model);
+		auto& override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
+		view_model->GetModelIndex() = g_model_info->GetModelIndex(override_model);
 	}
 }
 
