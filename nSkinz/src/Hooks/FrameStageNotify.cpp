@@ -3,7 +3,7 @@
 #include "../nSkinz.hpp"
 #include "../Configuration.hpp"
 
-void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
+static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
 {
 	// Force fallback values to be used.
 	item->GetItemIDHigh() = -1;
@@ -70,7 +70,7 @@ void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyIt
 	}
 }
 
-CreateClientClassFn GetWearableCreateFn()
+static CreateClientClassFn GetWearableCreateFn()
 {
 	auto clazz = g_client->GetAllClasses();
 
@@ -80,7 +80,7 @@ CreateClientClassFn GetWearableCreateFn()
 	return clazz->m_pCreateFn;
 }
 
-void inline PostDataUpdateStart()
+static void PostDataUpdateStart()
 {
 	auto local_index = g_engine->GetLocalPlayer();
 	auto local = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
@@ -140,6 +140,16 @@ void inline PostDataUpdateStart()
 				//glove = static_cast<C_BaseAttributableItem*>(create_wearable_fn(entry, serial));
 				create_wearable_fn(entry, serial);
 				glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
+
+				// He he
+				{
+					static auto set_abs_origin_fn = reinterpret_cast<void(__thiscall*)(void*, const Vector&)>
+						(platform::FindPattern("client.dll", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x57\x8B\xF1", "xxxxxxxxxxxx"));
+
+					static const Vector new_pos = { 10000.f, 10000.f, 10000.f };
+
+					set_abs_origin_fn(glove, new_pos);
+				}
 
 				wearables[0] = entry | serial << 16;
 
