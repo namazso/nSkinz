@@ -1,7 +1,6 @@
 #pragma once
 #include "SDK.hpp"
 #include "RecvProxyHook.hpp"
-#include <memory>
 
 extern VMTHook* g_client_hook;
 extern VMTHook* g_game_event_manager_hook;

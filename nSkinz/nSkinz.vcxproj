@@ -28,6 +28,7 @@
     <ClCompile Include="src\Hooks\Sequence.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\PaintKitParser.cpp" />
+    <ClCompile Include="src\UpdateCheck.cpp" />
     <ClCompile Include="src\Utilities\Platform.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Utilities\NetVarManager.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\ItemDefinitions.hpp" />
     <ClInclude Include="src\nSkinz.hpp" />
     <ClInclude Include="src\PaintKitParser.hpp" />
+    <ClInclude Include="src\UpdateCheck.hpp" />
     <ClInclude Include="src\Utilities\FnvHash.hpp" />
     <ClInclude Include="src\Configuration.hpp" />
     <ClInclude Include="src\Hooks\Hooks.hpp" />

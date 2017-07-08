@@ -30,6 +30,7 @@
     <ClCompile Include="src\ItemDefinitions.cpp" />
     <ClCompile Include="src\PaintKitParser.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
+    <ClCompile Include="src\UpdateCheck.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Configuration.hpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="src\ItemDefinitions.hpp" />
     <ClInclude Include="src\PaintKitParser.hpp" />
     <ClInclude Include="src\nSkinz.hpp" />
+    <ClInclude Include="src\UpdateCheck.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">

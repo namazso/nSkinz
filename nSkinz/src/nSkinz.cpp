@@ -2,6 +2,7 @@
 #include "Hooks/Hooks.hpp"
 #include "Renderer.hpp"
 #include "PaintKitParser.hpp"
+#include "UpdateCheck.hpp"
 
 IBaseClientDLL*		g_client;
 IClientEntityList*	g_entity_list;
@@ -25,6 +26,8 @@ void __stdcall Initialize(void* instance)
 	g_model_info = CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
 	g_game_event_manager = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	g_localize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
+
+	CheckUpdate();
 
 	// Get skins
 	GetPaintKits();

@@ -4,11 +4,19 @@
 #include "SDK.hpp"
 #include "PaintKitParser.hpp"
 #include <imgui.h>
+#include "UpdateCheck.hpp"
 
 inline void DrawGUI()
 {
+	char title[128];
+	
+	if(!g_update_needed)
+		strcpy_s(title, "nSkinz");
+	else
+		sprintf_s(title, "nSkinz - OUTDATED - Latest commit: %s", g_last_commit_date);
+
 	ImGui::SetNextWindowSize(ImVec2(600, 300));
-	if(ImGui::Begin("nSkinz", nullptr,
+	if(ImGui::Begin(title, nullptr,
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -117,7 +125,7 @@ inline void DrawGUI()
 			// We don't want to override weapons other than knives or gloves
 			static auto unused_value = 0;
 			selected_entry.definition_override_vector_index = 0;
-			ImGui::Combo("Unavailable", &unused_value, "Only for knives or gloves\0");
+			ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
 		}
 
 		selected_entry.UpdateValues();
