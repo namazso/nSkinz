@@ -4,6 +4,22 @@
 #include "../Configuration.hpp"
 #include "../StickerChanger.hpp"
 
+static void EraseOverrideIfExistsByIndex(int definition_index)
+{
+	// We have info about the item not needed to be overridden
+	if(k_weapon_info.count(definition_index))
+	{
+
+		auto& icon_override_map = g_config.GetIconOverrideMap();
+
+		const auto& original_item = k_weapon_info.at(definition_index);
+
+		// We are overriding its icon when not needed
+		if(original_item.icon && icon_override_map.count(original_item.icon))
+			icon_override_map.erase(icon_override_map.at(original_item.icon)); // Remove the leftover override
+	}
+}
+
 static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
 {
 	// Force fallback values to be used.
@@ -59,15 +75,7 @@ static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const Ec
 	}
 	else
 	{
-		// We have info about the item not needed to be overridden
-		if(k_weapon_info.count(definition_index))
-		{
-			const auto& original_item = k_weapon_info.at(definition_index);
-
-			// We are overriding its icon when not needed
-			if(original_item.icon && icon_override_map.count(original_item.icon))
-				icon_override_map.erase(icon_override_map.at(original_item.icon)); // Remove the leftover override
-		}
+		EraseOverrideIfExistsByIndex(definition_index);
 	}
 
 	ApplyStickerHooks(item);
@@ -183,6 +191,8 @@ static void PostDataUpdateStart()
 			// All knives are terrorist knives.
 			if(auto active_conf = g_config.GetByDefinitionIndex(IsKnife(definition_index) ? WEAPON_KNIFE : definition_index))
 				ApplyConfigOnAttributableItem(weapon, active_conf, player_info.xuid_low);
+			else
+				EraseOverrideIfExistsByIndex(definition_index);
 		}
 	}
 
