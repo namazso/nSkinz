@@ -3,6 +3,7 @@
 #include "KitParser.hpp"
 
 #include <unordered_map>
+#include <array>
 #include <algorithm>
 
 struct StickerSetting
@@ -90,7 +91,7 @@ struct EconomyItem_t
 	int stat_trak = 0;
 	float wear = FLT_MIN;
 	char custom_name[32] = "";
-	StickerSetting stickers[5];
+	std::array<StickerSetting, 5> stickers;
 };
 
 class Config

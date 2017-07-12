@@ -42,6 +42,7 @@
     <ClInclude Include="deps\imgui\stb_rect_pack.h" />
     <ClInclude Include="deps\imgui\stb_textedit.h" />
     <ClInclude Include="deps\imgui\stb_truetype.h" />
+    <ClInclude Include="deps\json.hpp" />
     <ClInclude Include="src\ItemDefinitions.hpp" />
     <ClInclude Include="src\nSkinz.hpp" />
     <ClInclude Include="src\KitParser.hpp" />

@@ -127,6 +127,9 @@
     <ClInclude Include="src\UpdateCheck.hpp" />
     <ClInclude Include="src\KitParser.hpp" />
     <ClInclude Include="src\StickerChanger.hpp" />
+    <ClInclude Include="deps\json.hpp">
+      <Filter>Dependency</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">
