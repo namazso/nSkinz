@@ -22,15 +22,8 @@ namespace ImGui
 
 void DrawGUI()
 {
-	char title[128];
-
-	if(!g_update_needed)
-		strcpy_s(title, "nSkinz");
-	else
-		sprintf_s(title, "nSkinz - OUTDATED - Latest commit: %s", g_last_commit_date);
-
 	ImGui::SetNextWindowSize(ImVec2(700, 400));
-	if(ImGui::Begin(title, nullptr,
+	if(ImGui::Begin("nSkinz", nullptr,
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -237,6 +230,23 @@ void DrawGUI()
 		ImGui::Text("nSkinz by namazso");
 		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("https://skinchanger.download").x - 17);
 		ImGui::Text("https://skinchanger.download");
+
+		ImGui::End();
+	}
+
+	if(g_update_needed && ImGui::Begin("New commits since compile!", &g_update_needed,
+		{600, 400}, -1, ImGuiWindowFlags_NoSavedSettings))
+	{
+		ImGui::Columns(3, "commit", true);
+		for(auto& commit : g_commits_since_compile)
+		{
+			ImGui::Text(commit.author.c_str());
+			ImGui::NextColumn();
+			ImGui::Text(commit.date.c_str());
+			ImGui::NextColumn();
+			ImGui::Text(commit.message.c_str());
+			ImGui::NextColumn();
+		}
 
 		ImGui::End();
 	}

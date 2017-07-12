@@ -2,7 +2,9 @@
 #include "Utilities/Platform.hpp"
 
 #include <ctime>
-#include <regex>
+#include <json.hpp>
+
+using json = nlohmann::json;
 
 namespace cx
 {
@@ -144,7 +146,14 @@ protected:
 static VersionCheckCallback s_check_callback;
 
 bool g_update_needed = false;
-char g_last_commit_date[32];
+std::vector<Commit_t> g_commits_since_compile;
+
+void from_json(const json& j, Commit_t& commit)
+{
+	commit.author = j["commit"]["author"]["name"].get<std::string>();
+	commit.date = j["commit"]["author"]["date"].get<std::string>();
+	commit.message = j["commit"]["message"].get<std::string>();
+}
 
 void VersionCheckCallback::Run(HTTPRequestCompleted_t* pvParam)
 {
@@ -154,7 +163,7 @@ void VersionCheckCallback::Run(HTTPRequestCompleted_t* pvParam)
 
 		// Sick regex
 		//static const std::regex iso8601(R"("([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?")");
-		static const std::regex iso8601(R"("(\d{4}\-\d\d\-\d\d([tT][\d:\.]*)?)([zZ]|([+\-])(\d\d):?(\d\d))?")");
+		//static const std::regex iso8601(R"("(\d{4}\-\d\d\-\d\d([tT][\d:\.]*)?)([zZ]|([+\-])(\d\d):?(\d\d))?")");
 
 		std::string body;
 
@@ -166,10 +175,14 @@ void VersionCheckCallback::Run(HTTPRequestCompleted_t* pvParam)
 
 		body_cstr[pvParam->m_unBodySize] = 0;
 
-		std::smatch sm;
-
-		if(regex_search(body, sm, iso8601))
-			strcpy_s(g_last_commit_date, sm.str().c_str());
+		try
+		{
+			g_commits_since_compile = json::parse(body).get<std::vector<Commit_t>>();
+		}
+		catch(const std::exception&)
+		{
+			g_update_needed = false;
+		}
 	}
 
 	s_steam_http->ReleaseHTTPRequest(pvParam->m_hRequest);
