@@ -9,7 +9,7 @@ bool __fastcall hooks::FireEventClientSide(IGameEventManager2* thisptr, void*, I
 	// Filter to only the events we're interested in.
 	if(!strcmp(event->GetName(), "player_death")
 		&& g_engine->GetPlayerForUserID(event->GetInt("attacker")) == g_engine->GetLocalPlayer())
-		if(auto icon_override = Config::Get()->GetIconOverride(event->GetString("weapon")))
+		if(auto icon_override = g_config.GetIconOverride(event->GetString("weapon")))
 			event->SetString("weapon", icon_override);
 
 	return original_fn(thisptr, event);

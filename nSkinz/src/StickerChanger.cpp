@@ -23,7 +23,7 @@ namespace Hooks
 
 		auto defindex = item->GetItemDefinitionIndex();
 
-		auto config = Config::Get()->GetByDefinitionIndex(defindex);
+		auto config = g_config.GetByDefinitionIndex(defindex);
 
 		if(config)
 		{
@@ -53,7 +53,7 @@ namespace Hooks
 		{
 			auto defindex = item->GetItemDefinitionIndex();
 
-			auto config = Config::Get()->GetByDefinitionIndex(defindex);
+			auto config = g_config.GetByDefinitionIndex(defindex);
 
 			if(config)
 				return config->stickers[slot].kit_index;

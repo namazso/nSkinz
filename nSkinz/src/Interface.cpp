@@ -37,7 +37,7 @@ void DrawGUI()
 		ImGuiWindowFlags_NoSavedSettings))
 	{
 
-		auto& entries = Config::Get()->GetItems();
+		auto& entries = g_config.GetItems();
 
 		// If the user deleted the only config let's add one
 		if(entries.size() == 0)
@@ -223,11 +223,11 @@ void DrawGUI()
 			ImGui::NextColumn();
 
 			if(ImGui::Button("Save", button_size))
-				Config::Get()->Save();
+				g_config.Save();
 			ImGui::NextColumn();
 
 			if(ImGui::Button("Load", button_size))
-				Config::Get()->Load();
+				g_config.Load();
 			ImGui::NextColumn();
 		}
 

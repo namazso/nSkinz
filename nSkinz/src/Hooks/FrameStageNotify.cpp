@@ -31,7 +31,7 @@ static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const Ec
 
 	auto& definition_index = item->GetItemDefinitionIndex();
 
-	auto& icon_override_map = Config::Get()->GetIconOverrideMap();
+	auto& icon_override_map = g_config.GetIconOverrideMap();
 
 	if(config->definition_override_index // We need to override defindex
 		&& config->definition_override_index != definition_index // It is not yet overridden
@@ -100,7 +100,7 @@ static void PostDataUpdateStart()
 	{
 		auto wearables = local->GetWearables();
 
-		auto glove_config = Config::Get()->GetByDefinitionIndex(GLOVE_T_SIDE);
+		auto glove_config = g_config.GetByDefinitionIndex(GLOVE_T_SIDE);
 
 		static CBaseHandle glove_handle = 0;
 
@@ -181,7 +181,7 @@ static void PostDataUpdateStart()
 			auto& definition_index = weapon->GetItemDefinitionIndex();
 
 			// All knives are terrorist knives.
-			if(auto active_conf = Config::Get()->GetByDefinitionIndex(IsKnife(definition_index) ? WEAPON_KNIFE : definition_index))
+			if(auto active_conf = g_config.GetByDefinitionIndex(IsKnife(definition_index) ? WEAPON_KNIFE : definition_index))
 				ApplyConfigOnAttributableItem(weapon, active_conf, player_info.xuid_low);
 		}
 	}

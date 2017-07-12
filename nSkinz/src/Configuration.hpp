@@ -97,13 +97,6 @@ struct EconomyItem_t
 class Config
 {
 public:
-	static Config* Get()
-	{
-		static Config instance;
-
-		return &instance;
-	}
-
 	void Save();
 	void Load();
 
@@ -117,3 +110,5 @@ private:
 	std::vector<EconomyItem_t> m_items;
 	std::unordered_map<std::string, std::string> m_icon_overrides;
 };
+
+extern Config g_config;

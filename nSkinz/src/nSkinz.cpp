@@ -3,6 +3,7 @@
 #include "Renderer.hpp"
 #include "KitParser.hpp"
 #include "UpdateCheck.hpp"
+#include "Configuration.hpp"
 
 IBaseClientDLL*		g_client;
 IClientEntityList*	g_entity_list;
@@ -27,12 +28,14 @@ void __stdcall Initialize(void* instance)
 	g_game_event_manager = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	g_localize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
 
+	g_client_state = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_engine, 12) + 0x10);
+
 	CheckUpdate();
 
 	// Get skins
 	InitializeKits();
 
-	g_client_state = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_engine, 12) + 0x10);
+	g_config.Load();
 
 	Render::Initialize();
 

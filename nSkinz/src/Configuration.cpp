@@ -2,49 +2,9 @@
 #include "SDK.hpp"
 
 #include <fstream>
-
-// Toptier configuration system
-
-/*void Config::Save()
-{
-	FILE* fp;
-	if(fopen_s(&fp, "nSkinz_1.bin", "wb"))
-		return;
-	auto size = m_items.size();
-	fwrite(&size, sizeof size, 1, fp);
-	fwrite(m_items.data(), sizeof(EconomyItem_t), m_items.size(), fp);
-	fclose(fp);
-}
-
-void Config::Load()
-{
-	FILE* fp;
-	if(fopen_s(&fp, "nSkinz_1.bin", "rb"))
-		return;
-	size_t size;
-	fread(&size, sizeof size, 1, fp);
-	auto items = new EconomyItem_t[size];
-	fread(items, sizeof(EconomyItem_t), size, fp);
-	m_items.clear();
-	m_items.insert(m_items.begin(), items, items + size);
-	for(auto& x : m_items)
-		x.UpdateIds();
-	delete[] items;
-	fclose(fp);
-
-	(*g_client_state)->ForceFullUpdate();
-}*/
-
-EconomyItem_t* Config::GetByDefinitionIndex(int definition_index)
-{
-	for(auto& x : m_items)
-		if(x.enabled && x.definition_index == definition_index)
-			return &x;
-
-	return nullptr;
-}
-
 #include <json.hpp>
+
+Config g_config;
 
 using json = nlohmann::json;
 
@@ -52,10 +12,10 @@ void to_json(json& j, const StickerSetting& sticker)
 {
 	j = json
 	{
-		{"kit", sticker.kit_index},
-		{"wear", sticker.wear},
-		{"scale", sticker.scale},
-		{"rotation", sticker.rotation}
+		{ "kit", sticker.kit_index },
+		{ "wear", sticker.wear },
+		{ "scale", sticker.scale },
+		{ "rotation", sticker.rotation }
 	};
 }
 
@@ -72,17 +32,17 @@ void to_json(json& j, const EconomyItem_t& item)
 {
 	j = json
 	{
-		{"name", item.name},
-		{"enabled", item.enabled},
-		{"definition_index", item.definition_index},
-		{"entity_quality_index", item.entity_quality_index},
-		{"paint_kit_index", item.paint_kit_index},
-		{"definition_override_index", item.definition_override_index},
-		{"seed", item.seed},
-		{"stat_trak", item.stat_trak},
-		{"wear", item.wear},
-		{"custom_name", item.custom_name},
-		{"stickers", item.stickers},
+		{ "name", item.name },
+		{ "enabled", item.enabled },
+		{ "definition_index", item.definition_index },
+		{ "entity_quality_index", item.entity_quality_index },
+		{ "paint_kit_index", item.paint_kit_index },
+		{ "definition_override_index", item.definition_override_index },
+		{ "seed", item.seed },
+		{ "stat_trak", item.stat_trak },
+		{ "wear", item.wear },
+		{ "custom_name", item.custom_name },
+		{ "stickers", item.stickers },
 	};
 }
 
@@ -101,7 +61,10 @@ void from_json(const json& j, EconomyItem_t& item)
 	auto stickers = j.at("stickers").get<std::vector<StickerSetting>>();
 	// Fuck you std::copy
 	//std::copy(stickers.begin(), stickers.end(), item.stickers);
-	for(int i = 0; i < item.stickers.size(); ++i)
+
+	auto size = stickers.size() < item.stickers.size() ? stickers.size() : item.stickers.size();
+
+	for(size_t i = 0; i < size; ++i)
 		item.stickers[i] = stickers[i];
 
 	item.UpdateIds();
@@ -114,5 +77,22 @@ void Config::Save()
 
 void Config::Load()
 {
-	m_items = json::parse(std::ifstream("nSkinz.json")).get<std::vector<EconomyItem_t>>();
+	try
+	{
+		m_items = json::parse(std::ifstream("nSkinz.json")).get<std::vector<EconomyItem_t>>();
+		(*g_client_state)->ForceFullUpdate();
+	}
+	catch(const std::exception&)
+	{
+		// Config file doesn't exists or is malformed, just ignore it
+	}
+}
+
+EconomyItem_t* Config::GetByDefinitionIndex(int definition_index)
+{
+	for(auto& x : m_items)
+		if(x.enabled && x.definition_index == definition_index)
+			return &x;
+
+	return nullptr;
 }
