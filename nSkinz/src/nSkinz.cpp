@@ -1,7 +1,7 @@
 #include "nSkinz.hpp"
 #include "Hooks/Hooks.hpp"
 #include "Renderer.hpp"
-#include "PaintKitParser.hpp"
+#include "KitParser.hpp"
 #include "UpdateCheck.hpp"
 
 IBaseClientDLL*		g_client;
@@ -30,7 +30,7 @@ void __stdcall Initialize(void* instance)
 	CheckUpdate();
 
 	// Get skins
-	GetPaintKits();
+	InitializeKits();
 
 	g_client_state = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_engine, 12) + 0x10);
 

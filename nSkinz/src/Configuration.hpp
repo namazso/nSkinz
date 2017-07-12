@@ -1,9 +1,31 @@
 #pragma once
 #include "ItemDefinitions.hpp"
-#include "PaintKitParser.hpp"
+#include "KitParser.hpp"
 
 #include <unordered_map>
 #include <algorithm>
+
+struct StickerSetting
+{
+	void UpdateValues()
+	{
+		kit_index = k_stickers.at(kit_vector_index).id;
+	}
+
+	void UpdateIds()
+	{
+		kit_vector_index = find_if(k_stickers.begin(), k_stickers.end(), [this](const Kit_t& x)
+		{
+			return this->kit_index == x.id;
+		}) - k_stickers.begin();
+	}
+
+	int kit_index = 0;
+	int kit_vector_index = 0;
+	float wear = FLT_MIN;
+	float scale = 1.f;
+	float rotation = 0.f;
+};
 
 struct EconomyItem_t
 {
@@ -19,6 +41,9 @@ struct EconomyItem_t
 		definition_override_index = definition_index == GLOVE_T_SIDE ?
 			k_glove_names.at(definition_override_vector_index).definition_index :
 			k_knife_names.at(definition_override_vector_index).definition_index;
+
+		for(auto& sticker : stickers)
+			sticker.UpdateValues();
 	}
 
 	void UpdateIds()
@@ -35,7 +60,7 @@ struct EconomyItem_t
 
 		const auto& skin_set = definition_index == GLOVE_T_SIDE ? k_gloves : k_skins;
 
-		paint_kit_vector_index = find_if(skin_set.begin(), skin_set.end(), [this](const PaintKit_t& x)
+		paint_kit_vector_index = find_if(skin_set.begin(), skin_set.end(), [this](const Kit_t& x)
 		{
 			return this->paint_kit_index == x.id;
 		}) - skin_set.begin();
@@ -46,6 +71,9 @@ struct EconomyItem_t
 		{
 			return this->definition_override_index == x.definition_index;
 		}) - override_set.begin();
+
+		for(auto& sticker : stickers)
+			sticker.UpdateIds();
 	}
 
 	char name[32] = "Default";
@@ -62,12 +90,7 @@ struct EconomyItem_t
 	int stat_trak = 0;
 	float wear = FLT_MIN;
 	char custom_name[32] = "";
-
-	// In case of adding more bullshit
-	uint64_t _reserved1 = 0xFFFFFFFFFFFFFFFF;
-	uint64_t _reserved2 = 0xFFFFFFFFFFFFFFFF;
-	uint64_t _reserved3 = 0xFFFFFFFFFFFFFFFF;
-	uint64_t _reserved4 = 0xFFFFFFFFFFFFFFFF;
+	StickerSetting stickers[5];
 };
 
 class Config

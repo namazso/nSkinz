@@ -8,7 +8,9 @@
 
 #include <imgui.h>
 #include <imgui_impl_dx9.h>
-#include "Interface.hpp"
+
+// Implement this somewhere
+extern void DrawGUI();
 
 using EndScene_t = HRESULT(__stdcall *)(IDirect3DDevice9*);
 using Reset_t = HRESULT(__stdcall *)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS*);

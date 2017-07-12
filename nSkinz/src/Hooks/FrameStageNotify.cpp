@@ -2,6 +2,7 @@
 #include "../ItemDefinitions.hpp"
 #include "../nSkinz.hpp"
 #include "../Configuration.hpp"
+#include "../StickerChanger.hpp"
 
 static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
 {
@@ -68,6 +69,8 @@ static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const Ec
 				icon_override_map.erase(icon_override_map.at(original_item.icon)); // Remove the leftover override
 		}
 	}
+
+	ApplyStickerHooks(item);
 }
 
 static CreateClientClassFn GetWearableCreateFn()

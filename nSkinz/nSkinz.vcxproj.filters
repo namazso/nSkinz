@@ -28,13 +28,14 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\ItemDefinitions.cpp" />
-    <ClCompile Include="src\PaintKitParser.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\UpdateCheck.cpp" />
+    <ClCompile Include="src\StickerChanger.cpp" />
+    <ClCompile Include="src\KitParser.cpp" />
+    <ClCompile Include="src\Interface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Configuration.hpp" />
-    <ClInclude Include="src\Interface.hpp" />
     <ClInclude Include="src\RecvProxyHook.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
     <ClInclude Include="deps\imgui\imconfig.h">
@@ -122,9 +123,10 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\ItemDefinitions.hpp" />
-    <ClInclude Include="src\PaintKitParser.hpp" />
     <ClInclude Include="src\nSkinz.hpp" />
     <ClInclude Include="src\UpdateCheck.hpp" />
+    <ClInclude Include="src\KitParser.hpp" />
+    <ClInclude Include="src\StickerChanger.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">
