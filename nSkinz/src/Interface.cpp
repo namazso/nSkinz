@@ -240,11 +240,11 @@ void DrawGUI()
 		ImGui::Columns(3, "commit", true);
 		for(auto& commit : g_commits_since_compile)
 		{
-			ImGui::Text(commit.author.c_str());
+			ImGui::Text("%s", commit.author.c_str());
 			ImGui::NextColumn();
-			ImGui::Text(commit.date.c_str());
+			ImGui::Text("%s", commit.date.c_str());
 			ImGui::NextColumn();
-			ImGui::Text(commit.message.c_str());
+			ImGui::Text("%s", commit.message.c_str());
 			ImGui::NextColumn();
 		}
 
