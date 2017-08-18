@@ -156,13 +156,10 @@ void InitializeKits()
 
 	// Dump sticker kits
 	{
-		auto sticker_sig = platform::FindPattern("client.dll", "\x8D\x48\x04\xE8\x00\x00\x00\x00\x89\x45\xF8\xE8", "xxxx????xxxx");
-
-		// Skip the instructions between, skip the opcode, read rel32 address
-		auto get_sticker_kit_definition_offset = *reinterpret_cast<intptr_t*>(sticker_sig + 3 + 1);
-
+		auto sticker_sig = platform::FindPattern("client.dll", "\x55\x8B\xEC\x53\x56\x57\x8B\xF9\x8B\x87\xBC\x02", "xxxxxxxxxxxx");
+ 
 		// Add the offset to the end of the instruction
-		auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sticker_sig + 3 + 5 + get_sticker_kit_definition_offset);
+		auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sticker_sig);
 
 		// The last offset is head_element, we need that
 
