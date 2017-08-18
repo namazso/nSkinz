@@ -10,7 +10,7 @@ struct StickerSetting
 {
 	void UpdateValues()
 	{
-		kit_vector_index = kit_vector_index < k_stickers.size() ? kit_vector_index : k_stickers.size() - 1;
+		kit_vector_index = kit_vector_index < int(k_stickers.size()) ? kit_vector_index : k_stickers.size() - 1;
 		kit_index = k_stickers.at(kit_vector_index).id;
 	}
 
@@ -33,26 +33,26 @@ struct EconomyItem_t
 {
 	void UpdateValues()
 	{
-		definition_vector_index = definition_vector_index < k_weapon_names.size() ? definition_vector_index : k_weapon_names.size() - 1;
+		definition_vector_index = definition_vector_index < int(k_weapon_names.size()) ? definition_vector_index : k_weapon_names.size() - 1;
 		definition_index = k_weapon_names.at(definition_vector_index).definition_index;
 
-		entity_quality_vector_index = entity_quality_vector_index < k_quality_names.size() ? entity_quality_vector_index : k_quality_names.size() - 1;
+		entity_quality_vector_index = entity_quality_vector_index < int(k_quality_names.size()) ? entity_quality_vector_index : k_quality_names.size() - 1;
 		entity_quality_index = k_quality_names.at(entity_quality_vector_index).index;
 
 		if(definition_index == GLOVE_T_SIDE)
 		{
-			paint_kit_vector_index = paint_kit_vector_index < k_gloves.size() ? paint_kit_vector_index : k_gloves.size() - 1;
+			paint_kit_vector_index = paint_kit_vector_index < int(k_gloves.size()) ? paint_kit_vector_index : k_gloves.size() - 1;
 			paint_kit_index = k_gloves.at(paint_kit_vector_index).id;
 
-			definition_override_vector_index = definition_override_vector_index < k_glove_names.size() ? definition_override_vector_index : k_glove_names.size() - 1;
+			definition_override_vector_index = definition_override_vector_index < int(k_glove_names.size()) ? definition_override_vector_index : k_glove_names.size() - 1;
 			definition_override_index = k_glove_names.at(definition_override_vector_index).definition_index;
 		}
 		else
 		{
-			paint_kit_vector_index = paint_kit_vector_index < k_skins.size() ? paint_kit_vector_index : k_skins.size() - 1;
+			paint_kit_vector_index = paint_kit_vector_index < int(k_skins.size()) ? paint_kit_vector_index : k_skins.size() - 1;
 			paint_kit_index = k_skins.at(paint_kit_vector_index).id;
 
-			definition_override_vector_index = definition_override_vector_index < k_knife_names.size() ? definition_override_vector_index : k_knife_names.size() - 1;
+			definition_override_vector_index = definition_override_vector_index < int(k_knife_names.size()) ? definition_override_vector_index : k_knife_names.size() - 1;
 			definition_override_index = k_knife_names.at(definition_override_vector_index).definition_index;
 		}
 

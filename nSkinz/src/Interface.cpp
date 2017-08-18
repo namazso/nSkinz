@@ -69,7 +69,7 @@ void DrawGUI()
 
 		ImGui::NextColumn();
 
-		selected_id = selected_id < entries.size() ? selected_id : entries.size() - 1;
+		selected_id = selected_id < int(entries.size()) ? selected_id : entries.size() - 1;
 
 		auto& selected_entry = entries[selected_id];
 
