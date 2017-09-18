@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <codecvt>
+#include <synchapi.h>
+#include <wincon.h>
 
 std::vector<Kit_t> k_skins;
 std::vector<Kit_t> k_gloves;
@@ -134,6 +136,25 @@ void InitializeKits()
 
 		auto map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(uintptr_t(item_schema) + head_offset);
 
+		int counter = 0;
+
+		while (map_head->start_element == map_head->last_element)
+		{
+			if (counter > 10)
+			{
+				MessageBox(nullptr, L"could not retrieve weapon & glove paintkits", L"Error", 0);
+
+				// TODO: UnInitialize();
+				abort();
+			}
+
+			map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(uintptr_t(item_schema) + head_offset);
+
+			Sleep(250);
+
+			counter++;
+		}
+
 		for(int i = 0; i <= map_head->last_element; ++i)
 		{
 			auto paint_kit = map_head->memory[i].value;
@@ -181,6 +202,25 @@ void InitializeKits()
 		auto head_offset = start_element_offset - 12;
 
 		auto map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(uintptr_t(item_schema) + head_offset);
+
+		int counter = 0;
+
+		while (map_head->start_element == map_head->last_element)
+		{
+			if (counter > 10)
+			{
+				MessageBox(nullptr, L"could not retrieve stickers", L"Error", 0);
+
+				// TODO: UnInitialize();
+				abort();
+			}
+
+			map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(uintptr_t(item_schema) + head_offset);
+
+			Sleep(250);
+
+			counter++;
+		}
 
 		for(int i = 0; i <= map_head->last_element; ++i)
 		{
