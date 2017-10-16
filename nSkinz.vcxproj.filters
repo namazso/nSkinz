@@ -3,15 +3,6 @@
   <ItemGroup>
     <ClCompile Include="src\Configuration.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="deps\imgui\imgui.cpp">
-      <Filter>Dependency\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_draw.cpp">
-      <Filter>Dependency\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_impl_dx9.cpp">
-      <Filter>Dependency\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hooks\FrameStageNotify.cpp">
       <Filter>Hooks</Filter>
     </ClCompile>
@@ -33,32 +24,20 @@
     <ClCompile Include="src\StickerChanger.cpp" />
     <ClCompile Include="src\KitParser.cpp" />
     <ClCompile Include="src\Interface.cpp" />
+    <ClCompile Include="deps\imgui\imgui.cpp">
+      <Filter>Dependency</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp">
+      <Filter>Dependency</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\imgui\imgui_draw.cpp">
+      <Filter>Dependency</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Configuration.hpp" />
     <ClInclude Include="src\RecvProxyHook.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
-    <ClInclude Include="deps\imgui\imconfig.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui_impl_dx9.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui_internal.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\stb_truetype.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\stb_textedit.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\stb_rect_pack.h">
-      <Filter>Dependency\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="src\Hooks\Hooks.hpp">
       <Filter>Hooks</Filter>
     </ClInclude>
@@ -127,9 +106,6 @@
     <ClInclude Include="src\UpdateCheck.hpp" />
     <ClInclude Include="src\KitParser.hpp" />
     <ClInclude Include="src\StickerChanger.hpp" />
-    <ClInclude Include="deps\json.hpp">
-      <Filter>Dependency</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">
@@ -140,9 +116,6 @@
     </Filter>
     <Filter Include="Dependency">
       <UniqueIdentifier>{ea773f6e-6f49-4132-8b2f-e1cd313697d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Dependency\ImGui">
-      <UniqueIdentifier>{2c17dc14-62e6-4a2d-ac8b-640b207eea54}</UniqueIdentifier>
     </Filter>
     <Filter Include="Hooks">
       <UniqueIdentifier>{4edde6e6-abf1-4097-8ca9-8ac78f0312a6}</UniqueIdentifier>

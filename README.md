@@ -23,9 +23,9 @@ nSkinz is a fully featured internal skin, knife and glove changer for Counter-St
 
 Currently only Windows is supported, however this may change ~~in the future~~ if you submit a PR because I'm lazy.
 
-* Download the source with "Clone or Download" -> "Download ZIP", or via command line:
+* Clone the source with:
 ```
-git clone https://github.com/namazso/nSkinz.git
+git clone --recursive https://github.com/namazso/nSkinz.git
 ```
 * Compile using your preferred compiler
 * Inject the resulting library into the game

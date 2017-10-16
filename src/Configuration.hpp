@@ -110,6 +110,12 @@ struct EconomyItem_t
 class Config
 {
 public:
+	Config()
+	{
+		// Ghetto fix for possible race conditions
+		m_items.reserve(128);
+	}
+
 	void Save();
 	void Load();
 
