@@ -15,7 +15,7 @@ extern void DrawGUI();
 using EndScene_t = HRESULT(__stdcall *)(IDirect3DDevice9*);
 using Reset_t = HRESULT(__stdcall *)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS*);
 
-extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 namespace Render
 {
@@ -89,7 +89,7 @@ namespace Render
 			s_active = !s_active;
 
 		if(s_active)
-			return ImGui_ImplDX9_WndProcHandler(s_hwnd, message_type, w_param, l_param) != 0;
+			return ImGui_ImplWin32_WndProcHandler(s_hwnd, message_type, w_param, l_param) != 0;
 
 		return false;
 	}
