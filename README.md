@@ -24,10 +24,8 @@ nSkinz is a fully featured internal skin, knife, glove and sticker changer for C
 
 Currently only Windows is supported, however this may change ~~in the future~~ if you submit a PR because I'm lazy.
 
-* Clone the source with:
-```
-git clone --recursive https://github.com/namazso/nSkinz.git
-```
+* Clone the source with:```
+git clone --recursive https://github.com/namazso/nSkinz.git```
 * Compile using your preferred compiler
 * Inject the resulting library into the game
 * Press <kbd>Insert</kbd> to bring up the menu.
