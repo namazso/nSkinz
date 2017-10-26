@@ -2,7 +2,8 @@
 
 ### nSkinz
 
-nSkinz is a fully featured internal skin, knife, glove and sticker changer for Counter-Strike: Global Offensive. Although written from scratch, nSkinz was heavily influenced by [chameleon-ng](https://github.com/emskye96/chameleon-ng).
+nSkinz is a fully featured internal skin, knife, glove and sticker changer for Counter-Strike: Global Offensive.
+Although written from scratch, nSkinz was heavily influenced by [chameleon-ng](https://github.com/emskye96/chameleon-ng).
 
 * Use any skin on any weapon, including ones not available normally
 * Add any sticker to your weapons
@@ -14,7 +15,7 @@ nSkinz is a fully featured internal skin, knife, glove and sticker changer for C
 * Uses signature scanning and NetVar manager for dynamic offsets
 * [JSON](https://github.com/nlohmann/json) based configuration saving & loading support
 
-## Requirements
+## Requirements for compiling
 
 * C++11 compilant compiler
 * Tested under: clang 4.0, MSVC 2017
@@ -29,9 +30,9 @@ Currently only Windows is supported, however this may change ~~in the future~~ i
 * Compile using your preferred compiler
 * Inject the resulting library into the game
 * Press <kbd>Insert</kbd> to bring up the menu.
-* Set a weapon configuration
+* Setup weapon configuration(s)
 * To override multiple weapons press the "Add" button. When an inventory update occurs always the first enabled entry applicable for that weapon will be used.
-* To save your configuration press the "Save" button. To load it later press the "Load" button
+* To save your configuration press the "Save" button. To load it later press the "Load" button.
 
 ## License
 
