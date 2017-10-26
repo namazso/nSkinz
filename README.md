@@ -2,22 +2,23 @@
 
 ### nSkinz
 
-nSkinz is a fully featured internal skin, knife and glove changer for Counter-Strike: Global Offensive. Although written from scratch, nSkinz was heavily influenced by [chameleon-ng](https://github.com/emskye96/chameleon-ng)
+nSkinz is a fully featured internal skin, knife, glove and sticker changer for Counter-Strike: Global Offensive. Although written from scratch, nSkinz was heavily influenced by [chameleon-ng](https://github.com/emskye96/chameleon-ng).
 
-* Use any skin on any weapon, including ones not available normally.
-* Add any sticker to your weapons.
+* Use any skin on any weapon, including ones not available normally
+* Add any sticker to your weapons
 * Use any glove model and skin combination
-* Special knife animations are supported.
-* Knife kill feed icons are automatically replaced.
+* Special knife animations are supported
+* Knife kill feed icons are automatically replaced
 * In-game configuration with [ImGui](https://github.com/ocornut/imgui)
 * Always up-to-date dynamic skins, with localized names
 * Uses signature scanning and NetVar manager for dynamic offsets
-* JSON based configuration saving & loading support
+* [JSON](https://github.com/nlohmann/json) based configuration saving & loading support
 
 ## Requirements
 
 * C++11 compilant compiler
 * Tested under: clang 4.0, MSVC 2017
+* [DirectX SDK](https://www.microsoft.com/en-ca/download/details.aspx?id=6812)
 
 ## Usage
 
@@ -38,7 +39,7 @@ git clone --recursive https://github.com/namazso/nSkinz.git
 
 **This project is licensed under the MIT license**
 
-See the "LICENSE" file for more details.
+See the "[LICENSE](https://github.com/namazso/nSkinz/blob/master/LICENSE)" file for more details.
 
 ## Ports
 
