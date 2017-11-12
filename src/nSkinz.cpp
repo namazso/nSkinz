@@ -51,7 +51,7 @@ void __stdcall Initialize(void* instance)
 
 	g_sequence_hook = new RecvPropHook(sequence_prop, hooks::SequenceProxyFn);
 	
-	g_engine->ClientCmd_Unrestricted( "echo nSkinz injected successfully", 0" );
+	g_engine->ClientCmd_Unrestricted( "echo nSkinz injected successfully", 0 );
 }
 
 // If we aren't unloaded correctly (like when you close csgo)
