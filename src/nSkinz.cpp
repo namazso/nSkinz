@@ -7,9 +7,9 @@
 
 using ulong_t = unsigned long;
 
-IBaseClientDLL*		g_client;
+IBaseClientDLL*	g_client;
 IClientEntityList*	g_entity_list;
-IVEngineClient*		g_engine;
+IVEngineClient*	g_engine;
 IVModelInfoClient*	g_model_info;
 IGameEventManager2*	g_game_event_manager;
 ILocalize*		g_localize;
