@@ -5,8 +5,6 @@
 #include "UpdateCheck.hpp"
 #include "Configuration.hpp"
 
-using ulong_t = unsigned long;
-
 IBaseClientDLL*	g_client;
 IClientEntityList*	g_entity_list;
 IVEngineClient*	g_engine;
@@ -67,7 +65,7 @@ void __stdcall UnInitialize()
 	delete g_sequence_hook;
 }
 
-bool __stdcall DllMain( HINSTANCE instance, ulong_t reason, void *reserved ) {
+bool __stdcall DllMain( HINSTANCE instance, unsigned long reason, void *reserved ) {
     switch ( reason ) {
     case DLL_PROCESS_ATTACH:
         DisableThreadLibraryCalls( instance );
