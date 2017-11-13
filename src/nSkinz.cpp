@@ -5,12 +5,12 @@
 #include "UpdateCheck.hpp"
 #include "Configuration.hpp"
 
-IBaseClientDLL*		g_client;
+IBaseClientDLL*	g_client;
 IClientEntityList*	g_entity_list;
-IVEngineClient*		g_engine;
+IVEngineClient*	g_engine;
 IVModelInfoClient*	g_model_info;
 IGameEventManager2*	g_game_event_manager;
-ILocalize*			g_localize;
+ILocalize*		g_localize;
 
 CBaseClientState**	g_client_state;
 
@@ -48,6 +48,8 @@ void __stdcall Initialize(void* instance)
 	auto sequence_prop = C_BaseViewModel::GetSequenceProp();
 
 	g_sequence_hook = new RecvPropHook(sequence_prop, hooks::SequenceProxyFn);
+	
+	g_engine->ClientCmd_Unrestricted( "echo nSkinz injected successfully", 0 );
 }
 
 // If we aren't unloaded correctly (like when you close csgo)
@@ -63,12 +65,25 @@ void __stdcall UnInitialize()
 	delete g_sequence_hook;
 }
 
-#include <windows.h>
+bool __stdcall DllMain( HINSTANCE instance, unsigned long reason, void *reserved ) {
+    switch ( reason ) {
+    case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls( instance );
+        CreateThread( nullptr, 0, LPTHREAD_START_ROUTINE( Initialize ), instance, 0, nullptr );
 
-bool WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
-{
-	if (reason == DLL_PROCESS_ATTACH)
-		CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(Initialize), instance, 0, nullptr);
+        return true;
+        break;
+/*
+    case DLL_PROCESS_DETACH:
+        if ( reserved == nullptr ) {
+            UnInitialize();
+        }
 
-	return true;
+        return true;
+        break;
+*/
+    default:
+        return true;
+        break;
+    }
 }

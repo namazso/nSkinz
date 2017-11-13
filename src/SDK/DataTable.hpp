@@ -7,7 +7,6 @@ class RecvProp;
 class RecvTable;
 
 using RecvVarProxyFn = void (__cdecl *)(const CRecvProxyData*, void*, void*);
-using Vector = float[3];
 
 struct DVariant
 {
@@ -17,7 +16,7 @@ struct DVariant
 		long m_Int;
 		char* m_pString;
 		void* m_pData;
-		Vector m_Vector;
+		float m_Vector[ 3 ];
 		int64_t m_Int64;
 	};
 
