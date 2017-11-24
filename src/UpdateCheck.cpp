@@ -227,9 +227,9 @@ ISteamHTTP* GetISteamHTTP(const char *pchVersion)
 		(GetProcAddress(GetModuleHandle("steam_api.dll"), "SteamClient"))();
 	
 	uint32_t hSteamUser = reinterpret_cast<uint32_t(__cdecl*)(void)>
-		(GetProcAddress(GetModuleHandle("steam_api.dll"), "SteamAPI_GetHSteamUser"))();
+		(GetProcAddress(GetModuleHandleA("steam_api.dll"), "SteamAPI_GetHSteamUser"))();
 	uint32_t hSteamPipe = reinterpret_cast<uint32_t(__cdecl*)(void)>
-		(GetProcAddress(GetModuleHandle("steam_api.dll"), "SteamAPI_GetHSteamPipe"))();
+		(GetProcAddress(GetModuleHandleA("steam_api.dll"), "SteamAPI_GetHSteamPipe"))();
 
 	return GetVirtualFunction<ISteamHTTP*(__thiscall*)(void*, uint32_t, uint32_t, const char*)>(pThis, 23)(pThis, hSteamUser, hSteamPipe, pchVersion);
 }
