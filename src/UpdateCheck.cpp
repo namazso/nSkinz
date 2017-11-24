@@ -126,12 +126,6 @@ struct HTTPRequestCompleted_t
 
 #pragma pack(pop)
 
-struct SteamContext
-{
-	void* __pad[11];
-	ISteamHTTP* steam_http;
-};
-
 class VersionCheckCallback
 {
 public:
@@ -189,17 +183,14 @@ void VersionCheckCallback::Run(HTTPRequestCompleted_t* pvParam)
 }
 
 static void SteamAPI_RegisterCallResult(VersionCheckCallback* callback, SteamAPICall_t handle);
+static ISteamHTTP* GetISteamHTTP(const char *pchVersion);
 
 void CheckUpdate()
 {
-	auto sig_result = platform::FindPattern("client.dll", "\xFF\x15\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x6A\x00", "xx????x????x????xx");
+	s_steam_http = GetISteamHTTP("STEAMHTTP_INTERFACE_VERSION002");
 
-	if(!sig_result)
+	if(!s_steam_http)
 		return;
-
-	auto steam_context = *reinterpret_cast<SteamContext**>(sig_result + 7);
-
-	s_steam_http = steam_context->steam_http;
 
 	auto handle = s_steam_http->CreateHTTPRequest(EHTTPMethod::GET, "http://api.github.com/repos/namazso/nSkinz/commits");
 
@@ -228,4 +219,17 @@ void SteamAPI_RegisterCallResult(VersionCheckCallback* callback, SteamAPICall_t 
 {
 	reinterpret_cast<void(__cdecl*)(VersionCheckCallback*, SteamAPICall_t)>
 		(GetProcAddress(GetModuleHandleA("steam_api.dll"), "SteamAPI_RegisterCallResult"))(callback, handle);
+}
+
+ISteamHTTP* GetISteamHTTP(const char *pchVersion)
+{
+	void* pThis = reinterpret_cast<void*(__cdecl*)(void)>
+		(GetProcAddress(GetModuleHandle("steam_api.dll"), "SteamClient"))();
+	
+	uint32_t hSteamUser = reinterpret_cast<uint32_t(__cdecl*)(void)>
+		(GetProcAddress(GetModuleHandleA("steam_api.dll"), "SteamAPI_GetHSteamUser"))();
+	uint32_t hSteamPipe = reinterpret_cast<uint32_t(__cdecl*)(void)>
+		(GetProcAddress(GetModuleHandleA("steam_api.dll"), "SteamAPI_GetHSteamPipe"))();
+
+	return GetVirtualFunction<ISteamHTTP*(__thiscall*)(void*, uint32_t, uint32_t, const char*)>(pThis, 23)(pThis, hSteamUser, hSteamPipe, pchVersion);
 }
