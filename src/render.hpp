@@ -23,10 +23,10 @@
 * SOFTWARE.
 */
 #pragma once
-#include "SDK.hpp"
-#include "recv_proxy_hook.hpp"
 
-extern vmt_smart_hook* g_client_hook;
-extern vmt_smart_hook* g_game_event_manager_hook;
-
-extern recv_prop_hook* g_sequence_hook;
+// Other parts don't need to know what goes behind the scenes
+namespace render
+{
+	extern void initialize();
+	extern void uninitialize();
+}

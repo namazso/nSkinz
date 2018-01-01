@@ -1,16 +1,39 @@
-#include "Hooks.hpp"
-#include "../ItemDefinitions.hpp"
+/* This file is part of nSkinz by namazso, licensed under the MIT license:
+*
+* MIT License
+*
+* Copyright (c) namazso 2018
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+#include "hooks.hpp"
+#include "../item_definitions.hpp"
 #include "../nSkinz.hpp"
-#include "../Configuration.hpp"
-#include "../StickerChanger.hpp"
+#include "../config.hpp"
+#include "../sticker_changer.hpp"
 
-static void EraseOverrideIfExistsByIndex(int definition_index)
+static auto erase_override_if_exists_by_index(const int definition_index) -> void
 {
 	// We have info about the item not needed to be overridden
 	if(k_weapon_info.count(definition_index))
 	{
-
-		auto& icon_override_map = g_config.GetIconOverrideMap();
+		auto& icon_override_map = g_config.get_icon_override_map();
 
 		const auto& original_item = k_weapon_info.at(definition_index);
 
@@ -20,7 +43,8 @@ static void EraseOverrideIfExistsByIndex(int definition_index)
 	}
 }
 
-static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const EconomyItem_t* config, unsigned xuid_low)
+static auto apply_config_on_attributable_item(sdk::C_BaseAttributableItem* item, const item_setting* config,
+	const unsigned xuid_low) -> void
 {
 	// Force fallback values to be used.
 	item->GetItemIDHigh() = -1;
@@ -47,13 +71,13 @@ static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const Ec
 
 	auto& definition_index = item->GetItemDefinitionIndex();
 
-	auto& icon_override_map = g_config.GetIconOverrideMap();
+	auto& icon_override_map = g_config.get_icon_override_map();
 
 	if(config->definition_override_index // We need to override defindex
 		&& config->definition_override_index != definition_index // It is not yet overridden
 		&& k_weapon_info.count(config->definition_override_index)) // We have info about what we gonna override it to
 	{
-		unsigned old_definition_index = definition_index;
+		const auto old_definition_index = definition_index;
 
 		definition_index = config->definition_override_index;
 
@@ -75,49 +99,52 @@ static void ApplyConfigOnAttributableItem(C_BaseAttributableItem* item, const Ec
 	}
 	else
 	{
-		EraseOverrideIfExistsByIndex(definition_index);
+		erase_override_if_exists_by_index(definition_index);
 	}
 
-	ApplyStickerHooks(item);
+	apply_sticker_changer(item);
 }
 
-static CreateClientClassFn GetWearableCreateFn()
+static auto get_wearable_create_fn() -> sdk::CreateClientClassFn
 {
 	auto clazz = g_client->GetAllClasses();
 
+	// Please, if you gonna paste it into a cheat use classids here. I use names because they
+	// won't change in the foreseeable future and i dont need high speed, but chances are
+	// you already have classids, so use them instead, they are faster.
 	while(strcmp(clazz->m_pNetworkName, "CEconWearable"))
 		clazz = clazz->m_pNext;
 
 	return clazz->m_pCreateFn;
 }
 
-static void PostDataUpdateStart()
+static auto post_data_update_start() -> void
 {
-	auto local_index = g_engine->GetLocalPlayer();
-	auto local = static_cast<C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
+	const auto local_index = g_engine->GetLocalPlayer();
+	const auto local = static_cast<sdk::C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
 
 	if(!local)
 		return;
 
-	player_info_t player_info;
+	sdk::player_info_t player_info;
 
 	if(!g_engine->GetPlayerInfo(local_index, &player_info))
 		return;
 
 	// Handle glove config
 	{
-		auto wearables = local->GetWearables();
+		const auto wearables = local->GetWearables();
 
-		auto glove_config = g_config.GetByDefinitionIndex(GLOVE_T_SIDE);
+		const auto glove_config = g_config.get_by_definition_index(GLOVE_T_SIDE);
 
-		static CBaseHandle glove_handle = 0;
+		static auto glove_handle = sdk::CBaseHandle(0);
 
-		auto glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(wearables[0]));
+		auto glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(wearables[0]));
 
 		if(!glove) // There is no glove
 		{
 			// Try to get our last created glove
-			auto our_glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(glove_handle));
+			const auto our_glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(glove_handle));
 
 			if(our_glove) // Our glove still exists
 			{
@@ -126,7 +153,7 @@ static void PostDataUpdateStart()
 			}
 		}
 
-		if(local->GetLifeState() != LifeState::ALIVE)
+		if(local->GetLifeState() != sdk::LifeState::ALIVE)
 		{
 			// We are dead but we have a glove, destroy it
 			if(glove)
@@ -143,21 +170,23 @@ static void PostDataUpdateStart()
 			// We don't have a glove, but we should
 			if(!glove)
 			{
-				static auto create_wearable_fn = GetWearableCreateFn();
+				static auto create_wearable_fn = get_wearable_create_fn();
 
-				auto entry = g_entity_list->GetHighestEntityIndex() + 1;
-				auto serial = rand() % 0x1000;
+				const auto entry = g_entity_list->GetHighestEntityIndex() + 1;
+				const auto serial = rand() % 0x1000;
 
 				//glove = static_cast<C_BaseAttributableItem*>(create_wearable_fn(entry, serial));
 				create_wearable_fn(entry, serial);
-				glove = reinterpret_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
+				glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
+				assert(glove);
 
 				// He he
 				{
-					static auto set_abs_origin_fn = reinterpret_cast<void(__thiscall*)(void*, const Vector&)>
-						(platform::FindPattern("client.dll", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x57\x8B\xF1", "xxxxxxxxxxxx"));
+					static auto set_abs_origin_addr = platform::find_pattern("client.dll", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x57\x8B\xF1", "xxxxxxxxxxxx");
 
-					static const Vector new_pos = { 10000.f, 10000.f, 10000.f };
+					const auto set_abs_origin_fn = reinterpret_cast<void(__thiscall*)(void*, const sdk::Vector&)>(set_abs_origin_addr);
+
+					static constexpr sdk::Vector new_pos = { 10000.f, 10000.f, 10000.f };
 
 					set_abs_origin_fn(glove, new_pos);
 				}
@@ -169,19 +198,22 @@ static void PostDataUpdateStart()
 			}
 
 			// Thanks, Beakers
-			*reinterpret_cast<int*>(uintptr_t(glove) + 0x64) = -1;
+			glove->GetIndex() = -1;
 
-			ApplyConfigOnAttributableItem(glove, glove_config, player_info.xuid_low);
+			apply_config_on_attributable_item(glove, glove_config, player_info.xuid_low);
 		}
 	}
 
 	// Handle weapon configs
 	{
-		auto weapons = local->GetWeapons();
+		auto& weapons = local->GetWeapons();
 
-		for(size_t i = 0; weapons[i] != INVALID_EHANDLE_INDEX; i++)
+		for(auto weapon_handle : weapons)
 		{
-			auto weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapons[i]));
+			if(weapon_handle == sdk::INVALID_EHANDLE_INDEX)
+				break;
+
+			auto weapon = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapon_handle));
 
 			if(!weapon)
 				continue;
@@ -189,46 +221,46 @@ static void PostDataUpdateStart()
 			auto& definition_index = weapon->GetItemDefinitionIndex();
 
 			// All knives are terrorist knives.
-			if(auto active_conf = g_config.GetByDefinitionIndex(IsKnife(definition_index) ? WEAPON_KNIFE : definition_index))
-				ApplyConfigOnAttributableItem(weapon, active_conf, player_info.xuid_low);
+			if(const auto active_conf = g_config.get_by_definition_index(is_knife(definition_index) ? WEAPON_KNIFE : definition_index))
+				apply_config_on_attributable_item(weapon, active_conf, player_info.xuid_low);
 			else
-				EraseOverrideIfExistsByIndex(definition_index);
+				erase_override_if_exists_by_index(definition_index);
 		}
 	}
 
-	auto view_model_handle = local->GetViewModel();
+	const auto view_model_handle = local->GetViewModel();
 
-	if(view_model_handle == INVALID_EHANDLE_INDEX)
+	if(view_model_handle == sdk::INVALID_EHANDLE_INDEX)
 		return;
 
-	auto view_model = static_cast<C_BaseViewModel*>(g_entity_list->GetClientEntityFromHandle(view_model_handle));
+	const auto view_model = static_cast<sdk::C_BaseViewModel*>(g_entity_list->GetClientEntityFromHandle(view_model_handle));
 
 	if(!view_model)
 		return;
 
-	auto view_model_weapon_handle = view_model->GetWeapon();
+	const auto view_model_weapon_handle = view_model->GetWeapon();
 
-	if(view_model_weapon_handle == INVALID_EHANDLE_INDEX)
+	if(view_model_weapon_handle == sdk::INVALID_EHANDLE_INDEX)
 		return;
 
-	auto view_model_weapon = static_cast<C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(view_model_weapon_handle));
+	const auto view_model_weapon = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(view_model_weapon_handle));
 
 	if(!view_model_weapon)
 		return;
 
 	if(k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
 	{
-		auto& override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
+		const auto override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
 		view_model->GetModelIndex() = g_model_info->GetModelIndex(override_model);
 	}
 }
 
-void __fastcall hooks::FrameStageNotify(IBaseClientDLL* thisptr, void*, ClientFrameStage_t stage)
+auto __fastcall hooks::FrameStageNotify::hooked(sdk::IBaseClientDLL* thisptr, void*, const sdk::ClientFrameStage_t stage) -> void
 {
-	static auto original_fn = g_client_hook->GetOriginalFunction<FrameStageNotify_t>(36);
+	if(stage == sdk::FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+		post_data_update_start();
 
-	if(stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-		PostDataUpdateStart();
-
-	return original_fn(thisptr, stage);
+	return m_original(thisptr, nullptr, stage);
 }
+
+hooks::FrameStageNotify::Fn* hooks::FrameStageNotify::m_original;

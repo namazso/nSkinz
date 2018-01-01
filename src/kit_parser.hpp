@@ -23,10 +23,21 @@
 * SOFTWARE.
 */
 #pragma once
-#include "SDK.hpp"
-#include "recv_proxy_hook.hpp"
+#include <vector>
 
-extern vmt_smart_hook* g_client_hook;
-extern vmt_smart_hook* g_game_event_manager_hook;
+struct paint_kit
+{
+	int id;
+	std::string name;
 
-extern recv_prop_hook* g_sequence_hook;
+	auto operator < (const paint_kit& other) const -> bool
+	{
+		return name < other.name;
+	}
+};
+
+extern std::vector<paint_kit> k_skins;
+extern std::vector<paint_kit> k_gloves;
+extern std::vector<paint_kit> k_stickers;
+
+extern auto initialize_kits() -> void;

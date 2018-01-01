@@ -1,74 +1,94 @@
+/* This file is part of nSkinz by namazso, licensed under the MIT license:
+*
+* MIT License
+*
+* Copyright (c) namazso 2018
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "nSkinz.hpp"
-#include "Hooks/Hooks.hpp"
-#include "Renderer.hpp"
-#include "KitParser.hpp"
-#include "UpdateCheck.hpp"
-#include "Configuration.hpp"
+#include "Hooks/hooks.hpp"
+#include "render.hpp"
+#include "kit_parser.hpp"
+#include "update_check.hpp"
+#include "config.hpp"
 
-IBaseClientDLL*		g_client;
-IClientEntityList*	g_entity_list;
-IVEngineClient*		g_engine;
-IVModelInfoClient*	g_model_info;
-IGameEventManager2*	g_game_event_manager;
-ILocalize*			g_localize;
+sdk::IBaseClientDLL*		g_client;
+sdk::IClientEntityList*		g_entity_list;
+sdk::IVEngineClient*		g_engine;
+sdk::IVModelInfoClient*		g_model_info;
+sdk::IGameEventManager2*	g_game_event_manager;
+sdk::ILocalize*				g_localize;
 
-CBaseClientState**	g_client_state;
+sdk::CBaseClientState**		g_client_state;
 
-VMTHook* g_client_hook;
-VMTHook* g_game_event_manager_hook;
+vmt_smart_hook*				g_client_hook;
+vmt_smart_hook*				g_game_event_manager_hook;
 
-RecvPropHook* g_sequence_hook;
+recv_prop_hook*				g_sequence_hook;
 
-void __stdcall Initialize(void* instance)
+template <class T>
+auto get_interface(const char* module, const char* name) -> T*
 {
-	g_client = CaptureInterface<IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
-	g_entity_list = CaptureInterface<IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
-	g_engine = CaptureInterface<IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
-	g_model_info = CaptureInterface<IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
-	g_game_event_manager = CaptureInterface<IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
-	g_localize = CaptureInterface<ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
+	return reinterpret_cast<T*>(platform::get_interface(module, name));
+}
 
-	g_client_state = *reinterpret_cast<CBaseClientState***>(GetVirtualFunction<uintptr_t>(g_engine, 12) + 0x10);
+auto initialize(void* instance) -> void
+{
+	g_client = get_interface<sdk::IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
+	g_entity_list = get_interface<sdk::IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
+	g_engine = get_interface<sdk::IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
+	g_model_info = get_interface<sdk::IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
+	g_game_event_manager = get_interface<sdk::IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	g_localize = get_interface<sdk::ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
 
-	CheckUpdate();
+	g_client_state = *reinterpret_cast<sdk::CBaseClientState***>(get_vfunc<std::uintptr_t>(g_engine, 12) + 0x10);
+
+	run_update_check();
 
 	// Get skins
-	InitializeKits();
+	initialize_kits();
 
-	g_config.Load();
+	g_config.load();
 
-	Render::Initialize();
+	render::initialize();
 
-	g_client_hook = new VMTHook(g_client);
-	g_client_hook->HookFunction(reinterpret_cast<void*>(hooks::FrameStageNotify), 36);
+	g_client_hook = new vmt_smart_hook(g_client);
+	g_client_hook->apply_hook<hooks::FrameStageNotify>(36);
 
-	g_game_event_manager_hook = new VMTHook(g_game_event_manager);
-	g_game_event_manager_hook->HookFunction(reinterpret_cast<void*>(hooks::FireEventClientSide), 9);
+	g_game_event_manager_hook = new vmt_smart_hook(g_game_event_manager);
+	g_game_event_manager_hook->apply_hook<hooks::FireEventClientSide>(9);
 
-	auto sequence_prop = C_BaseViewModel::GetSequenceProp();
+	const auto sequence_prop = sdk::C_BaseViewModel::GetSequenceProp();
 
-	g_sequence_hook = new RecvPropHook(sequence_prop, hooks::SequenceProxyFn);
+	g_sequence_hook = new recv_prop_hook(sequence_prop, &hooks::sequence_proxy_fn);
 }
 
 // If we aren't unloaded correctly (like when you close csgo)
 // we should just leak the hooks, since the hooked instances
 // might be already destroyed
-void __stdcall UnInitialize()
+auto uninitialize() -> void
 {
-	Render::Uninitialize();
+	render::uninitialize();
 
 	delete g_client_hook;
 	delete g_game_event_manager_hook;
 
 	delete g_sequence_hook;
-}
-
-#include <windows.h>
-
-bool WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
-{
-	if (reason == DLL_PROCESS_ATTACH)
-		CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(Initialize), instance, 0, nullptr);
-
-	return true;
 }

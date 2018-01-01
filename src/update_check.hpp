@@ -23,10 +23,17 @@
 * SOFTWARE.
 */
 #pragma once
-#include "SDK.hpp"
-#include "recv_proxy_hook.hpp"
+#include <string>
+#include <vector>
 
-extern vmt_smart_hook* g_client_hook;
-extern vmt_smart_hook* g_game_event_manager_hook;
+extern auto run_update_check() -> void;
 
-extern recv_prop_hook* g_sequence_hook;
+struct commit_entry
+{
+	std::string author;
+	std::string date;
+	std::string message;
+};
+
+extern bool g_update_needed;
+extern std::vector<commit_entry> g_commits_since_compile;

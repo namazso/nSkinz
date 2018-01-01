@@ -1,13 +1,37 @@
-#include "KitParser.hpp"
-#include "Utilities/Platform.hpp"
+/* This file is part of nSkinz by namazso, licensed under the MIT license:
+*
+* MIT License
+*
+* Copyright (c) namazso 2018
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+#include "kit_parser.hpp"
+#include "Utilities/platform.hpp"
 #include "nSkinz.hpp"
 
 #include <algorithm>
 #include <codecvt>
 
-std::vector<Kit_t> k_skins;
-std::vector<Kit_t> k_gloves;
-std::vector<Kit_t> k_stickers;
+std::vector<paint_kit> k_skins;
+std::vector<paint_kit> k_gloves;
+std::vector<paint_kit> k_stickers;
 
 class CCStrike15ItemSchema;
 class CCStrike15ItemSystem;
@@ -89,7 +113,7 @@ struct CStickerKit
 	uint32_t pad0[4];
 };
 
-void InitializeKits()
+auto initialize_kits() -> void
 {
 	static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
@@ -100,26 +124,26 @@ void InitializeKits()
 	// lea     ecx, [eax+4]
 	// call    CEconItemSchema::GetPaintKitDefinition
 
-	auto sig_address = platform::FindPattern("client.dll", "\xE8\x00\x00\x00\x00\xFF\x76\x0C\x8D\x48\x04\xE8", "x????xxxxxxx");
+	const auto sig_address = platform::find_pattern("client.dll", "\xE8\x00\x00\x00\x00\xFF\x76\x0C\x8D\x48\x04\xE8", "x????xxxxxxx");
 
 	// Skip the opcode, read rel32 address
-	auto item_system_offset = *reinterpret_cast<int32_t*>(sig_address + 1);
+	const auto item_system_offset = *reinterpret_cast<int32_t*>(sig_address + 1);
 
 	// Add the offset to the end of the instruction
-	auto item_system_fn = reinterpret_cast<CCStrike15ItemSystem* (*)()>(sig_address + 5 + item_system_offset);
+	const auto item_system_fn = reinterpret_cast<CCStrike15ItemSystem* (*)()>(sig_address + 5 + item_system_offset);
 
 	// Skip VTable, first member variable of ItemSystem is ItemSchema
-	auto item_schema = reinterpret_cast<CCStrike15ItemSchema*>(uintptr_t(item_system_fn()) + sizeof(void*));
+	const auto item_schema = reinterpret_cast<CCStrike15ItemSchema*>(uintptr_t(item_system_fn()) + sizeof(void*));
 
 	// Dump paint kits
 	{
 		// Skip the instructions between, skip the opcode, read rel32 address
-		auto get_paint_kit_definition_offset = *reinterpret_cast<int32_t*>(sig_address + 11 + 1);
+		const auto get_paint_kit_definition_offset = *reinterpret_cast<int32_t*>(sig_address + 11 + 1);
 
 		// Add the offset to the end of the instruction
-		auto get_paint_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sig_address + 11 + 5 + get_paint_kit_definition_offset);
+		const auto get_paint_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sig_address + 11 + 5 + get_paint_kit_definition_offset);
 
-		// The last offset is head_element, we need that
+		// The last offset is start_element, we need that
 
 		// push    ebp
 		// mov     ebp, esp
@@ -127,22 +151,22 @@ void InitializeKits()
 		// mov     eax, [ecx+298h]
 
 		// Skip instructions, skip opcode, read offset
-		auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_paint_kit_definition_fn) + 8 + 2);
+		const auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_paint_kit_definition_fn) + 8 + 2);
 
 		// Calculate head base from start_element's offset
-		auto head_offset = start_element_offset - 12;
+		const auto head_offset = start_element_offset - 12;
 
-		auto map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(uintptr_t(item_schema) + head_offset);
+		const auto map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(uintptr_t(item_schema) + head_offset);
 
-		for(int i = 0; i <= map_head->last_element; ++i)
+		for(auto i = 0; i <= map_head->last_element; ++i)
 		{
-			auto paint_kit = map_head->memory[i].value;
+			const auto paint_kit = map_head->memory[i].value;
 
 			if(paint_kit->id == 9001)
 				continue;
 
-			const wchar_t* wide_name = g_localize->Find(paint_kit->item_name.buffer + 1);
-			auto name = converter.to_bytes(wide_name);
+			const auto wide_name = g_localize->Find(paint_kit->item_name.buffer + 1);
+			const auto name = converter.to_bytes(wide_name);
 
 			if(paint_kit->id < 10000)
 				k_skins.push_back({ paint_kit->id, name });
@@ -156,13 +180,13 @@ void InitializeKits()
 
 	// Dump sticker kits
 	{
-		auto sticker_sig = platform::FindPattern("client.dll", "\x53\x8D\x48\x04\xE8\x00\x00\x00\x00\x8B\x4D\x10", "xxxxx????xxx") + 4;
+		const auto sticker_sig = platform::find_pattern("client.dll", "\x53\x8D\x48\x04\xE8\x00\x00\x00\x00\x8B\x4D\x10", "xxxxx????xxx") + 4;
 
 		// Skip the opcode, read rel32 address
-		auto get_sticker_kit_definition_offset = *reinterpret_cast<intptr_t*>(sticker_sig + 1);
+		const auto get_sticker_kit_definition_offset = *reinterpret_cast<intptr_t*>(sticker_sig + 1);
 
 		// Add the offset to the end of the instruction
-		auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sticker_sig + 5 + get_sticker_kit_definition_offset);
+		const auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sticker_sig + 5 + get_sticker_kit_definition_offset);
 
 		// The last offset is head_element, we need that
 
@@ -175,16 +199,16 @@ void InitializeKits()
 		//	mov     eax, [edi + 2BCh]
 
 		// Skip instructions, skip opcode, read offset
-		auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_sticker_kit_definition_fn) + 8 + 2);
+		const auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_sticker_kit_definition_fn) + 8 + 2);
 
 		// Calculate head base from start_element's offset
-		auto head_offset = start_element_offset - 12;
+		const auto head_offset = start_element_offset - 12;
 
-		auto map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(uintptr_t(item_schema) + head_offset);
+		const auto map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(uintptr_t(item_schema) + head_offset);
 
-		for(int i = 0; i <= map_head->last_element; ++i)
+		for(auto i = 0; i <= map_head->last_element; ++i)
 		{
-			auto sticker_kit = map_head->memory[i].value;
+			const auto sticker_kit = map_head->memory[i].value;
 
 			char sticker_name_if_valve_fucked_up_their_translations[64];
 
@@ -197,8 +221,8 @@ void InitializeKits()
 				sticker_name_ptr = sticker_name_if_valve_fucked_up_their_translations;
 			}
 
-			const wchar_t* wide_name = g_localize->Find(sticker_name_ptr);
-			auto name = converter.to_bytes(wide_name);
+			const auto wide_name = g_localize->Find(sticker_name_ptr);
+			const auto name = converter.to_bytes(wide_name);
 
 			k_stickers.push_back({ sticker_kit->id, name });
 		}

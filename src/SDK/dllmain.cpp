@@ -22,11 +22,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#pragma once
-#include "SDK.hpp"
-#include "recv_proxy_hook.hpp"
+#include <windows.h>
 
-extern vmt_smart_hook* g_client_hook;
-extern vmt_smart_hook* g_game_event_manager_hook;
+extern auto initialize(void* instance) -> void;
 
-extern recv_prop_hook* g_sequence_hook;
+static auto WINAPI thread_entry(const LPVOID instance) -> DWORD
+{
+	initialize(instance);
+	return 0;
+}
+
+auto WINAPI DllMain(const HINSTANCE instance, const DWORD reason, LPVOID reserved) -> bool
+{
+	if(reason == DLL_PROCESS_ATTACH)
+	{
+		// Manual mappers sometimes pass nullptr here
+		if(instance)
+			DisableThreadLibraryCalls(instance);
+		CreateThread(nullptr, 0, thread_entry, instance, 0, nullptr);
+	}
+
+	return true;
+}

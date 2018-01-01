@@ -1,4 +1,5 @@
 #pragma once
+#include "SDK/declarations.hpp"
 #include "SDK/DataTable.hpp"
 #include "SDK/CBaseClientState.hpp"
 #include "SDK/ClientClass.hpp"
@@ -13,8 +14,8 @@
 #include "SDK/IVModelInfoClient.hpp"
 #include "SDK/ILocalize.hpp"
 
-#include "Utilities/VMTHook.hpp"
-#include "Utilities/Platform.hpp"
-#include "Utilities/Interface.hpp"
-#include "Utilities/Virtuals.hpp"
-#include "Utilities/NetVarManager.hpp"
+#include "SDK/interfaces.hpp"
+
+#include "Utilities/vmt_smart_hook.hpp"
+#include "Utilities/platform.hpp"
+#include "Utilities/netvar_manager.hpp"

@@ -1,68 +1,61 @@
 #pragma once
+#include "declarations.hpp"
 #include "IClientEntity.hpp"
-#include "../Utilities/NetVarManager.hpp"
-#include "../Utilities/Virtuals.hpp"
+#include "../Utilities/netvar_manager.hpp"
 
-enum class LifeState
+namespace sdk
 {
-	ALIVE = 0,
-	DYING,
-	DEAD,
-	RESPAWNABLE,
-	DISCARDBODY,
-};
-
-class C_BaseEntity: public IClientEntity
-{
-public:
-	NETVAR(GetModelIndex, unsigned, "CBaseEntity->m_nModelIndex")
-
-	void SetModelIndex(int index)
+	class C_BaseEntity : public IClientEntity
 	{
-		GetVirtualFunction<void(__thiscall*)(C_BaseEntity*, int)>(this, 75)(this, index);
-	}
-};
+	public:
+		NETVAR_OFFSET(GetIndex, "CBaseEntity", "m_bIsAutoaimTarget", +0x4, int);
+		NETVAR(GetModelIndex, "CBaseEntity", "m_nModelIndex", unsigned);
 
-class C_BaseCombatCharacter : public C_BaseEntity
-{
-public:
-	PNETVAR(GetWeapons, CBaseHandle, "CBaseCombatCharacter->m_hMyWeapons")
-	PNETVAR(GetWearables, CBaseHandle, "CBaseCombatCharacter->m_hMyWearables")
-};
+		void SetModelIndex(const int index)
+		{
+			get_vfunc<void(__thiscall*)(C_BaseEntity*, int)>(this, 75)(this, index);
+		}
+	};
 
-class C_BasePlayer: public C_BaseCombatCharacter
-{
-public:
-	NETVAR(GetLifeState, LifeState, "CBasePlayer->m_lifeState")
-	NETVAR(GetViewModel, CBaseHandle, "CBasePlayer->m_hViewModel[0]")
-};
+	class C_BaseCombatCharacter : public C_BaseEntity
+	{
+	public:
+		NETVAR(GetWeapons, "CBaseCombatCharacter", "m_hMyWeapons", std::array<CBaseHandle, MAX_WEAPONS>);
+		PNETVAR(GetWearables, "CBaseCombatCharacter", "m_hMyWearables", CBaseHandle);
+	};
 
-class C_BaseCombatWeapon: public C_BaseEntity
-{
-public:
-	NETVAR(GetViewModelIndex, int, "CBaseCombatWeapon->m_iViewModelIndex")
-};
+	class C_BasePlayer : public C_BaseCombatCharacter
+	{
+	public:
+		NETVAR(GetLifeState, "CBasePlayer", "m_lifeState", LifeState);
+		NETVAR(GetViewModel, "CBasePlayer", "m_hViewModel[0]", CBaseHandle);
+	};
 
-class C_BaseAttributableItem: public C_BaseCombatWeapon
-{
-private:
-	using str_32 = char[32];
-public:
-	NETVAR(GetAccountID, int, "CBaseAttributableItem->m_iAccountID")
-	NETVAR(GetItemDefinitionIndex, int, "CBaseAttributableItem->m_iItemDefinitionIndex")
-	NETVAR(GetItemIDHigh, int, "CBaseAttributableItem->m_iItemIDHigh")
-	NETVAR(GetEntityQuality, int, "CBaseAttributableItem->m_iEntityQuality")
-	NETVAR(GetCustomName, str_32, "CBaseAttributableItem->m_szCustomName")
-	NETVAR(GetFallbackPaintKit, unsigned, "CBaseAttributableItem->m_nFallbackPaintKit")
-	NETVAR(GetFallbackSeed, unsigned, "CBaseAttributableItem->m_nFallbackSeed")
-	NETVAR(GetFallbackWear, float, "CBaseAttributableItem->m_flFallbackWear")
-	NETVAR(GetFallbackStatTrak, unsigned, "CBaseAttributableItem->m_nFallbackStatTrak")
-};
+	class C_BaseCombatWeapon : public C_BaseEntity
+	{
+	public:
+		NETVAR(GetViewModelIndex, "CBaseCombatWeapon", "m_iViewModelIndex", int);
+	};
 
-class C_BaseViewModel: public C_BaseEntity
-{
-public:
-	NETVAR(GetOwner, CBaseHandle, "CBaseViewModel->m_hOwner")
-	NETVAR(GetWeapon, CBaseHandle, "CBaseViewModel->m_hWeapon")
-	NETPROP(GetSequenceProp, "CBaseViewModel->m_nSequence")
-};
+	class C_BaseAttributableItem : public C_BaseCombatWeapon
+	{
+	public:
+		NETVAR(GetAccountID, "CBaseAttributableItem", "m_iAccountID", int);
+		NETVAR(GetItemDefinitionIndex, "CBaseAttributableItem", "m_iItemDefinitionIndex", int);
+		NETVAR(GetItemIDHigh, "CBaseAttributableItem", "m_iItemIDHigh", int);
+		NETVAR(GetEntityQuality, "CBaseAttributableItem", "m_iEntityQuality", int);
+		NETVAR(GetCustomName, "CBaseAttributableItem", "m_szCustomName", char[32]);
+		NETVAR(GetFallbackPaintKit, "CBaseAttributableItem", "m_nFallbackPaintKit", unsigned);
+		NETVAR(GetFallbackSeed, "CBaseAttributableItem", "m_nFallbackSeed", unsigned);
+		NETVAR(GetFallbackWear, "CBaseAttributableItem", "m_flFallbackWear", float);
+		NETVAR(GetFallbackStatTrak, "CBaseAttributableItem", "m_nFallbackStatTrak", unsigned);
+	};
+
+	class C_BaseViewModel : public C_BaseEntity
+	{
+	public:
+		NETVAR(GetOwner, "CBaseViewModel", "m_hOwner", CBaseHandle);
+		NETVAR(GetWeapon, "CBaseViewModel", "m_hWeapon", CBaseHandle);
+		NETPROP(GetSequenceProp, "CBaseViewModel", "m_nSequence");
+	};
+}

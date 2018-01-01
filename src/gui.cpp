@@ -1,8 +1,32 @@
-#include "Configuration.hpp"
-#include "ItemDefinitions.hpp"
+/* This file is part of nSkinz by namazso, licensed under the MIT license:
+*
+* MIT License
+*
+* Copyright (c) namazso 2018
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+#include "config.hpp"
+#include "item_definitions.hpp"
 #include "SDK.hpp"
-#include "KitParser.hpp"
-#include "UpdateCheck.hpp"
+#include "kit_parser.hpp"
+#include "update_check.hpp"
 
 #include <imgui.h>
 #include <functional>
@@ -20,7 +44,7 @@ namespace ImGui
 	}
 }
 
-void DrawGUI()
+void draw_gui()
 {
 	ImGui::SetNextWindowSize(ImVec2(700, 400));
 	if(ImGui::Begin("nSkinz", nullptr,
@@ -30,11 +54,11 @@ void DrawGUI()
 		ImGuiWindowFlags_NoSavedSettings))
 	{
 
-		auto& entries = g_config.GetItems();
+		auto& entries = g_config.get_items();
 
 		// If the user deleted the only config let's add one
 		if(entries.size() == 0)
-			entries.push_back(EconomyItem_t());
+			entries.push_back(item_setting());
 
 		static auto selected_id = 0;
 
@@ -52,11 +76,11 @@ void DrawGUI()
 				return element_name;
 			}, entries.size(), 11);
 
-			auto button_size = ImVec2(ImGui::GetColumnWidth() / 2 - 8.5f, 31);
+			const auto button_size = ImVec2(ImGui::GetColumnWidth() / 2 - 12.5f, 31);
 
 			if(ImGui::Button("Add", button_size))
 			{
-				entries.push_back(EconomyItem_t());
+				entries.push_back(item_setting());
 				selected_id = entries.size() - 1;
 			}
 			ImGui::SameLine();
@@ -122,7 +146,7 @@ void DrawGUI()
 			}, nullptr, k_quality_names.size(), 5);
 
 			// Yes we do it twice to decide knifes
-			selected_entry.UpdateValues();
+			selected_entry.update_values();
 
 			// Item defindex override
 			if(selected_entry.definition_index == WEAPON_KNIFE)
@@ -149,7 +173,7 @@ void DrawGUI()
 				ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
 			}
 
-			selected_entry.UpdateValues();
+			selected_entry.update_values();
 
 			// Custom Name tag
 			ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
@@ -211,18 +235,18 @@ void DrawGUI()
 
 		// Lower buttons for modifying items and saving
 		{
-			auto button_size = ImVec2(ImGui::GetColumnWidth() - 1, 20);
+			const auto button_size = ImVec2(ImGui::GetColumnWidth() - 1, 20);
 
 			if(ImGui::Button("Update", button_size))
 				(*g_client_state)->ForceFullUpdate();
 			ImGui::NextColumn();
 
 			if(ImGui::Button("Save", button_size))
-				g_config.Save();
+				g_config.save();
 			ImGui::NextColumn();
 
 			if(ImGui::Button("Load", button_size))
-				g_config.Load();
+				g_config.load();
 			ImGui::NextColumn();
 		}
 
@@ -240,7 +264,7 @@ void DrawGUI()
 		{600, 400}, -1, ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Columns(3, "commit", true);
-		for(auto& commit : g_commits_since_compile)
+		for(const auto& commit : g_commits_since_compile)
 		{
 			ImGui::Text("%s", commit.author.c_str());
 			ImGui::NextColumn();
