@@ -56,10 +56,6 @@ void draw_gui()
 
 		auto& entries = g_config.get_items();
 
-		// If the user deleted the only config let's add one
-		if(entries.size() == 0)
-			entries.push_back(item_setting());
-
 		static auto selected_id = 0;
 
 		ImGui::Columns(2, nullptr, false);
@@ -85,7 +81,7 @@ void draw_gui()
 			}
 			ImGui::SameLine();
 
-			if(ImGui::Button("Remove", button_size))
+			if(ImGui::Button("Remove", button_size) && entries.size() > 1)
 				entries.erase(entries.begin() + selected_id);
 
 			ImGui::PopItemWidth();
@@ -218,7 +214,7 @@ void draw_gui()
 
 			ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.f, "%.3f");
 
-			ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.f, 360.f, "%.3f");
+			ImGui::SliderAngle("Rotation", &selected_sticker.rotation, 0.f, 360.f);
 
 			ImGui::NextColumn();
 
@@ -254,7 +250,7 @@ void draw_gui()
 		ImGui::Columns(1);
 
 		ImGui::Text("nSkinz by namazso");
-		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("https://skinchanger.download").x - 17);
+		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("https://skinchanger.download").x - 20);
 		ImGui::Text("https://skinchanger.download");
 
 		ImGui::End();
