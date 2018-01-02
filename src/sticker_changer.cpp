@@ -34,14 +34,14 @@ enum class EStickerAttributeType
 	Rotation
 };
 
-static auto s_econ_item_interface_wrapper_offset = uint16_t(0);
+static auto s_econ_item_interface_wrapper_offset = std::uint16_t(0);
 
 struct GetStickerAttributeBySlotIndexFloat
 {
 	static auto __fastcall hooked(void* thisptr, void*, const int slot,
 		const EStickerAttributeType attribute, const float unknown) -> float
 	{
-		auto item = reinterpret_cast<sdk::C_BaseAttributableItem*>(uintptr_t(thisptr) - s_econ_item_interface_wrapper_offset);
+		auto item = reinterpret_cast<sdk::C_BaseAttributableItem*>(std::uintptr_t(thisptr) - s_econ_item_interface_wrapper_offset);
 
 		const auto defindex = item->GetItemDefinitionIndex();
 
@@ -75,7 +75,7 @@ struct GetStickerAttributeBySlotIndexInt
 	static auto __fastcall hooked(void* thisptr, void*, const int slot,
 		const EStickerAttributeType attribute, const int unknown) -> int
 	{
-		auto item = reinterpret_cast<sdk::C_BaseAttributableItem*>(uintptr_t(thisptr) - s_econ_item_interface_wrapper_offset);
+		auto item = reinterpret_cast<sdk::C_BaseAttributableItem*>(std::uintptr_t(thisptr) - s_econ_item_interface_wrapper_offset);
 
 		if(attribute == EStickerAttributeType::Index)
 		{
@@ -102,7 +102,7 @@ auto apply_sticker_changer(sdk::C_BaseAttributableItem* item) -> void
 
 	vmt_multi_hook hook;
 
-	const auto econ_item_interface_wrapper = uintptr_t(item) + s_econ_item_interface_wrapper_offset;
+	const auto econ_item_interface_wrapper = std::uintptr_t(item) + s_econ_item_interface_wrapper_offset;
 
 	if(hook.initialize_and_hook_instance(reinterpret_cast<void*>(econ_item_interface_wrapper)))
 	{
