@@ -138,6 +138,9 @@ public:
 	{
 		// Ghetto fix for possible race conditions
 		m_items.reserve(128);
+
+		// Default config
+		m_items.push_back(item_setting());
 	}
 
 	auto save() -> void;
