@@ -26,7 +26,6 @@ namespace sdk
 	class KeyValues;
 	class RecvProp;
 	class RecvTable;
-	class RecvTable;
 
 	struct AppSystemInfo_t;
 	struct CRecvProxyData;

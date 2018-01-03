@@ -110,7 +110,7 @@ struct CStickerKit
 	String_t image_inventory2;
 	String_t image_inventory_large;
 
-	uint32_t pad0[4];
+	std::uint32_t pad0[4];
 };
 
 auto initialize_kits() -> void
@@ -127,21 +127,21 @@ auto initialize_kits() -> void
 	const auto sig_address = platform::find_pattern("client.dll", "\xE8\x00\x00\x00\x00\xFF\x76\x0C\x8D\x48\x04\xE8", "x????xxxxxxx");
 
 	// Skip the opcode, read rel32 address
-	const auto item_system_offset = *reinterpret_cast<int32_t*>(sig_address + 1);
+	const auto item_system_offset = *reinterpret_cast<std::int32_t*>(sig_address + 1);
 
 	// Add the offset to the end of the instruction
 	const auto item_system_fn = reinterpret_cast<CCStrike15ItemSystem* (*)()>(sig_address + 5 + item_system_offset);
 
 	// Skip VTable, first member variable of ItemSystem is ItemSchema
-	const auto item_schema = reinterpret_cast<CCStrike15ItemSchema*>(uintptr_t(item_system_fn()) + sizeof(void*));
+	const auto item_schema = reinterpret_cast<CCStrike15ItemSchema*>(std::uintptr_t(item_system_fn()) + sizeof(void*));
 
 	// Dump paint kits
 	{
 		// Skip the instructions between, skip the opcode, read rel32 address
-		const auto get_paint_kit_definition_offset = *reinterpret_cast<int32_t*>(sig_address + 11 + 1);
+		const auto get_paint_kit_definition_offset = *reinterpret_cast<std::int32_t*>(sig_address + 11 + 1);
 
 		// Add the offset to the end of the instruction
-		const auto get_paint_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sig_address + 11 + 5 + get_paint_kit_definition_offset);
+		const auto get_paint_kit_definition_fn = reinterpret_cast<CPaintKit*(__thiscall*)(CCStrike15ItemSchema*, int)>(sig_address + 11 + 5 + get_paint_kit_definition_offset);
 
 		// The last offset is start_element, we need that
 
@@ -151,12 +151,12 @@ auto initialize_kits() -> void
 		// mov     eax, [ecx+298h]
 
 		// Skip instructions, skip opcode, read offset
-		const auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_paint_kit_definition_fn) + 8 + 2);
+		const auto start_element_offset = *reinterpret_cast<std::intptr_t*>(std::uintptr_t(get_paint_kit_definition_fn) + 8 + 2);
 
 		// Calculate head base from start_element's offset
 		const auto head_offset = start_element_offset - 12;
 
-		const auto map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(uintptr_t(item_schema) + head_offset);
+		const auto map_head = reinterpret_cast<Head_t<int, CPaintKit*>*>(std::uintptr_t(item_schema) + head_offset);
 
 		for(auto i = 0; i <= map_head->last_element; ++i)
 		{
@@ -183,10 +183,10 @@ auto initialize_kits() -> void
 		const auto sticker_sig = platform::find_pattern("client.dll", "\x53\x8D\x48\x04\xE8\x00\x00\x00\x00\x8B\x4D\x10", "xxxxx????xxx") + 4;
 
 		// Skip the opcode, read rel32 address
-		const auto get_sticker_kit_definition_offset = *reinterpret_cast<intptr_t*>(sticker_sig + 1);
+		const auto get_sticker_kit_definition_offset = *reinterpret_cast<std::intptr_t*>(sticker_sig + 1);
 
 		// Add the offset to the end of the instruction
-		const auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit* (__thiscall *)(CCStrike15ItemSchema*, int)>(sticker_sig + 5 + get_sticker_kit_definition_offset);
+		const auto get_sticker_kit_definition_fn = reinterpret_cast<CPaintKit*(__thiscall*)(CCStrike15ItemSchema*, int)>(sticker_sig + 5 + get_sticker_kit_definition_offset);
 
 		// The last offset is head_element, we need that
 
@@ -199,12 +199,12 @@ auto initialize_kits() -> void
 		//	mov     eax, [edi + 2BCh]
 
 		// Skip instructions, skip opcode, read offset
-		const auto start_element_offset = *reinterpret_cast<intptr_t*>(uintptr_t(get_sticker_kit_definition_fn) + 8 + 2);
+		const auto start_element_offset = *reinterpret_cast<intptr_t*>(std::uintptr_t(get_sticker_kit_definition_fn) + 8 + 2);
 
 		// Calculate head base from start_element's offset
 		const auto head_offset = start_element_offset - 12;
 
-		const auto map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(uintptr_t(item_schema) + head_offset);
+		const auto map_head = reinterpret_cast<Head_t<int, CStickerKit*>*>(std::uintptr_t(item_schema) + head_offset);
 
 		for(auto i = 0; i <= map_head->last_element; ++i)
 		{
