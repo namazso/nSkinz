@@ -26,11 +26,23 @@
 #include "../SDK.hpp"
 #include <cctype>
 
+//#define DUMP_NETVARS
+
+#ifdef DUMP_NETVARS
+#define IF_DUMPING(...) __VA_ARGS__
+#else
+#define IF_DUMPING(...)
+#endif
+
+IF_DUMPING(static FILE* s_fp;)
+
 netvar_manager::netvar_manager()
 {
+	IF_DUMPING(fopen_s(&s_fp, "netvar_dump.txt", "w");)
 	for (auto clazz = g_client->GetAllClasses(); clazz; clazz = clazz->m_pNext)
 		if (clazz->m_pRecvTable)
 			dump_recursive(clazz->m_pNetworkName, clazz->m_pRecvTable, 0);
+	IF_DUMPING(fclose(s_fp);)
 }
 
 auto netvar_manager::dump_recursive(const char* base_class, sdk::RecvTable* table, const std::uint16_t offset) -> void
@@ -62,6 +74,8 @@ auto netvar_manager::dump_recursive(const char* base_class, sdk::RecvTable* tabl
 
 		const auto hash = fnv::hash_runtime(hash_name);
 		const auto total_offset = std::uint16_t(offset + prop_ptr->m_Offset);
+
+		IF_DUMPING(fprintf(s_fp, "%s\t0x%04X\t%s\n", base_class, total_offset, prop_ptr->m_pVarName);)
 
 		m_props[hash] =
 		{
