@@ -214,7 +214,7 @@ void draw_gui()
 
 			ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.f, "%.3f");
 
-			ImGui::SliderAngle("Rotation", &selected_sticker.rotation, 0.f, 360.f);
+			ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.f, 360.f);
 
 			ImGui::NextColumn();
 
