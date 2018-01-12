@@ -256,10 +256,23 @@ static auto post_data_update_start() -> void
 	if(!view_model_weapon)
 		return;
 
-	if(k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
+	if (k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
 	{
 		const auto override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
-		view_model->GetModelIndex() = g_model_info->GetModelIndex(override_model);
+		auto override_model_index = g_model_info->GetModelIndex(override_model);
+		view_model->GetModelIndex() = override_model_index;
+
+		auto world_model_handle = view_model_weapon->GetWeaponWorldModel();
+
+		if (world_model_handle == sdk::INVALID_EHANDLE_INDEX)
+			return;
+
+		const auto world_model = static_cast<sdk::CBaseWeaponWorldModel*>(g_entity_list->GetClientEntityFromHandle(world_model_handle));
+
+		if(!world_model)
+			return;
+
+		world_model->GetModelIndex() = override_model_index + 1;
 	}
 }
 
