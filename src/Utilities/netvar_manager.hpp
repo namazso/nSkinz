@@ -64,12 +64,12 @@ public:
 	}
 	
 	template<fnv::hash Hash>
-	static auto to_address(void* ptr) -> std::uintptr_t
+	static auto get_offset_by_hash_cached() -> std::uint16_t
 	{
 		static auto offset = std::uint16_t(0);
 		if(!offset)
 			offset = get_offset_by_hash(Hash);
-		return std::uintptr_t(ptr) + offset;
+		return offset;
 	}
 
 private:
@@ -85,7 +85,7 @@ private:
 auto funcname() -> std::add_pointer_t<__VA_ARGS__> \
 { \
 	constexpr auto hash = fnv::hash_constexpr(class_name "->" var_name); \
-	const auto addr = netvar_manager::to_address<hash>(this); \
+	const auto addr = std::uintptr_t(this) + offset + netvar_manager::get_offset_by_hash_cached<hash>(); \
 	return reinterpret_cast<std::add_pointer_t<__VA_ARGS__>>(addr); \
 }
 
@@ -96,7 +96,7 @@ auto funcname() -> std::add_pointer_t<__VA_ARGS__> \
 auto funcname() -> std::add_lvalue_reference_t<__VA_ARGS__> \
 { \
 	constexpr auto hash = fnv::hash_constexpr(class_name "->" var_name); \
-	const auto addr = netvar_manager::to_address<hash>(this); \
+	const auto addr = std::uintptr_t(this) + offset + netvar_manager::get_offset_by_hash_cached<hash>(); \
 	return *reinterpret_cast<std::add_pointer_t<__VA_ARGS__>>(addr); \
 }
 
