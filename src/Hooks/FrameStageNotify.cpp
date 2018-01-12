@@ -126,6 +126,14 @@ static auto post_data_update_start() -> void
 	if(!local)
 		return;
 
+	/*if(auto player_resource = *g_player_resource)
+	{
+		player_resource->GetCoins()[local_index] = 890;
+		player_resource->GetMusicKits()[local_index] = 3;
+		player_resource->GetRanks()[local_index] = 1;
+		player_resource->GetWins()[local_index] = 1337;
+	}*/
+
 	sdk::player_info_t player_info;
 
 	if(!g_engine->GetPlayerInfo(local_index, &player_info))

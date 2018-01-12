@@ -35,6 +35,9 @@ namespace sdk
 	{
 	public:
 		NETVAR(GetViewModelIndex, "CBaseCombatWeapon", "m_iViewModelIndex", int);
+		NETVAR(GetWorldModelIndex, "CBaseCombatWeapon", "m_iWorldModelIndex", int);
+		NETVAR(GetWorldDroppedModelIndex, "CBaseCombatWeapon", "m_iWorldDroppedModelIndex", int);
+		NETVAR(GetWeaponWorldModel, "CBaseCombatWeapon", "m_hWeaponWorldModel", CBaseHandle);
 	};
 
 	class C_BaseAttributableItem : public C_BaseCombatWeapon
@@ -57,5 +60,25 @@ namespace sdk
 		NETVAR(GetOwner, "CBaseViewModel", "m_hOwner", CBaseHandle);
 		NETVAR(GetWeapon, "CBaseViewModel", "m_hWeapon", CBaseHandle);
 		NETPROP(GetSequenceProp, "CBaseViewModel", "m_nSequence");
+	};
+
+	class C_PlayerResource
+	{
+	public:
+		NETPROP(GetTeamProp, "CPlayerResource", "m_iTeam");
+	};
+
+	class C_CS_PlayerResource : public C_PlayerResource
+	{
+	public:
+		NETVAR(GetRanks, "CCSPlayerResource", "m_iCompetitiveRanking", int[65]);
+		NETVAR(GetWins, "CCSPlayerResource", "m_iCompetitiveWins", int[65]);
+		NETVAR(GetClanTags, "CCSPlayerResource", "m_szClan", char[65][32]);
+		NETVAR(GetCoins, "CCSPlayerResource", "m_nActiveCoinRank", unsigned[65]);
+		NETVAR(GetMusicKits, "CCSPlayerResource", "m_nMusicID", unsigned[65]);
+	};
+
+	class CBaseWeaponWorldModel : public C_BaseEntity
+	{
 	};
 }

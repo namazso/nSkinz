@@ -37,11 +37,13 @@ sdk::IGameEventManager2*	g_game_event_manager;
 sdk::ILocalize*				g_localize;
 
 sdk::CBaseClientState**		g_client_state;
+sdk::C_CS_PlayerResource**	g_player_resource;
 
 vmt_smart_hook*				g_client_hook;
 vmt_smart_hook*				g_game_event_manager_hook;
 
 recv_prop_hook*				g_sequence_hook;
+
 
 template <class T>
 auto get_interface(const char* module, const char* name) -> T*
@@ -76,8 +78,12 @@ auto initialize(void* instance) -> void
 	g_game_event_manager_hook->apply_hook<hooks::FireEventClientSide>(9);
 
 	const auto sequence_prop = sdk::C_BaseViewModel::GetSequenceProp();
-
 	g_sequence_hook = new recv_prop_hook(sequence_prop, &hooks::sequence_proxy_fn);
+
+	const auto team_arr_prop = sdk::C_CS_PlayerResource::GetTeamProp();
+	const auto team_prop = team_arr_prop->m_pDataTable->m_pProps;
+	const auto proxy_addr = std::uintptr_t(team_prop->m_ProxyFn);
+	g_player_resource = *reinterpret_cast<sdk::C_CS_PlayerResource***>(proxy_addr + 0x10);
 }
 
 // If we aren't unloaded correctly (like when you close csgo)
