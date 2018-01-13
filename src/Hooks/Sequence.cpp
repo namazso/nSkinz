@@ -24,7 +24,7 @@
 */
 #include "hooks.hpp"
 #include "../nSkinz.hpp"
-
+#include "../config.hpp"
 
 static auto random_sequence(const int low, const int high) -> int
 {
@@ -161,11 +161,23 @@ auto __cdecl hooks::sequence_proxy_fn(const sdk::CRecvProxyData* proxy_data_cons
 
 			if(owner == g_entity_list->GetClientEntity(g_engine->GetLocalPlayer()))
 			{
-				// Get the filename of the current view model.
-				const auto knife_model = g_model_info->GetModel(view_model->GetModelIndex());
-				const auto model_name = g_model_info->GetModelName(knife_model);
+				const auto view_model_weapon_handle = view_model->GetWeapon();
 
-				proxy_data->m_Value.m_Int = fix_animation(fnv::hash_runtime(model_name), proxy_data->m_Value.m_Int);
+				if (view_model_weapon_handle != sdk::INVALID_EHANDLE_INDEX)
+				{
+					const auto view_model_weapon = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(view_model_weapon_handle));
+
+					if (view_model_weapon)
+					{
+						if (k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
+						{
+							auto original_sequence = proxy_data->m_Value.m_Int;
+
+							const auto override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
+							proxy_data->m_Value.m_Int = fix_animation(fnv::hash_runtime(override_model), proxy_data->m_Value.m_Int);
+						}
+					}
+				}
 
 				/*if(animation_fix_map.count(model_name))
 				proxy_data->m_Value.m_Int = animation_fix_map.at(model_name)(proxy_data->m_Value.m_Int);*/
