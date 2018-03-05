@@ -20,7 +20,7 @@
     <ClCompile Include="src\Hooks\Sequence.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\kit_parser.cpp" />
-    <ClCompile Include="src\SDK\dllmain.cpp" />
+    <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\sticker_changer.cpp" />
     <ClCompile Include="src\update_check.cpp" />
     <ClCompile Include="src\Utilities\platform.cpp" />

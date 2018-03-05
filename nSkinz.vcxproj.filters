@@ -30,10 +30,10 @@
     <ClCompile Include="src\gui.cpp" />
     <ClCompile Include="src\item_definitions.cpp" />
     <ClCompile Include="src\kit_parser.cpp" />
-    <ClCompile Include="src\SDK\dllmain.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sticker_changer.cpp" />
     <ClCompile Include="src\update_check.cpp" />
+    <ClCompile Include="src\dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SDK\CBaseClientState.hpp">
