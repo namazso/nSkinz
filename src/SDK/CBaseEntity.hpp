@@ -71,11 +71,11 @@ namespace sdk
 	class C_CS_PlayerResource : public C_PlayerResource
 	{
 	public:
-		NETVAR(GetRanks, "CCSPlayerResource", "m_iCompetitiveRanking", int[65]);
-		NETVAR(GetWins, "CCSPlayerResource", "m_iCompetitiveWins", int[65]);
-		NETVAR(GetClanTags, "CCSPlayerResource", "m_szClan", char[65][32]);
-		NETVAR(GetCoins, "CCSPlayerResource", "m_nActiveCoinRank", unsigned[65]);
-		NETVAR(GetMusicKits, "CCSPlayerResource", "m_nMusicID", unsigned[65]);
+		NETVAR(GetRanks, "CCSPlayerResource", "m_iCompetitiveRanking", int[MAX_PLAYERS]);
+		NETVAR(GetWins, "CCSPlayerResource", "m_iCompetitiveWins", int[MAX_PLAYERS]);
+		NETVAR(GetClanTags, "CCSPlayerResource", "m_szClan", char[MAX_PLAYERS][32]);
+		NETVAR(GetCoins, "CCSPlayerResource", "m_nActiveCoinRank", unsigned[MAX_PLAYERS]);
+		NETVAR(GetMusicKits, "CCSPlayerResource", "m_nMusicID", unsigned[MAX_PLAYERS]);
 	};
 
 	class CBaseWeaponWorldModel : public C_BaseEntity

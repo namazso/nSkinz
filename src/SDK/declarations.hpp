@@ -46,6 +46,7 @@ namespace sdk
 	constexpr static auto MAX_PLAYER_NAME_LENGTH = 128;
 	constexpr static auto SIGNED_GUID_LEN = 32;
 	constexpr static auto MAX_WEAPONS = 48;
+	constexpr static auto MAX_PLAYERS = 65; // Only cstrike and csgo
 
 	enum class LifeState
 	{
