@@ -23,6 +23,7 @@
 * SOFTWARE.
 */
 #include "item_definitions.hpp"
+// These are std::vectors because else I'd have to write their size in the header or write my own container
 
 // We need these for overriding viewmodels and icons
 const std::map<size_t, weapon_info> k_weapon_info =
@@ -46,7 +47,8 @@ const std::map<size_t, weapon_info> k_weapon_info =
 	{GLOVE_SLICK,{"models/weapons/v_models/arms/glove_slick/v_glove_slick.mdl"}},
 	{GLOVE_LEATHER_WRAP,{"models/weapons/v_models/arms/glove_handwrap_leathery/v_glove_handwrap_leathery.mdl"}},
 	{GLOVE_MOTORCYCLE,{"models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"}},
-	{GLOVE_SPECIALIST,{"models/weapons/v_models/arms/glove_specialist/v_glove_specialist.mdl"}}
+	{GLOVE_SPECIALIST,{"models/weapons/v_models/arms/glove_specialist/v_glove_specialist.mdl"}},
+	{GLOVE_HYDRA,{"models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_hydra.mdl"}}
 };
 
 const std::vector<weapon_name> k_knife_names =
@@ -74,7 +76,8 @@ const std::vector<weapon_name> k_glove_names =
 	{GLOVE_SLICK, "Slick"},
 	{GLOVE_LEATHER_WRAP, "Handwrap"},
 	{GLOVE_MOTORCYCLE, "Motorcycle"},
-	{GLOVE_SPECIALIST, "Specialist"}
+	{GLOVE_SPECIALIST, "Specialist"},
+	{GLOVE_HYDRA, "Hydra"}
 };
 
 const std::vector<weapon_name> k_weapon_names =

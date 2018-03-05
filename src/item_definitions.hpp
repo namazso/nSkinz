@@ -88,7 +88,8 @@ enum ItemDefinitionIndex : int
 	GLOVE_SLICK = 5031,
 	GLOVE_LEATHER_WRAP = 5032,
 	GLOVE_MOTORCYCLE = 5033,
-	GLOVE_SPECIALIST = 5034
+	GLOVE_SPECIALIST = 5034,
+	GLOVE_HYDRA = 5035
 };
 
 static auto is_knife(const int i) -> bool
