@@ -114,6 +114,8 @@ struct CStickerKit
 
 auto initialize_kits() -> void
 {
+	const auto V_UCS2ToUTF8 = static_cast<int(*)(const wchar_t* ucs2, char* utf8, int len)>(platform::get_export("vstdlib.dll", "V_UCS2ToUTF8"));
+
 	// Search the relative calls
 
 	// call    ItemSystem
@@ -164,8 +166,10 @@ auto initialize_kits() -> void
 
 			const auto wide_name = g_localize->Find(paint_kit->item_name.buffer + 1);
 			char name[256];
-			size_t retval;
-			wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
+			//size_t retval;
+			//wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
+			//g_localize->ConvertUnicodeToANSI(wide_name, name, sizeof(name));
+			V_UCS2ToUTF8(wide_name, name, sizeof(name));
 
 			if(paint_kit->id < 10000)
 				k_skins.push_back({ paint_kit->id, name });
@@ -222,8 +226,10 @@ auto initialize_kits() -> void
 
 			const auto wide_name = g_localize->Find(sticker_name_ptr);
 			char name[256];
-			size_t retval;
-			wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
+			//size_t retval;
+			//wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
+			//g_localize->ConvertUnicodeToANSI(wide_name, name, sizeof(name));
+			V_UCS2ToUTF8(wide_name, name, sizeof(name));
 
 			k_stickers.push_back({ sticker_kit->id, name });
 		}
