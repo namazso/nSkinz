@@ -27,7 +27,6 @@
 #include "nSkinz.hpp"
 
 #include <algorithm>
-#include <codecvt>
 
 std::vector<paint_kit> k_skins;
 std::vector<paint_kit> k_gloves;
@@ -115,8 +114,6 @@ struct CStickerKit
 
 auto initialize_kits() -> void
 {
-	static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
 	// Search the relative calls
 
 	// call    ItemSystem
@@ -166,7 +163,9 @@ auto initialize_kits() -> void
 				continue;
 
 			const auto wide_name = g_localize->Find(paint_kit->item_name.buffer + 1);
-			const auto name = converter.to_bytes(wide_name);
+			char name[256];
+			size_t retval;
+			wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
 
 			if(paint_kit->id < 10000)
 				k_skins.push_back({ paint_kit->id, name });
@@ -222,7 +221,9 @@ auto initialize_kits() -> void
 			}
 
 			const auto wide_name = g_localize->Find(sticker_name_ptr);
-			const auto name = converter.to_bytes(wide_name);
+			char name[256];
+			size_t retval;
+			wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
 
 			k_stickers.push_back({ sticker_kit->id, name });
 		}
