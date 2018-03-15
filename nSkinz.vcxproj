@@ -96,11 +96,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)deps\json\src;$(ProjectDir)deps\imgui;$(ProjectDir)deps\imgui\examples\directx9_example;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)deps\json\include;$(ProjectDir)deps\imgui;$(ProjectDir)deps\imgui\examples\directx9_example;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)deps\json\src;$(ProjectDir)deps\imgui;$(ProjectDir)deps\imgui\examples\directx9_example;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)deps\json\include;$(ProjectDir)deps\imgui;$(ProjectDir)deps\imgui\examples\directx9_example;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
