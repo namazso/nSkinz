@@ -26,7 +26,7 @@
 #include "SDK.hpp"
 
 #include <fstream>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 config g_config;
 
