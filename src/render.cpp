@@ -70,6 +70,10 @@ namespace render
 	{
 		static auto COM_DECLSPEC_NOTHROW STDMETHODCALLTYPE hooked(IDirect3DDevice9* thisptr) -> HRESULT
 		{
+			// Save the state to prevent messing up stuff
+			IDirect3DStateBlock9* state;
+			thisptr->CreateStateBlock(D3DSBT_ALL, &state);
+
 			//fix drawing without cl_showfps
 			thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
 
@@ -100,6 +104,9 @@ namespace render
 					mouse_enabled = true;
 				}
 			}
+
+			state->Apply();
+			state->Release();
 
 			return m_original(thisptr);
 		}
