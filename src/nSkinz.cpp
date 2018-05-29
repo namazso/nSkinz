@@ -39,11 +39,39 @@ sdk::ILocalize*				g_localize;
 sdk::CBaseClientState**		g_client_state;
 sdk::C_CS_PlayerResource**	g_player_resource;
 
-vmt_smart_hook*				g_client_hook;
-vmt_smart_hook*				g_game_event_manager_hook;
+//vmt_smart_hook*				g_client_hook;
+//vmt_smart_hook*				g_game_event_manager_hook;
 
 recv_prop_hook*				g_sequence_hook;
 
+auto ensure_dynamic_hooks() -> void
+{
+	auto hss = get_vfunc<char*>(g_client, 86);
+	auto hud = *(void**)(hss + 7);
+	auto off = *(int32_t*)(hss + 12);
+	auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);
+	auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
+	if(notice_hud)
+	{
+		static vmt_multi_hook notice_hook;
+		if(notice_hook.initialize_and_hook_instance(notice_hud))
+		{
+			notice_hook.apply_hook<hooks::SFHudDeathNoticeAndBotStatus_FireGameEvent>(1);
+		}
+	}
+
+	const auto local_index = g_engine->GetLocalPlayer();
+	const auto local = static_cast<sdk::C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
+	if(local)
+	{
+		static vmt_multi_hook player_hook;
+		const auto networkable = static_cast<sdk::IClientNetworkable*>(local);
+		if(player_hook.initialize_and_hook_instance(networkable))
+		{
+			player_hook.apply_hook<hooks::CCSPlayer_PostDataUpdate>(7);
+		}
+	}
+}
 
 template <class T>
 auto get_interface(const char* module, const char* name) -> T*
@@ -71,11 +99,11 @@ auto initialize(void* instance) -> void
 
 	render::initialize();
 
-	g_client_hook = new vmt_smart_hook(g_client);
-	g_client_hook->apply_hook<hooks::FrameStageNotify>(36);
+	//g_client_hook = new vmt_smart_hook(g_client);
+	//g_client_hook->apply_hook<hooks::FrameStageNotify>(36);
 
-	g_game_event_manager_hook = new vmt_smart_hook(g_game_event_manager);
-	g_game_event_manager_hook->apply_hook<hooks::FireEventClientSide>(9);
+	//g_game_event_manager_hook = new vmt_smart_hook(g_game_event_manager);
+	//g_game_event_manager_hook->apply_hook<hooks::FireEventClientSide>(9);
 
 	const auto sequence_prop = sdk::C_BaseViewModel::GetSequenceProp();
 	g_sequence_hook = new recv_prop_hook(sequence_prop, &hooks::sequence_proxy_fn);
@@ -93,8 +121,8 @@ auto uninitialize() -> void
 {
 	render::uninitialize();
 
-	delete g_client_hook;
-	delete g_game_event_manager_hook;
+	//delete g_client_hook;
+	//delete g_game_event_manager_hook;
 
 	delete g_sequence_hook;
 }

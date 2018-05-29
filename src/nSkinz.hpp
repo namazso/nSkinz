@@ -26,7 +26,9 @@
 #include "SDK.hpp"
 #include "recv_proxy_hook.hpp"
 
-extern vmt_smart_hook* g_client_hook;
-extern vmt_smart_hook* g_game_event_manager_hook;
+//extern vmt_smart_hook* g_client_hook;
+//extern vmt_smart_hook* g_game_event_manager_hook;
+
+auto ensure_dynamic_hooks() -> void;
 
 extern recv_prop_hook* g_sequence_hook;

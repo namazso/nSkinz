@@ -118,13 +118,9 @@ static auto get_wearable_create_fn() -> sdk::CreateClientClassFn
 	return clazz->m_pCreateFn;
 }
 
-static auto post_data_update_start() -> void
+static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
 {
-	const auto local_index = g_engine->GetLocalPlayer();
-	const auto local = static_cast<sdk::C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
-
-	if(!local)
-		return;
+	const auto local_index = local->GetIndex();
 
 	/*if(auto player_resource = *g_player_resource)
 	{
@@ -135,7 +131,6 @@ static auto post_data_update_start() -> void
 	}*/
 
 	sdk::player_info_t player_info;
-
 	if(!g_engine->GetPlayerInfo(local_index, &player_info))
 		return;
 
@@ -276,12 +271,11 @@ static auto post_data_update_start() -> void
 	}
 }
 
-auto __fastcall hooks::FrameStageNotify::hooked(sdk::IBaseClientDLL* thisptr, void*, const sdk::ClientFrameStage_t stage) -> void
+auto __fastcall hooks::CCSPlayer_PostDataUpdate::hooked(sdk::IClientNetworkable* thisptr, void*, int update_type) -> void
 {
-	if(stage == sdk::FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-		post_data_update_start();
+	post_data_update_start(static_cast<sdk::C_BasePlayer*>(thisptr));
 
-	return m_original(thisptr, nullptr, stage);
+	return m_original(thisptr, nullptr, update_type);
 }
 
-hooks::FrameStageNotify::Fn* hooks::FrameStageNotify::m_original;
+hooks::CCSPlayer_PostDataUpdate::Fn* hooks::CCSPlayer_PostDataUpdate::m_original;

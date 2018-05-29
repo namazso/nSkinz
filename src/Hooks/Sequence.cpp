@@ -144,6 +144,10 @@ static auto fix_animation(const fnv::hash model, const int sequence) -> int
 // Replacement function that will be called when the view model animation sequence changes.
 auto __cdecl hooks::sequence_proxy_fn(const sdk::CRecvProxyData* proxy_data_const, void* entity, void* output) -> void
 {
+	// Ensure our other dynamic object hooks are in place.
+	// Must do this from a game thread.
+	ensure_dynamic_hooks();
+
 	static auto original_fn = g_sequence_hook->get_original_function();
 
 	const auto local = static_cast<sdk::C_BasePlayer*>(g_entity_list->GetClientEntity(g_engine->GetLocalPlayer()));

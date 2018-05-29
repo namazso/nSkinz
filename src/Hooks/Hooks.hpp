@@ -29,18 +29,18 @@ namespace hooks
 {
 	// IBaseClientDLL
 
-	struct FrameStageNotify
+	struct CCSPlayer_PostDataUpdate
 	{
-		using Fn = void __fastcall(sdk::IBaseClientDLL* thisptr, void*, sdk::ClientFrameStage_t stage);
+		using Fn = void __fastcall(sdk::IClientNetworkable* thisptr, void*, int update_type);
 		static Fn hooked;
 		static Fn* m_original;
 	};
 
 	// IGameEventManager2
 
-	struct FireEventClientSide
+	struct SFHudDeathNoticeAndBotStatus_FireGameEvent
 	{
-		using Fn = bool __fastcall(sdk::IGameEventManager2* thisptr, void*, sdk::IGameEvent* event);
+		using Fn = void __fastcall(void* thisptr, void*, sdk::IGameEvent* event);
 		static Fn hooked;
 		static Fn* m_original;
 	};
