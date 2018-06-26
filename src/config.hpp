@@ -30,23 +30,70 @@
 #include <array>
 #include <algorithm>
 
+template<typename Container, typename T1, typename T2, typename TC>
+class value_syncer
+{
+	using container_type = typename Container::value_type;
+
+	const Container& container;
+	T1& key;
+	T2& value;
+	const TC container_type::* member;
+
+public:
+	value_syncer(const Container& container, T1& key, T2& value, const TC container_type::* member)
+		: container{container}
+		, key{key}
+		, value{value}
+		, member{member}
+	{}
+
+	auto key_to_value() const -> void
+	{
+		key = std::clamp(key, T1(0), T1(container.size() - 1));
+		value = container.at(key).*member;
+	}
+
+	auto value_to_key() const -> void
+	{
+		auto it = std::find_if(std::begin(container), std::end(container), [this](const container_type& x)
+		{
+			return value == x.*member;
+		});
+
+		// Originally I wanted this to work with maps too, but fuck that
+		if(it != std::end(container))
+			key = it - std::begin(container);
+		else
+			key = T1(0);
+	}
+};
+
+enum class sync_type
+{
+	VALUE_TO_KEY,
+	KEY_TO_VALUE
+};
+
+template<sync_type Type, typename Container, typename T1, typename T2, typename TC>
+static auto do_sync(const Container& container, T1& key, T2& value, TC Container::value_type::* member) -> void
+{
+	auto syncer = value_syncer<Container, T1, T2, TC>{ container, key, value, member };
+	if constexpr(Type == sync_type::VALUE_TO_KEY)
+		syncer.value_to_key();
+	else
+		syncer.key_to_value();
+}
+
 struct sticker_setting
 {
-	void update_values()
+	template<sync_type Type>
+	void update()
 	{
-		kit_vector_index = kit_vector_index < int(k_stickers.size()) ? kit_vector_index : k_stickers.size() - 1;
-		kit_index = k_stickers.at(kit_vector_index).id;
+		do_sync<Type>(game_data::sticker_kits, kit_vector_index, kit, &game_data::paint_kit::id);
 	}
 
-	void update_ids()
-	{
-		kit_vector_index = std::find_if(begin(k_stickers), end(k_stickers), [this](const paint_kit& x)
-		{
-			return this->kit_index == x.id;
-		}) - k_stickers.begin();
-	}
-
-	int kit_index = 0;
+	int kit = 0;
 	int kit_vector_index = 0;
 	float wear = std::numeric_limits<float>::min();
 	float scale = 1.f;
@@ -55,63 +102,53 @@ struct sticker_setting
 
 struct item_setting
 {
-	void update_values()
+	template<sync_type Type>
+	void update()
 	{
-		definition_vector_index = definition_vector_index < int(k_weapon_names.size()) ? definition_vector_index : k_weapon_names.size() - 1;
-		definition_index = k_weapon_names.at(definition_vector_index).definition_index;
+		do_sync<Type>(
+			game_data::weapon_names,
+			definition_vector_index,
+			definition_index,
+			&game_data::weapon_name::definition_index
+		);
 
-		entity_quality_vector_index = entity_quality_vector_index < int(k_quality_names.size()) ? entity_quality_vector_index : k_quality_names.size() - 1;
-		entity_quality_index = k_quality_names.at(entity_quality_vector_index).index;
+		do_sync<Type>(
+			game_data::quality_names,
+			entity_quality_vector_index,
+			entity_quality_index,
+			&game_data::quality_name::index
+		);
+
+		const std::vector<game_data::paint_kit>* kit_names;
+		const std::vector<game_data::weapon_name>* defindex_names;
 
 		if(definition_index == GLOVE_T_SIDE)
 		{
-			paint_kit_vector_index = paint_kit_vector_index < int(k_gloves.size()) ? paint_kit_vector_index : k_gloves.size() - 1;
-			paint_kit_index = k_gloves.at(paint_kit_vector_index).id;
-
-			definition_override_vector_index = definition_override_vector_index < int(k_glove_names.size()) ? definition_override_vector_index : k_glove_names.size() - 1;
-			definition_override_index = k_glove_names.at(definition_override_vector_index).definition_index;
+			kit_names = &game_data::glove_kits;
+			defindex_names = &game_data::glove_names;
 		}
 		else
 		{
-			paint_kit_vector_index = paint_kit_vector_index < int(k_skins.size()) ? paint_kit_vector_index : k_skins.size() - 1;
-			paint_kit_index = k_skins.at(paint_kit_vector_index).id;
-
-			definition_override_vector_index = definition_override_vector_index < int(k_knife_names.size()) ? definition_override_vector_index : k_knife_names.size() - 1;
-			definition_override_index = k_knife_names.at(definition_override_vector_index).definition_index;
+			kit_names = &game_data::skin_kits;
+			defindex_names = &game_data::knife_names;
 		}
 
-		for(auto& sticker : stickers)
-			sticker.update_values();
-	}
+		do_sync<Type>(
+			*kit_names,
+			paint_kit_vector_index,
+			paint_kit_index,
+			&game_data::paint_kit::id
+		);
 
-	void update_ids()
-	{
-		definition_vector_index = find_if(k_weapon_names.begin(), k_weapon_names.end(), [this](const weapon_name& x)
-		{
-			return this->definition_index == x.definition_index;
-		}) - k_weapon_names.begin();
-
-		entity_quality_vector_index = find_if(k_quality_names.begin(), k_quality_names.end(), [this](const quality_name& x)
-		{
-			return this->entity_quality_index == x.index;
-		}) - k_quality_names.begin();
-
-		const auto& skin_set = definition_index == GLOVE_T_SIDE ? k_gloves : k_skins;
-
-		paint_kit_vector_index = find_if(skin_set.begin(), skin_set.end(), [this](const paint_kit& x)
-		{
-			return this->paint_kit_index == x.id;
-		}) - skin_set.begin();
-
-		const auto& override_set = definition_index == GLOVE_T_SIDE ? k_glove_names : k_knife_names;
-
-		definition_override_vector_index = find_if(override_set.begin(), override_set.end(), [this](const weapon_name& x)
-		{
-			return this->definition_override_index == x.definition_index;
-		}) - override_set.begin();
+		do_sync<Type>(
+			*defindex_names,
+			definition_override_vector_index,
+			definition_override_index,
+			&game_data::weapon_name::definition_index
+		);
 
 		for(auto& sticker : stickers)
-			sticker.update_ids();
+			sticker.update<Type>();
 	}
 
 	char name[32] = "Default";

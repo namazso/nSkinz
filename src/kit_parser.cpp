@@ -28,9 +28,9 @@
 
 #include <algorithm>
 
-std::vector<paint_kit> k_skins;
-std::vector<paint_kit> k_gloves;
-std::vector<paint_kit> k_stickers;
+std::vector<game_data::paint_kit> game_data::skin_kits;
+std::vector<game_data::paint_kit> game_data::glove_kits;
+std::vector<game_data::paint_kit> game_data::sticker_kits;
 
 class CCStrike15ItemSchema;
 class CCStrike15ItemSystem;
@@ -112,7 +112,7 @@ struct CStickerKit
 	std::uint32_t pad0[4];
 };
 
-auto initialize_kits() -> void
+auto game_data::initialize_kits() -> void
 {
 	const auto V_UCS2ToUTF8 = static_cast<int(*)(const wchar_t* ucs2, char* utf8, int len)>(platform::get_export("vstdlib.dll", "V_UCS2ToUTF8"));
 
@@ -166,19 +166,16 @@ auto initialize_kits() -> void
 
 			const auto wide_name = g_localize->Find(paint_kit->item_name.buffer + 1);
 			char name[256];
-			//size_t retval;
-			//wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
-			//g_localize->ConvertUnicodeToANSI(wide_name, name, sizeof(name));
 			V_UCS2ToUTF8(wide_name, name, sizeof(name));
 
 			if(paint_kit->id < 10000)
-				k_skins.push_back({ paint_kit->id, name });
+				game_data::skin_kits.push_back({ paint_kit->id, name });
 			else
-				k_gloves.push_back({ paint_kit->id, name });
+				game_data::glove_kits.push_back({ paint_kit->id, name });
 		}
 
-		std::sort(k_skins.begin(), k_skins.end());
-		std::sort(k_gloves.begin(), k_gloves.end());
+		std::sort(game_data::skin_kits.begin(), game_data::skin_kits.end());
+		std::sort(game_data::glove_kits.begin(), game_data::glove_kits.end());
 	}
 
 	// Dump sticker kits
@@ -226,16 +223,13 @@ auto initialize_kits() -> void
 
 			const auto wide_name = g_localize->Find(sticker_name_ptr);
 			char name[256];
-			//size_t retval;
-			//wcstombs_s(&retval, name, sizeof(name) - 1, wide_name, sizeof(name) - 1);
-			//g_localize->ConvertUnicodeToANSI(wide_name, name, sizeof(name));
 			V_UCS2ToUTF8(wide_name, name, sizeof(name));
 
-			k_stickers.push_back({ sticker_kit->id, name });
+			game_data::sticker_kits.push_back({ sticker_kit->id, name });
 		}
 
-		std::sort(k_stickers.begin(), k_stickers.end());
+		std::sort(game_data::sticker_kits.begin(), game_data::sticker_kits.end());
 
-		k_stickers.insert(k_stickers.begin(), { 0, "None" });
+		game_data::sticker_kits.insert(game_data::sticker_kits.begin(), { 0, "None" });
 	}
 }

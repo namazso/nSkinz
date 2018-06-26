@@ -31,15 +31,18 @@
 static auto erase_override_if_exists_by_index(const int definition_index) -> void
 {
 	// We have info about the item not needed to be overridden
-	if(k_weapon_info.count(definition_index))
+	if(const auto original_item = game_data::get_weapon_info(definition_index))
 	{
 		auto& icon_override_map = g_config.get_icon_override_map();
 
-		const auto& original_item = k_weapon_info.at(definition_index);
+		if (!original_item->icon)
+			return;
+
+		const auto override_entry = icon_override_map.find(original_item->icon);
 
 		// We are overriding its icon when not needed
-		if(original_item.icon && icon_override_map.count(original_item.icon))
-			icon_override_map.erase(icon_override_map.at(original_item.icon)); // Remove the leftover override
+		if(override_entry != end(icon_override_map))
+			icon_override_map.erase(override_entry); // Remove the leftover override
 	}
 }
 
@@ -74,27 +77,29 @@ static auto apply_config_on_attributable_item(sdk::C_BaseAttributableItem* item,
 	auto& icon_override_map = g_config.get_icon_override_map();
 
 	if(config->definition_override_index // We need to override defindex
-		&& config->definition_override_index != definition_index // It is not yet overridden
-		&& k_weapon_info.count(config->definition_override_index)) // We have info about what we gonna override it to
+		&& config->definition_override_index != definition_index) // It is not yet overridden
 	{
-		const auto old_definition_index = definition_index;
-
-		definition_index = config->definition_override_index;
-
-		const auto& replacement_item = k_weapon_info.at(config->definition_override_index);
-
-		// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
-		//item->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(config->definition_override_index).model);
-		item->SetModelIndex(g_model_info->GetModelIndex(replacement_item.model));
-		item->GetClientNetworkable()->PreDataUpdate(0);
-
-		// We didn't override 0, but some actual weapon, that we have data for
-		if(old_definition_index && k_weapon_info.count(old_definition_index))
+		// We have info about what we gonna override it to
+		if(const auto replacement_item = game_data::get_weapon_info(config->definition_override_index))
 		{
-			const auto& original_item = k_weapon_info.at(old_definition_index);
+			const auto old_definition_index = definition_index;
 
-			if(original_item.icon && replacement_item.icon)
-				icon_override_map[original_item.icon] = replacement_item.icon;
+			definition_index = config->definition_override_index;
+
+			// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
+			//item->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(config->definition_override_index).model);
+			item->SetModelIndex(g_model_info->GetModelIndex(replacement_item->model));
+			item->GetClientNetworkable()->PreDataUpdate(0);
+
+			// We didn't override 0, but some actual weapon, that we have data for
+			if(old_definition_index)
+			{
+				if(const auto original_item = game_data::get_weapon_info(old_definition_index))
+				{
+					if(original_item->icon && replacement_item->icon)
+						icon_override_map[original_item->icon] = replacement_item->icon;
+				}
+			}
 		}
 	}
 	else
@@ -112,10 +117,33 @@ static auto get_wearable_create_fn() -> sdk::CreateClientClassFn
 	// Please, if you gonna paste it into a cheat use classids here. I use names because they
 	// won't change in the foreseeable future and i dont need high speed, but chances are
 	// you already have classids, so use them instead, they are faster.
-	while(strcmp(clazz->m_pNetworkName, "CEconWearable"))
+	while(fnv::hash_runtime(clazz->m_pNetworkName) != FNV("CEconWearable"))
 		clazz = clazz->m_pNext;
 
 	return clazz->m_pCreateFn;
+}
+
+static auto make_glove(int entry, int serial) -> sdk::C_BaseAttributableItem*
+{
+	static auto create_wearable_fn = get_wearable_create_fn();
+
+	create_wearable_fn(entry, serial);
+
+	const auto glove = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
+	assert(glove);
+
+	// He he
+	{
+		static auto set_abs_origin_addr = platform::find_pattern("client.dll", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x57\x8B\xF1", "xxxxxxxxxxxx");
+
+		const auto set_abs_origin_fn = reinterpret_cast<void(__thiscall*)(void*, const sdk::Vector&)>(set_abs_origin_addr);
+
+		static constexpr sdk::Vector new_pos = { 10000.f, 10000.f, 10000.f };
+
+		set_abs_origin_fn(glove, new_pos);
+	}
+
+	return glove;
 }
 
 static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
@@ -142,12 +170,12 @@ static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
 
 		static auto glove_handle = sdk::CBaseHandle(0);
 
-		auto glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(wearables[0]));
+		auto glove = get_entity_from_handle<sdk::C_BaseAttributableItem>(wearables[0]);
 
 		if(!glove) // There is no glove
 		{
 			// Try to get our last created glove
-			const auto our_glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(glove_handle));
+			const auto our_glove = get_entity_from_handle<sdk::C_BaseAttributableItem>(glove_handle);
 
 			if(our_glove) // Our glove still exists
 			{
@@ -173,26 +201,10 @@ static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
 			// We don't have a glove, but we should
 			if(!glove)
 			{
-				static auto create_wearable_fn = get_wearable_create_fn();
-
 				const auto entry = g_entity_list->GetHighestEntityIndex() + 1;
 				const auto serial = rand() % 0x1000;
-
-				//glove = static_cast<C_BaseAttributableItem*>(create_wearable_fn(entry, serial));
-				create_wearable_fn(entry, serial);
-				glove = reinterpret_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntity(entry));
-				assert(glove);
-
-				// He he
-				{
-					static auto set_abs_origin_addr = platform::find_pattern("client.dll", "\x55\x8B\xEC\x83\xE4\xF8\x51\x53\x56\x57\x8B\xF1", "xxxxxxxxxxxx");
-
-					const auto set_abs_origin_fn = reinterpret_cast<void(__thiscall*)(void*, const sdk::Vector&)>(set_abs_origin_addr);
-
-					static constexpr sdk::Vector new_pos = { 10000.f, 10000.f, 10000.f };
-
-					set_abs_origin_fn(glove, new_pos);
-				}
+				
+				glove = make_glove(entry, serial);
 
 				wearables[0] = entry | serial << 16;
 
@@ -216,7 +228,7 @@ static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
 			if(weapon_handle == sdk::INVALID_EHANDLE_INDEX)
 				break;
 
-			auto weapon = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(weapon_handle));
+			auto weapon = get_entity_from_handle<sdk::C_BaseAttributableItem>(weapon_handle);
 
 			if(!weapon)
 				continue;
@@ -231,44 +243,30 @@ static auto post_data_update_start(sdk::C_BasePlayer* local) -> void
 		}
 	}
 
-	const auto view_model_handle = local->GetViewModel();
-
-	if(view_model_handle == sdk::INVALID_EHANDLE_INDEX)
-		return;
-
-	const auto view_model = static_cast<sdk::C_BaseViewModel*>(g_entity_list->GetClientEntityFromHandle(view_model_handle));
+	const auto view_model = get_entity_from_handle<sdk::C_BaseViewModel>(local->GetViewModel());
 
 	if(!view_model)
 		return;
 
-	const auto view_model_weapon_handle = view_model->GetWeapon();
-
-	if(view_model_weapon_handle == sdk::INVALID_EHANDLE_INDEX)
-		return;
-
-	const auto view_model_weapon = static_cast<sdk::C_BaseAttributableItem*>(g_entity_list->GetClientEntityFromHandle(view_model_weapon_handle));
+	const auto view_model_weapon = get_entity_from_handle<sdk::C_BaseAttributableItem>(view_model->GetWeapon());
 
 	if(!view_model_weapon)
 		return;
 
-	if (k_weapon_info.count(view_model_weapon->GetItemDefinitionIndex()))
-	{
-		const auto override_model = k_weapon_info.at(view_model_weapon->GetItemDefinitionIndex()).model;
-		auto override_model_index = g_model_info->GetModelIndex(override_model);
-		view_model->GetModelIndex() = override_model_index;
+	const auto override_info = game_data::get_weapon_info(view_model_weapon->GetItemDefinitionIndex());
 
-		auto world_model_handle = view_model_weapon->GetWeaponWorldModel();
+	if(!override_info)
+		return;
 
-		if (world_model_handle == sdk::INVALID_EHANDLE_INDEX)
-			return;
+	const auto override_model_index = g_model_info->GetModelIndex(override_info->model);
+	view_model->GetModelIndex() = override_model_index;
 
-		const auto world_model = static_cast<sdk::CBaseWeaponWorldModel*>(g_entity_list->GetClientEntityFromHandle(world_model_handle));
+	const auto world_model = get_entity_from_handle<sdk::CBaseWeaponWorldModel>(view_model_weapon->GetWeaponWorldModel());
 
-		if(!world_model)
-			return;
+	if(!world_model)
+		return;
 
-		world_model->GetModelIndex() = override_model_index + 1;
-	}
+	world_model->GetModelIndex() = override_model_index + 1;
 }
 
 auto __fastcall hooks::CCSPlayer_PostDataUpdate::hooked(sdk::IClientNetworkable* thisptr, void*, int update_type) -> void

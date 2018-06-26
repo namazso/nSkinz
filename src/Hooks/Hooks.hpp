@@ -27,16 +27,12 @@
 
 namespace hooks
 {
-	// IBaseClientDLL
-
 	struct CCSPlayer_PostDataUpdate
 	{
 		using Fn = void __fastcall(sdk::IClientNetworkable* thisptr, void*, int update_type);
 		static Fn hooked;
 		static Fn* m_original;
 	};
-
-	// IGameEventManager2
 
 	struct SFHudDeathNoticeAndBotStatus_FireGameEvent
 	{

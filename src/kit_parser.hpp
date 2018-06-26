@@ -25,19 +25,22 @@
 #pragma once
 #include <vector>
 
-struct paint_kit
+namespace game_data
 {
-	int id;
-	std::string name;
-
-	auto operator < (const paint_kit& other) const -> bool
+	struct paint_kit
 	{
-		return name < other.name;
-	}
-};
+		int id;
+		std::string name;
 
-extern std::vector<paint_kit> k_skins;
-extern std::vector<paint_kit> k_gloves;
-extern std::vector<paint_kit> k_stickers;
+		auto operator < (const paint_kit& other) const -> bool
+		{
+			return name < other.name;
+		}
+	};
 
-extern auto initialize_kits() -> void;
+	extern std::vector<paint_kit> skin_kits;
+	extern std::vector<paint_kit> glove_kits;
+	extern std::vector<paint_kit> sticker_kits;
+
+	extern auto initialize_kits() -> void;
+}

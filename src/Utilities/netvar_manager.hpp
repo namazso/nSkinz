@@ -107,6 +107,7 @@ auto funcname() -> std::add_lvalue_reference_t<__VA_ARGS__> \
 static auto funcname() ->  RecvProp* \
 { \
 	constexpr auto hash = fnv::hash_constexpr(class_name "->" var_name); \
-	static auto prop_ptr = netvar_manager::get().get_prop(hash); \
+	static sdk::RecvProp* prop_ptr; \
+	if(!prop_ptr) prop_ptr = netvar_manager::get().get_prop(hash); \
 	return prop_ptr; \
 }

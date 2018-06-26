@@ -68,7 +68,7 @@ void draw_gui()
 
 			ImGui::ListBox("##config", &selected_id, [&element_name, &entries](int idx)
 			{
-				sprintf_s(element_name, "%s (%s)", entries.at(idx).name, k_weapon_names.at(entries.at(idx).definition_vector_index).name);
+				sprintf_s(element_name, "%s (%s)", entries.at(idx).name, game_data::weapon_names.at(entries.at(idx).definition_vector_index).name);
 				return element_name;
 			}, entries.size(), 11);
 
@@ -100,9 +100,9 @@ void draw_gui()
 			// Item to change skins for
 			ImGui::Combo("Item", &selected_entry.definition_vector_index, [](void* data, int idx, const char** out_text)
 			{
-				*out_text = k_weapon_names[idx].name;
+				*out_text = game_data::weapon_names[idx].name;
 				return true;
-			}, nullptr, k_weapon_names.size(), 5);
+			}, nullptr, game_data::weapon_names.size(), 5);
 
 			// Enabled
 			ImGui::Checkbox("Enabled", &selected_entry.enabled);
@@ -121,45 +121,45 @@ void draw_gui()
 			{
 				ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
 				{
-					*out_text = k_skins[idx].name.c_str();
+					*out_text = game_data::skin_kits[idx].name.c_str();
 					return true;
-				}, nullptr, k_skins.size(), 10);
+				}, nullptr, game_data::skin_kits.size(), 10);
 			}
 			else
 			{
 				ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
 				{
-					*out_text = k_gloves[idx].name.c_str();
+					*out_text = game_data::glove_kits[idx].name.c_str();
 					return true;
-				}, nullptr, k_gloves.size(), 10);
+				}, nullptr, game_data::glove_kits.size(), 10);
 			}
 
 			// Quality
 			ImGui::Combo("Quality", &selected_entry.entity_quality_vector_index, [](void* data, int idx, const char** out_text)
 			{
-				*out_text = k_quality_names[idx].name;
+				*out_text = game_data::quality_names[idx].name;
 				return true;
-			}, nullptr, k_quality_names.size(), 5);
+			}, nullptr, game_data::quality_names.size(), 5);
 
 			// Yes we do it twice to decide knifes
-			selected_entry.update_values();
+			selected_entry.update<sync_type::KEY_TO_VALUE>();
 
 			// Item defindex override
 			if(selected_entry.definition_index == WEAPON_KNIFE)
 			{
 				ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
 				{
-					*out_text = k_knife_names.at(idx).name;
+					*out_text = game_data::knife_names.at(idx).name;
 					return true;
-				}, nullptr, k_knife_names.size(), 5);
+				}, nullptr, game_data::knife_names.size(), 5);
 			}
 			else if(selected_entry.definition_index == GLOVE_T_SIDE)
 			{
 				ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
 				{
-					*out_text = k_glove_names.at(idx).name;
+					*out_text = game_data::glove_names.at(idx).name;
 					return true;
-				}, nullptr, k_glove_names.size(), 5);
+				}, nullptr, game_data::glove_names.size(), 5);
 			}
 			else
 			{
@@ -169,7 +169,7 @@ void draw_gui()
 				ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
 			}
 
-			selected_entry.update_values();
+			selected_entry.update<sync_type::KEY_TO_VALUE>();
 
 			// Custom Name tag
 			ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
@@ -197,7 +197,7 @@ void draw_gui()
 			ImGui::ListBox("", &selected_sticker_slot, [&selected_entry, &element_name](int idx)
 			{
 				auto kit_vector_index = selected_entry.stickers[idx].kit_vector_index;
-				sprintf_s(element_name, "#%d (%s)", idx + 1, k_stickers.at(kit_vector_index).name.c_str());
+				sprintf_s(element_name, "#%d (%s)", idx + 1, game_data::sticker_kits.at(kit_vector_index).name.c_str());
 				return element_name;
 			}, 5, 5);
 			ImGui::PopItemWidth();
@@ -206,9 +206,9 @@ void draw_gui()
 
 			ImGui::Combo("Sticker Kit", &selected_sticker.kit_vector_index, [](void* data, int idx, const char** out_text)
 			{
-				*out_text = k_stickers.at(idx).name.c_str();
+				*out_text = game_data::sticker_kits.at(idx).name.c_str();
 				return true;
-			}, nullptr, k_stickers.size(), 10);
+			}, nullptr, game_data::sticker_kits.size(), 10);
 
 			ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.f, "%.10f", 5);
 

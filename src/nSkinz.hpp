@@ -26,8 +26,14 @@
 #include "SDK.hpp"
 #include "recv_proxy_hook.hpp"
 
-//extern vmt_smart_hook* g_client_hook;
-//extern vmt_smart_hook* g_game_event_manager_hook;
+template <typename T>
+auto get_entity_from_handle(sdk::CBaseHandle h) -> T*
+{
+	if(h == sdk::INVALID_EHANDLE_INDEX)
+		return nullptr;
+
+	return static_cast<T*>(g_entity_list->GetClientEntityFromHandle(h));
+}
 
 auto ensure_dynamic_hooks() -> void;
 

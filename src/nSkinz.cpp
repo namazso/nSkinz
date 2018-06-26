@@ -46,18 +46,16 @@ recv_prop_hook*				g_sequence_hook;
 
 auto ensure_dynamic_hooks() -> void
 {
-	auto hss = get_vfunc<char*>(g_client, 86);
-	auto hud = *(void**)(hss + 7);
-	auto off = *(int32_t*)(hss + 12);
-	auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);
-	auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
+	const auto hss = get_vfunc<char*>(g_client, 86);
+	const auto hud = *(void**)(hss + 7);
+	const auto off = *(int32_t*)(hss + 12);
+	const auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);
+	const auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
 	if(notice_hud)
 	{
 		static vmt_multi_hook notice_hook;
 		if(notice_hook.initialize_and_hook_instance(notice_hud))
-		{
 			notice_hook.apply_hook<hooks::SFHudDeathNoticeAndBotStatus_FireGameEvent>(1);
-		}
 	}
 
 	const auto local_index = g_engine->GetLocalPlayer();
@@ -67,9 +65,7 @@ auto ensure_dynamic_hooks() -> void
 		static vmt_multi_hook player_hook;
 		const auto networkable = static_cast<sdk::IClientNetworkable*>(local);
 		if(player_hook.initialize_and_hook_instance(networkable))
-		{
 			player_hook.apply_hook<hooks::CCSPlayer_PostDataUpdate>(7);
-		}
 	}
 }
 
@@ -93,7 +89,7 @@ auto initialize(void* instance) -> void
 	run_update_check();
 
 	// Get skins
-	initialize_kits();
+	game_data::initialize_kits();
 
 	g_config.load();
 

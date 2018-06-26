@@ -97,43 +97,46 @@ static auto is_knife(const int i) -> bool
 	return (i >= WEAPON_KNIFE_BAYONET && i < GLOVE_STUDDED_BLOODHOUND) || i == WEAPON_KNIFE_T || i == WEAPON_KNIFE;
 }
 
-// Stupid MSVC requires separate constexpr constructors for any initialization
-
-struct weapon_info
+//extern const std::map<size_t, weapon_info> k_weapon_info;
+namespace game_data
 {
-	constexpr weapon_info(const char* model, const char* icon = nullptr) :
-		model(model),
-		icon(icon)
-	{}
+	// Stupid MSVC requires separate constexpr constructors for any initialization
+	struct weapon_info
+	{
+		constexpr weapon_info(const char* model, const char* icon = nullptr) :
+			model(model),
+			icon(icon)
+		{}
 
-	const char* model;
-	const char* icon;
-};
+		const char* model;
+		const char* icon;
+	};
 
-struct weapon_name
-{
-	constexpr weapon_name(const int definition_index, const char* name) :
-		definition_index(definition_index),
-		name(name)
-	{}
+	struct weapon_name
+	{
+		constexpr weapon_name(const int definition_index, const char* name) :
+			definition_index(definition_index),
+			name(name)
+		{}
 
-	int definition_index = 0;
-	const char* name = nullptr;
-};
+		int definition_index = 0;
+		const char* name = nullptr;
+	};
 
-struct quality_name
-{
-	constexpr quality_name(const int index, const char* name) :
-		index(index),
-		name(name)
-	{}
+	struct quality_name
+	{
+		constexpr quality_name(const int index, const char* name) :
+			index(index),
+			name(name)
+		{}
 
-	int index = 0;
-	const char* name = nullptr;
-};
+		int index = 0;
+		const char* name = nullptr;
+	};
 
-extern const std::map<size_t, weapon_info> k_weapon_info;
-extern const std::vector<weapon_name> k_knife_names;
-extern const std::vector<weapon_name> k_glove_names;
-extern const std::vector<weapon_name> k_weapon_names;
-extern const std::vector<quality_name> k_quality_names;
+	const weapon_info* get_weapon_info(int defindex);
+	extern const std::vector<weapon_name> knife_names;
+	extern const std::vector<weapon_name> glove_names;
+	extern const std::vector<weapon_name> weapon_names;
+	extern const std::vector<quality_name> quality_names;
+}

@@ -56,7 +56,7 @@ auto netvar_manager::dump_recursive(const char* base_class, sdk::RecvTable* tabl
 			continue;
 
 		//We dont care about the base class, we already know that
-		if (strcmp(prop_ptr->m_pVarName, "baseclass") == 0)
+		if (fnv::hash_runtime(prop_ptr->m_pVarName) == FNV("baseclass"))
 			continue;
 
 		if (prop_ptr->m_RecvType == sdk::DPT_DataTable &&

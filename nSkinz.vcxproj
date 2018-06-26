@@ -15,8 +15,8 @@
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="src\config.cpp" />
-    <ClCompile Include="src\Hooks\FireEventClientSide.cpp" />
-    <ClCompile Include="src\Hooks\FrameStageNotify.cpp" />
+    <ClCompile Include="src\Hooks\FireGameEvent.cpp" />
+    <ClCompile Include="src\Hooks\PostDataUpdate.cpp" />
     <ClCompile Include="src\Hooks\Sequence.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\kit_parser.cpp" />
@@ -114,6 +114,7 @@
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +143,7 @@
       <ControlFlowGuard>false</ControlFlowGuard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

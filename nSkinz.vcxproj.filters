@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Hooks\FrameStageNotify.cpp">
-      <Filter>Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hooks\FireEventClientSide.cpp">
-      <Filter>Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hooks\Sequence.cpp">
       <Filter>Hooks</Filter>
     </ClCompile>
@@ -34,6 +28,12 @@
     <ClCompile Include="src\sticker_changer.cpp" />
     <ClCompile Include="src\update_check.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\Hooks\PostDataUpdate.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hooks\FireGameEvent.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SDK\CBaseClientState.hpp">

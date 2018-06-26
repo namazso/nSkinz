@@ -30,9 +30,9 @@
 class table_hook
 {
 public:
-	constexpr table_hook() :
-		m_new_vmt{nullptr},
-		m_old_vmt{nullptr} {}
+	constexpr table_hook()
+		: m_new_vmt{nullptr}
+		, m_old_vmt{nullptr} {}
 
 	~table_hook()
 	{
@@ -113,8 +113,8 @@ private:
 class vmt_smart_hook : table_hook
 {
 public:
-	vmt_smart_hook(void* class_base) :
-		m_class{class_base}
+	vmt_smart_hook(void* class_base)
+		: m_class{class_base}
 	{
 		initialize_and_hook_instance(class_base);
 	}

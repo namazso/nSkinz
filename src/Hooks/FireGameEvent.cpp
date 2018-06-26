@@ -29,7 +29,7 @@
 auto __fastcall hooks::SFHudDeathNoticeAndBotStatus_FireGameEvent::hooked(void* thisptr, void*, sdk::IGameEvent* event) -> void
 {
 	// Filter to only the events we're interested in.
-	if(0 == strcmp(event->GetName(), "player_death")
+	if(fnv::hash_runtime(event->GetName()) == FNV("player_death")
 		&& g_engine->GetPlayerForUserID(event->GetInt("attacker")) == g_engine->GetLocalPlayer())
 		if(const auto icon_override = g_config.get_icon_override(event->GetString("weapon")))
 			event->SetString("weapon", icon_override);
