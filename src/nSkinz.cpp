@@ -46,7 +46,8 @@ recv_prop_hook*				g_sequence_hook;
 
 auto ensure_dynamic_hooks() -> void
 {
-	const auto hss = get_vfunc<char*>(g_client, 86);
+	// find by xref to "CHudSaveStatus"
+	const auto hss = get_vfunc<char*>(g_client, 87);
 	const auto hud = *(void**)(hss + 7);
 	const auto off = *(int32_t*)(hss + 12);
 	const auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);

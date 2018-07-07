@@ -44,7 +44,7 @@ namespace sdk
 	{
 	public:
 		NETVAR(GetAccountID, "CBaseAttributableItem", "m_iAccountID", int);
-		NETVAR(GetItemDefinitionIndex, "CBaseAttributableItem", "m_iItemDefinitionIndex", int);
+		NETVAR(GetItemDefinitionIndex, "CBaseAttributableItem", "m_iItemDefinitionIndex", short);
 		NETVAR(GetItemIDHigh, "CBaseAttributableItem", "m_iItemIDHigh", int);
 		NETVAR(GetEntityQuality, "CBaseAttributableItem", "m_iEntityQuality", int);
 		NETVAR(GetCustomName, "CBaseAttributableItem", "m_szCustomName", char[32]);
