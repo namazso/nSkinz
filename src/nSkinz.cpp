@@ -35,6 +35,7 @@ sdk::IVEngineClient*		g_engine;
 sdk::IVModelInfoClient*		g_model_info;
 sdk::IGameEventManager2*	g_game_event_manager;
 sdk::ILocalize*				g_localize;
+sdk::IInputSystem*			g_input_system;
 
 sdk::CBaseClientState**		g_client_state;
 sdk::C_CS_PlayerResource**	g_player_resource;
@@ -84,6 +85,7 @@ auto initialize(void* instance) -> void
 	g_model_info = get_interface<sdk::IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
 	g_game_event_manager = get_interface<sdk::IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	g_localize = get_interface<sdk::ILocalize>("localize.dll", ILOCALIZE_CLIENT_INTERFACE_VERSION);
+	g_input_system = get_interface<sdk::IInputSystem>("inputsystem.dll", INPUTSYSTEM_INTERFACE_VERSION);
 
 	g_client_state = *reinterpret_cast<sdk::CBaseClientState***>(get_vfunc<std::uintptr_t>(g_engine, 12) + 0x10);
 

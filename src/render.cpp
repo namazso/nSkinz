@@ -84,7 +84,8 @@ namespace render
 				if(mouse_enabled)
 				{
 					// We could do this with cvars, but too much work to implement a whole cvar interface just for this.
-					g_engine->ClientCmd_Unrestricted("cl_mouseenable 0");
+					//g_engine->ClientCmd_Unrestricted("cl_mouseenable 0");
+					g_input_system->EnableInput(false);
 					mouse_enabled = false;
 				}
 
@@ -100,7 +101,8 @@ namespace render
 			{
 				if(!mouse_enabled)
 				{
-					g_engine->ClientCmd_Unrestricted("cl_mouseenable 1");
+					//g_engine->ClientCmd_Unrestricted("cl_mouseenable 1");
+					g_input_system->EnableInput(true);
 					mouse_enabled = true;
 				}
 			}

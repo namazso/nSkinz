@@ -107,6 +107,7 @@
     <ClInclude Include="src\Hooks\hooks.hpp">
       <Filter>Hooks</Filter>
     </ClInclude>
+    <ClInclude Include="src\SDK\IInputSystem.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK">

@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SDK\declarations.hpp" />
+    <ClInclude Include="src\SDK\IInputSystem.hpp" />
     <ClInclude Include="src\SDK\interfaces.hpp" />
     <ClInclude Include="src\item_definitions.hpp" />
     <ClInclude Include="src\nSkinz.hpp" />
