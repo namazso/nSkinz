@@ -50,13 +50,13 @@ auto ensure_dynamic_hooks() -> void
 	const auto hud = *(void**)(hss + 7);
 	const auto off = *(int32_t*)(hss + 12);
 	const auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);
-	const auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
-	if(notice_hud)
-	{
-		static vmt_multi_hook notice_hook;
-		if(notice_hook.initialize_and_hook_instance(notice_hud))
-			notice_hook.apply_hook<hooks::SFHudDeathNoticeAndBotStatus_FireGameEvent>(1);
-	}
+	//const auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
+	//if(notice_hud)
+	//{
+	//	static vmt_multi_hook notice_hook;
+	//	if(notice_hook.initialize_and_hook_instance(notice_hud))
+	//		notice_hook.apply_hook<hooks::SFHudDeathNoticeAndBotStatus_FireGameEvent>(1);
+	//}
 
 	const auto local_index = g_engine->GetLocalPlayer();
 	const auto local = static_cast<sdk::C_BasePlayer*>(g_entity_list->GetClientEntity(local_index));
