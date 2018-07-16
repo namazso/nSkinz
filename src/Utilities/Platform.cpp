@@ -51,9 +51,12 @@ auto platform::get_interface(const char* module_name, const char* interface_name
 
 auto platform::get_module_info(const char* module_name) -> std::pair<std::uintptr_t, std::size_t>
 {
+	const auto module = GetModuleHandleA(module_name);
+	if (!module)
+		return { 0, 0 };
 	MODULEINFO module_info;
-	K32GetModuleInformation(GetCurrentProcess(), GetModuleHandleA(module_name), &module_info, sizeof(MODULEINFO));
-	return { std::uintptr_t((module_info.lpBaseOfDll)), module_info.SizeOfImage };
+	K32GetModuleInformation(GetCurrentProcess(), module, &module_info, sizeof(MODULEINFO));
+	return { std::uintptr_t(module_info.lpBaseOfDll), module_info.SizeOfImage };
 }
 
 /*auto platform::find_pattern(const char* module_name, const char* pattern, const char* mask) -> std::uintptr_t

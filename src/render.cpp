@@ -29,6 +29,7 @@
 // Renderer for windows. Maybe sometime i'll make a linux one
 
 #include <d3d9.h>
+#include <intrin.h>
 
 #include <imgui.h>
 #include <imgui_impl_dx9.h>
@@ -44,6 +45,96 @@ namespace render
 
 	static bool s_ready = false;
 	static bool s_active = false;
+
+	struct d3d9_state
+	{
+		D3DMATRIX transform_world[4];
+		D3DMATRIX transform_view;
+		D3DMATRIX transform_projection;
+		D3DMATRIX transform_texture[8];
+		DWORD srgbwrite;
+		DWORD colorwrite;
+		DWORD fvf;
+
+		IDirect3DVertexBuffer9* stream_data = nullptr;
+		UINT stream_offset;
+		UINT stream_stride;
+
+		IDirect3DBaseTexture9* texture = nullptr;
+		IDirect3DSurface9* target = nullptr;
+		IDirect3DIndexBuffer9* indices = nullptr;
+		IDirect3DVertexDeclaration9* vertex_declaration = nullptr;
+		IDirect3DPixelShader9* pixel_shader = nullptr;
+		IDirect3DVertexShader9* vertex_shader = nullptr;
+
+		~d3d9_state()
+		{
+			if (stream_data)
+				stream_data->Release();
+			if (texture)
+				texture->Release();
+			if (target)
+				target->Release();
+			if (indices)
+				indices->Release();
+			if (vertex_declaration)
+				vertex_declaration->Release();
+			if (pixel_shader)
+				pixel_shader->Release();
+			if (vertex_shader)
+				vertex_shader->Release();
+		}
+
+		auto save(IDirect3DDevice9* device) -> void
+		{
+			device->GetTransform(D3DTS_WORLD, &transform_world[0]);
+			device->GetTransform(D3DTS_WORLD1, &transform_world[1]);
+			device->GetTransform(D3DTS_WORLD2, &transform_world[2]);
+			device->GetTransform(D3DTS_WORLD3, &transform_world[3]);
+			device->GetTransform(D3DTS_VIEW, &transform_view);
+			device->GetTransform(D3DTS_PROJECTION, &transform_projection);
+			for (auto i = 0; i < 8; ++i)
+				device->GetTransform(D3DTRANSFORMSTATETYPE(D3DTS_TEXTURE0 + i), &transform_texture[i]);
+
+			device->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgbwrite);
+			device->GetRenderState(D3DRS_SRGBWRITEENABLE, &colorwrite);
+			device->GetFVF(&fvf);
+
+			device->GetStreamSource(0, &stream_data, &stream_offset, &stream_stride);
+
+			device->GetTexture(0, &texture);
+			device->GetRenderTarget(0, &target);
+			device->GetIndices(&indices);
+			device->GetVertexDeclaration(&vertex_declaration);
+			device->GetPixelShader(&pixel_shader);
+			device->GetVertexShader(&vertex_shader);
+		}
+
+		auto load(IDirect3DDevice9* device) const -> void
+		{
+			device->SetTransform(D3DTS_WORLD, &transform_world[0]);
+			device->SetTransform(D3DTS_WORLD1, &transform_world[1]);
+			device->SetTransform(D3DTS_WORLD2, &transform_world[2]);
+			device->SetTransform(D3DTS_WORLD3, &transform_world[3]);
+			device->SetTransform(D3DTS_VIEW, &transform_view);
+			device->SetTransform(D3DTS_PROJECTION, &transform_projection);
+			for (auto i = 0; i < 8; ++i)
+				device->SetTransform(D3DTRANSFORMSTATETYPE(D3DTS_TEXTURE0 + i), &transform_texture[i]);
+
+			device->SetRenderState(D3DRS_SRGBWRITEENABLE, srgbwrite);
+			device->SetRenderState(D3DRS_SRGBWRITEENABLE, colorwrite);
+			device->SetFVF(fvf);
+
+			device->SetStreamSource(0, stream_data, stream_offset, stream_stride);
+
+			device->SetTexture(0, texture);
+			device->SetRenderTarget(0, target);
+			device->SetIndices(indices);
+			device->SetVertexDeclaration(vertex_declaration);
+			device->SetPixelShader(pixel_shader);
+			device->SetVertexShader(vertex_shader);
+		}
+	};
 
 	struct Reset
 	{
@@ -70,45 +161,61 @@ namespace render
 	{
 		static auto COM_DECLSPEC_NOTHROW STDMETHODCALLTYPE hooked(IDirect3DDevice9* thisptr) -> HRESULT
 		{
-			// Save the state to prevent messing up stuff
-			IDirect3DStateBlock9* state;
-			thisptr->CreateStateBlock(D3DSBT_ALL, &state);
+			static void* ret_addr;
+			if (!ret_addr)
+				ret_addr = _ReturnAddress();
 
-			//fix drawing without cl_showfps
-			thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
-
-			static auto mouse_enabled = true;
-
-			if(s_active)
+			if(_ReturnAddress() == ret_addr)
 			{
-				if(mouse_enabled)
+				// Save the state to prevent messing up stuff
+				// Doesn't work yet
+				//d3d9_state state;
+				//state.save(thisptr);
+
+				IDirect3DStateBlock9* state;
+				thisptr->CreateStateBlock(D3DSBT_ALL, &state);
+
+				//fix drawing without cl_showfps
+				thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
+
+				//thisptr->SetRenderState(D3DRS_SRGBWRITEENABLE, 0);
+
+				static void* saved_hwnd;
+
+				if (s_active)
 				{
-					// We could do this with cvars, but too much work to implement a whole cvar interface just for this.
-					//g_engine->ClientCmd_Unrestricted("cl_mouseenable 0");
-					g_input_system->EnableInput(false);
-					mouse_enabled = false;
+					if (!saved_hwnd)
+					{
+						// We could do this with cvars, but too much work to implement a whole cvar interface just for this.
+						//g_engine->ClientCmd_Unrestricted("cl_mouseenable 0");
+						//g_input_system->EnableInput(false);
+						//mouse_enabled = false;
+						std::swap(saved_hwnd, g_input_system->get_window());
+					}
+
+					ImGui::GetIO().MouseDrawCursor = true;
+
+					ImGui_ImplDX9_NewFrame();
+
+					draw_gui();
+
+					ImGui::Render();
+				}
+				else
+				{
+					if (saved_hwnd)
+					{
+						//g_engine->ClientCmd_Unrestricted("cl_mouseenable 1");
+						//g_input_system->EnableInput(true);
+						//mouse_enabled = true;
+						std::swap(saved_hwnd, g_input_system->get_window());
+					}
 				}
 
-				ImGui::GetIO().MouseDrawCursor = true;
-
-				ImGui_ImplDX9_NewFrame();
-
-				draw_gui();
-
-				ImGui::Render();
+				//state.load(thisptr);
+				state->Apply();
+				state->Release();
 			}
-			else
-			{
-				if(!mouse_enabled)
-				{
-					//g_engine->ClientCmd_Unrestricted("cl_mouseenable 1");
-					g_input_system->EnableInput(true);
-					mouse_enabled = true;
-				}
-			}
-
-			state->Apply();
-			state->Release();
 
 			return m_original(thisptr);
 		}
@@ -242,7 +349,7 @@ namespace render
 			return;
 		}
 
-		s_hwnd = FindWindowA("Valve001", nullptr);
+		s_hwnd = HWND(g_input_system->get_window());
 		assert(s_hwnd);
 
 		s_original_wnd_proc = swap_wndproc(s_hwnd, &wndproc_hook);

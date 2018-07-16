@@ -77,10 +77,18 @@ auto get_interface(const char* module, const char* name) -> T*
 	return reinterpret_cast<T*>(platform::get_interface(module, name));
 }
 
+auto get_client_name() -> const char*
+{
+	static const char* name = nullptr;
+	if (!name)
+		name = platform::get_module_info("client_panorama.dll").first ? "client_panorama.dll" : "client.dll";
+	return name;
+}
+
 auto initialize(void* instance) -> void
 {
-	g_client = get_interface<sdk::IBaseClientDLL>("client.dll", CLIENT_DLL_INTERFACE_VERSION);
-	g_entity_list = get_interface<sdk::IClientEntityList>("client.dll", VCLIENTENTITYLIST_INTERFACE_VERSION);
+	g_client = get_interface<sdk::IBaseClientDLL>(get_client_name(), CLIENT_DLL_INTERFACE_VERSION);
+	g_entity_list = get_interface<sdk::IClientEntityList>(get_client_name(), VCLIENTENTITYLIST_INTERFACE_VERSION);
 	g_engine = get_interface<sdk::IVEngineClient>("engine.dll", VENGINE_CLIENT_INTERFACE_VERSION);
 	g_model_info = get_interface<sdk::IVModelInfoClient>("engine.dll", VMODELINFO_CLIENT_INTERFACE_VERSION);
 	g_game_event_manager = get_interface<sdk::IGameEventManager2>("engine.dll", INTERFACEVERSION_GAMEEVENTSMANAGER2);
