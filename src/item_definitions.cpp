@@ -59,22 +59,22 @@ const game_data::weapon_info* game_data::get_weapon_info(int defindex)
 
 const std::vector<game_data::weapon_name> game_data::knife_names =
 {
-	{0, "Standart"},
+	{0, "Default"},
 	{WEAPON_KNIFE_BAYONET, "Bayonet"},
-	{WEAPON_KNIFE_FLIP, "Klappmesser"},
-	{WEAPON_KNIFE_GUT, "Aufbrechmesser"},
+	{WEAPON_KNIFE_FLIP, "Flip Knife"},
+	{WEAPON_KNIFE_GUT, "Gut Knife"},
 	{WEAPON_KNIFE_KARAMBIT, "Karambit"},
 	{WEAPON_KNIFE_M9_BAYONET, "M9 Bayonet"},
-	{WEAPON_KNIFE_TACTICAL, "Jagdmesser"},
-	{WEAPON_KNIFE_FALCHION, "Falchion Messer"},
-	{WEAPON_KNIFE_SURVIVAL_BOWIE, "Bowiemesser"},
-	{WEAPON_KNIFE_BUTTERFLY, "Butterflymesser"},
-	{WEAPON_KNIFE_PUSH, "Schattendolche"}
+	{WEAPON_KNIFE_TACTICAL, "Huntsman Knife"},
+	{WEAPON_KNIFE_FALCHION, "Falchion Knife"},
+	{WEAPON_KNIFE_SURVIVAL_BOWIE, "Bowie Knife"},
+	{WEAPON_KNIFE_BUTTERFLY, "Butterfly Knife"},
+	{WEAPON_KNIFE_PUSH, "Shadow Daggers"}
 };
 
 const std::vector<game_data::weapon_name> game_data::glove_names =
 {
-	{0, "Standart"},
+	{0, "Default"},
 	{GLOVE_STUDDED_BLOODHOUND, "Bloodhound"},
 	{GLOVE_T_SIDE, "Default (Terrorists)"},
 	{GLOVE_CT_SIDE, "Default (Counter-Terrorists)"},
@@ -127,7 +127,7 @@ const std::vector<game_data::weapon_name> game_data::weapon_names =
 
 const std::vector<game_data::quality_name> game_data::quality_names =
 {
-	{0, "Standart"},
+	{0, "Default"},
 	{1, "Genuine"},
 	{2, "Vintage"},
 	{3, "Unusual"},

@@ -74,14 +74,14 @@ void draw_gui()
 
 			const auto button_size = ImVec2(ImGui::GetColumnWidth() / 2 - 12.5f, 31);
 
-			if(ImGui::Button("Hinzufügen", button_size))
+			if(ImGui::Button("Add", button_size))
 			{
 				entries.push_back(item_setting());
 				selected_id = entries.size() - 1;
 			}
 			ImGui::SameLine();
 
-			if(ImGui::Button("Entfernen", button_size) && entries.size() > 1)
+			if(ImGui::Button("Remove", button_size) && entries.size() > 1)
 				entries.erase(entries.begin() + selected_id);
 
 			ImGui::PopItemWidth();
@@ -98,14 +98,14 @@ void draw_gui()
 			ImGui::InputText("Name", selected_entry.name, 32);
 
 			// Item to change skins for
-			ImGui::Combo("Waffen/Messer", &selected_entry.definition_vector_index, [](void* data, int idx, const char** out_text)
+			ImGui::Combo("Item", &selected_entry.definition_vector_index, [](void* data, int idx, const char** out_text)
 			{
 				*out_text = game_data::weapon_names[idx].name;
 				return true;
 			}, nullptr, game_data::weapon_names.size(), 5);
 
 			// Enabled
-			ImGui::Checkbox("Aktiviert", &selected_entry.enabled);
+			ImGui::Checkbox("Enabled", &selected_entry.enabled);
 
 			// Pattern Seed
 			ImGui::InputInt("Seed", &selected_entry.seed);
@@ -114,12 +114,12 @@ void draw_gui()
 			ImGui::InputInt("StatTrak", &selected_entry.stat_trak);
 
 			// Wear Float
-			ImGui::SliderFloat("Abnutzungsgrad", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
+			ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
 
 			// Paint kit
 			if(selected_entry.definition_index != GLOVE_T_SIDE)
 			{
-				ImGui::Combo("Skins", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+				ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
 				{
 					*out_text = game_data::skin_kits[idx].name.c_str();
 					return true;
@@ -127,7 +127,7 @@ void draw_gui()
 			}
 			else
 			{
-				ImGui::Combo("Skins", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+				ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
 				{
 					*out_text = game_data::glove_kits[idx].name.c_str();
 					return true;
@@ -135,7 +135,7 @@ void draw_gui()
 			}
 
 			// Quality
-			ImGui::Combo(u8"Qualität", &selected_entry.entity_quality_vector_index, [](void* data, int idx, const char** out_text)
+			ImGui::Combo("Quality", &selected_entry.entity_quality_vector_index, [](void* data, int idx, const char** out_text)
 			{
 				*out_text = game_data::quality_names[idx].name;
 				return true;
@@ -147,7 +147,7 @@ void draw_gui()
 			// Item defindex override
 			if(selected_entry.definition_index == WEAPON_KNIFE)
 			{
-				ImGui::Combo("Messer", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+				ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
 				{
 					*out_text = game_data::knife_names.at(idx).name;
 					return true;
@@ -155,7 +155,7 @@ void draw_gui()
 			}
 			else if(selected_entry.definition_index == GLOVE_T_SIDE)
 			{
-				ImGui::Combo("Handschuhe", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+				ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
 				{
 					*out_text = game_data::glove_names.at(idx).name;
 					return true;
@@ -166,13 +166,13 @@ void draw_gui()
 				// We don't want to override weapons other than knives or gloves
 				static auto unused_value = 0;
 				selected_entry.definition_override_vector_index = 0;
-				ImGui::Combo(u8"Nicht Verfügbar", &unused_value, u8"Für Messer und Handschuhe\0");
+				ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
 			}
 
 			selected_entry.update<sync_type::KEY_TO_VALUE>();
 
 			// Custom Name tag
-			ImGui::InputText("Namensschild", selected_entry.custom_name, 32);
+			ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
 		}
 
 		ImGui::NextColumn();
@@ -184,7 +184,7 @@ void draw_gui()
 		{
 			ImGui::Columns(2, nullptr, false);
 
-			ImGui::PushID("Aufkleber");
+			ImGui::PushID("sticker");
 
 			static auto selected_sticker_slot = 0;
 
@@ -204,17 +204,17 @@ void draw_gui()
 
 			ImGui::NextColumn();
 
-			ImGui::Combo("Aufkleber", &selected_sticker.kit_vector_index, [](void* data, int idx, const char** out_text)
+			ImGui::Combo("Sticker Kit", &selected_sticker.kit_vector_index, [](void* data, int idx, const char** out_text)
 			{
 				*out_text = game_data::sticker_kits.at(idx).name.c_str();
 				return true;
 			}, nullptr, game_data::sticker_kits.size(), 10);
 
-			ImGui::SliderFloat("Abnutzungsgrad", &selected_sticker.wear, FLT_MIN, 1.f, "%.10f", 5);
+			ImGui::SliderFloat("Wear", &selected_sticker.wear, FLT_MIN, 1.f, "%.10f", 5);
 
-			ImGui::SliderFloat(u8"Maßstab", &selected_sticker.scale, 0.1f, 5.f, "%.3f");
+			ImGui::SliderFloat("Scale", &selected_sticker.scale, 0.1f, 5.f, "%.3f");
 
-			ImGui::SliderFloat("Drehungsgrad", &selected_sticker.rotation, 0.f, 360.f);
+			ImGui::SliderFloat("Rotation", &selected_sticker.rotation, 0.f, 360.f);
 
 			ImGui::NextColumn();
 
@@ -233,15 +233,15 @@ void draw_gui()
 		{
 			const auto button_size = ImVec2(ImGui::GetColumnWidth() - 1, 20);
 
-			if(ImGui::Button("Aktualisieren", button_size))
+			if(ImGui::Button("Update", button_size))
 				(*g_client_state)->ForceFullUpdate();
 			ImGui::NextColumn();
 
-			if(ImGui::Button("Speichern", button_size))
+			if(ImGui::Button("Save", button_size))
 				g_config.save();
 			ImGui::NextColumn();
 
-			if(ImGui::Button("Laden", button_size))
+			if(ImGui::Button("Load", button_size))
 				g_config.load();
 			ImGui::NextColumn();
 		}
@@ -249,17 +249,17 @@ void draw_gui()
 		ImGui::PopItemWidth();
 		ImGui::Columns(1);
 
-		ImGui::Text("nSkinz by namazso - German translation by M1XT3NZ");
+		ImGui::Text("nSkinz by namazso");
 		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("https://skinchanger.download").x - 20);
 		ImGui::Text("https://skinchanger.download");
 
 		ImGui::End();
 	}
 
-	if(g_update_needed && ImGui::Begin("Neue updates auf github", &g_update_needed,
+	if(g_update_needed && ImGui::Begin("New commits since compile!", &g_update_needed,
 		{600, 400}, -1, ImGuiWindowFlags_NoSavedSettings))
 	{
-		ImGui::Columns(3, "updates", true);
+		ImGui::Columns(3, "commit", true);
 		for(const auto& commit : g_commits_since_compile)
 		{
 			ImGui::Text("%s", commit.author.c_str());
