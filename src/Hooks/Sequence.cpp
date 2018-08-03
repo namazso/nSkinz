@@ -136,6 +136,34 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 				return sequence - 1;
 			}
 		}
+	case FNV("models/weapons/v_knife_ursus.mdl"):
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_DRAW:
+				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, 14);
+			default:
+				return sequence + 1;
+			}
+		}
+	case FNV("models/weapons/v_knife_stiletto.mdl"):
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(12, 13);
+			}
+		}
+	case FNV("models/weapons/v_knife_widowmaker.mdl"):
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(14, 15);
+			}
+		}
 	default:
 		return sequence;
 	}
