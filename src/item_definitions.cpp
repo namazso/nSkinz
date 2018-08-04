@@ -73,7 +73,7 @@ const std::vector<game_data::weapon_name> game_data::knife_names =
 	{WEAPON_KNIFE_FALCHION, "Falchion Knife"},
 	{WEAPON_KNIFE_SURVIVAL_BOWIE, "Bowie Knife"},
 	{WEAPON_KNIFE_BUTTERFLY, "Butterfly Knife"},
-	{WEAPON_KNIFE_PUSH, "Shadow Daggers"}
+	{WEAPON_KNIFE_PUSH, "Shadow Daggers"},
 	{WEAPON_KNIFE_URSUS, "Ursus Knife"},
 	{WEAPON_KNIFE_GYPSY_JACKKNIFE, "Navaja Knife"},
 	{WEAPON_KNIFE_STILETTO, "Stiletto Knife"},
