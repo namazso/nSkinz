@@ -52,6 +52,7 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 		SEQUENCE_BUTTERFLY_DRAW = 0,
 		SEQUENCE_BUTTERFLY_DRAW2 = 1,
 		SEQUENCE_BUTTERFLY_LOOKAT01 = 13,
+		SEQUENCE_BUTTERFLY_LOOKAT02 = 14, // probs wrong... but its looks cleaner
 		SEQUENCE_BUTTERFLY_LOOKAT03 = 15,
 
 		SEQUENCE_FALCHION_IDLE1 = 1,
@@ -143,7 +144,7 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			case SEQUENCE_DEFAULT_DRAW:
 				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
 			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, 14);
+				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT02);
 			default:
 				return sequence + 1;
 			}
@@ -153,7 +154,7 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			switch (sequence)
 			{
 			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(12, 13);
+				return random_sequence(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02);
 			}
 		}
 	case FNV("models/weapons/v_knife_widowmaker.mdl"):
@@ -161,7 +162,7 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			switch (sequence)
 			{
 			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(14, 15);
+				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT02, SEQUENCE_BUTTERFLY_LOOKAT03);
 			}
 		}
 	default:
