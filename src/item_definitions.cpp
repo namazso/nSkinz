@@ -114,6 +114,7 @@ const std::vector<game_data::weapon_name> game_data::weapon_names =
 	{16, "M4A4"},
 	{17, "MAC-10"},
 	{27, "MAG-7"},
+	{23, "MP5-SD"},
 	{33, "MP7"},
 	{34, "MP9"},
 	{28, "Negev"},
@@ -131,7 +132,6 @@ const std::vector<game_data::weapon_name> game_data::weapon_names =
 	{24, "UMP-45"},
 	{61, "USP-S"},
 	{25, "XM1014"},
-	{23, "MP5-SD"},
 };
 
 const std::vector<game_data::quality_name> game_data::quality_names =
