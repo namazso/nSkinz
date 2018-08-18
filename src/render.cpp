@@ -173,7 +173,7 @@ namespace render
 				//state.save(thisptr);
 
 				IDirect3DStateBlock9* state;
-				thisptr->CreateStateBlock(D3DSBT_ALL, &state);
+				thisptr->CreateStateBlock(D3DSBT_PIXELSTATE, &state);
 
 				//fix drawing without cl_showfps
 				thisptr->SetRenderState(D3DRS_COLORWRITEENABLE, 0xFFFFFFFF);
