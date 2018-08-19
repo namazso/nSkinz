@@ -11,13 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp" />
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\Hooks\FireGameEvent.cpp" />
     <ClCompile Include="src\Hooks\PostDataUpdate.cpp" />
     <ClCompile Include="src\Hooks\Sequence.cpp" />
+    <ClCompile Include="src\Imgui_impl_dx9\imgui_impl_dx9.cpp" />
     <ClCompile Include="src\nSkinz.cpp" />
     <ClCompile Include="src\kit_parser.cpp" />
     <ClCompile Include="src\dllmain.cpp" />

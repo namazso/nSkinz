@@ -8,9 +8,6 @@
     <ClCompile Include="deps\imgui\imgui.cpp">
       <Filter>Dependency</Filter>
     </ClCompile>
-    <ClCompile Include="deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp">
-      <Filter>Dependency</Filter>
-    </ClCompile>
     <ClCompile Include="deps\imgui\imgui_draw.cpp">
       <Filter>Dependency</Filter>
     </ClCompile>
@@ -33,6 +30,9 @@
     </ClCompile>
     <ClCompile Include="src\Hooks\FireGameEvent.cpp">
       <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Imgui_impl_dx9\imgui_impl_dx9.cpp">
+      <Filter>Dependency</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
