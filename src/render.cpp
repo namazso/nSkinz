@@ -206,7 +206,7 @@ namespace render
 					if (saved_hwnd)
 					{
 						//g_engine->ClientCmd_Unrestricted("cl_mouseenable 1");
-						//g_input_system->EnableInput(true);
+						g_input_system->EnableInput(true); //reenabling this fixed the movement.
 						//mouse_enabled = true;
 						std::swap(saved_hwnd, g_input_system->get_window());
 					}
