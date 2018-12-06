@@ -234,9 +234,7 @@ void draw_gui()
 			const auto button_size = ImVec2(ImGui::GetColumnWidth() - 1, 20);
 
 			if(ImGui::Button("Update", button_size))
-				(*g_client_state)->ForceFullUpdate(); /*Comment this out when you enable ClientCmd
-				g_engine->ClientCmd_Unrestricted("record x;stop"); */
-
+				(*g_client_state)->ForceFullUpdate(); 
 
 			ImGui::NextColumn();
 
