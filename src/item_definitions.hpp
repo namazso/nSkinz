@@ -97,7 +97,7 @@ enum ItemDefinitionIndex : int
 	GLOVE_HYDRA = 5035
 };
 
-static auto is_knife(const int i) -> bool
+static inline auto is_knife(const int i) -> bool
 {
 	return (i >= WEAPON_KNIFE_BAYONET && i < GLOVE_STUDDED_BLOODHOUND) || i == WEAPON_KNIFE_T || i == WEAPON_KNIFE;
 }

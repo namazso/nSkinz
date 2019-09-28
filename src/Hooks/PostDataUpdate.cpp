@@ -84,7 +84,7 @@ static auto apply_config_on_attributable_item(sdk::C_BaseAttributableItem* item,
 		{
 			const auto old_definition_index = definition_index;
 
-			definition_index = config->definition_override_index;
+			definition_index = short(config->definition_override_index);
 
 			// Set the weapon model index -- required for paint kits to work on replacement items after the 29/11/2016 update.
 			//item->GetModelIndex() = g_model_info->GetModelIndex(k_weapon_info.at(config->definition_override_index).model);

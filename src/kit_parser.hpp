@@ -24,6 +24,7 @@
 */
 #pragma once
 #include <vector>
+#include <string>
 
 namespace game_data
 {
