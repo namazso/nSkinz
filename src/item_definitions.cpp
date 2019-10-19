@@ -33,6 +33,7 @@ const game_data::weapon_info* game_data::get_weapon_info(int defindex)
 		{WEAPON_KNIFE,{"models/weapons/v_knife_default_ct.mdl", "knife_default_ct"}},
 		{WEAPON_KNIFE_T,{"models/weapons/v_knife_default_t.mdl", "knife_t"}},
 		{WEAPON_KNIFE_BAYONET, {"models/weapons/v_knife_bayonet.mdl", "bayonet"}},
+		{WEAPON_KNIFE_CSS, {"models/weapons/v_knife_css.mdl", "knife_css"}},
 		{WEAPON_KNIFE_FLIP, {"models/weapons/v_knife_flip.mdl", "knife_flip"}},
 		{WEAPON_KNIFE_GUT, {"models/weapons/v_knife_gut.mdl", "knife_gut"}},
 		{WEAPON_KNIFE_KARAMBIT, {"models/weapons/v_knife_karam.mdl", "knife_karambit"}},
@@ -65,6 +66,7 @@ const std::vector<game_data::weapon_name> game_data::knife_names =
 {
 	{0, "Default"},
 	{WEAPON_KNIFE_BAYONET, "Bayonet"},
+	{WEAPON_KNIFE_CSS, "Classic Knife"},
 	{WEAPON_KNIFE_FLIP, "Flip Knife"},
 	{WEAPON_KNIFE_GUT, "Gut Knife"},
 	{WEAPON_KNIFE_KARAMBIT, "Karambit"},
