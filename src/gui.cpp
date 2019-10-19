@@ -196,7 +196,7 @@ void draw_gui()
 
 			ImGui::ListBox("", &selected_sticker_slot, [&selected_entry, &element_name](int idx)
 			{
-				auto kit_vector_index = selected_entry.stickers[idx].kit_vector_index;
+				const auto kit_vector_index = selected_entry.stickers[idx].kit_vector_index;
 				sprintf_s(element_name, "#%d (%s)", idx + 1, game_data::sticker_kits.at(kit_vector_index).name.c_str());
 				return element_name;
 			}, 5, 5);

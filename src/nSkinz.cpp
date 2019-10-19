@@ -49,9 +49,9 @@ auto ensure_dynamic_hooks() -> void
 {
 	// find by xref to "CHudSaveStatus"
 	const auto hss = get_vfunc<char*>(g_client, 87);
-	const auto hud = *(void**)(hss + 7);
-	const auto off = *(int32_t*)(hss + 12);
-	const auto fn = (void*(__thiscall *)(void*, const char*))(hss + 16 + off);
+	const auto hud = *reinterpret_cast<void**>(hss + 7);
+	const auto off = *reinterpret_cast<int32_t*>(hss + 12);
+	const auto fn = reinterpret_cast<void*(__thiscall *)(void*, const char*)>(hss + 16 + off);
 	const auto notice_hud = fn(hud, "SFHudDeathNoticeAndBotStatus");
 	if(notice_hud)
 	{
