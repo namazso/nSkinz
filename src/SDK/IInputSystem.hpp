@@ -14,8 +14,8 @@ namespace sdk
 		{
 			static uint32_t offset = 0;
 			if (!offset)
-				offset = *(uint32_t*)((*(char***)this)[10] + 5);
-			return *(void**)((char*)this + offset);
+				offset = *reinterpret_cast<uint32_t*>((*reinterpret_cast<char***>(this))[10] + 5);
+			return *reinterpret_cast<void**>(reinterpret_cast<char*>(this) + offset);
 		}
 	};
 

@@ -127,7 +127,7 @@ auto config::load() -> void
 
 auto config::get_by_definition_index(const int definition_index) -> item_setting*
 {
-	auto it = std::find_if(m_items.begin(), m_items.end(), [definition_index](const item_setting& e)
+	const auto it = std::find_if(m_items.begin(), m_items.end(), [definition_index](const item_setting& e)
 	{
 		return e.enabled && e.definition_index == definition_index;
 	});
