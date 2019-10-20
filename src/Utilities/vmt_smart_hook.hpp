@@ -91,8 +91,8 @@ protected:
 	template <typename Fn>
 	auto hook_function(Fn hooked_fn, const std::size_t index) -> Fn
 	{
-		m_new_vmt[index] = (proc_t)(hooked_fn);
-		return (Fn)(m_old_vmt[index]);
+		m_new_vmt[index] = proc_t(hooked_fn);
+		return Fn(m_old_vmt[index]);
 	}
 
 	template<typename T>
@@ -104,7 +104,7 @@ protected:
 	template <typename Fn = uintptr_t>
 	auto get_original_function(const int index) -> Fn
 	{
-		return (Fn)(m_old_vmt[index]);
+		return Fn(m_old_vmt[index]);
 	}
 
 private:
