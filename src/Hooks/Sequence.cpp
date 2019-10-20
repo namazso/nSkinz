@@ -59,6 +59,9 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 		SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP = 9,
 		SEQUENCE_FALCHION_LOOKAT01 = 12,
 		SEQUENCE_FALCHION_LOOKAT02 = 13,
+		
+		SEQUENCE_CSS_LOOKAT01 = 14,
+		SEQUENCE_CSS_LOOKAT02 = 15,
 
 		SEQUENCE_DAGGERS_IDLE1 = 1,
 		SEQUENCE_DAGGERS_LIGHT_MISS1 = 2,
@@ -101,6 +104,16 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 				return sequence - 1;
 			}
 		}
+	case FNV("models/weapons/v_knife_css.mdl"):
+	{
+		switch (sequence)
+		{
+		case SEQUENCE_DEFAULT_LOOKAT01:
+			return random_sequence(SEQUENCE_CSS_LOOKAT01, SEQUENCE_CSS_LOOKAT02);
+		default:
+			return sequence;
+		}
+	}
 	case FNV("models/weapons/v_knife_push.mdl"):
 		{
 			switch(sequence)
