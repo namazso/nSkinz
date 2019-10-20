@@ -167,6 +167,8 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			{
 			case SEQUENCE_DEFAULT_LOOKAT01:
 				return random_sequence(12, 13);
+			default:
+				return sequence;
 			}
 		}
 	case FNV("models/weapons/v_knife_widowmaker.mdl"):
@@ -175,6 +177,8 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			{
 			case SEQUENCE_DEFAULT_LOOKAT01:
 				return random_sequence(14, 15);
+			default:
+				return sequence;
 			}
 		}
 	default:
