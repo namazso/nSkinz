@@ -39,7 +39,3 @@ Currently only Windows is supported, however this may change ~~in the future~~ i
 **This project is licensed under the MIT license**
 
 See the "[LICENSE](https://github.com/namazso/nSkinz/blob/master/LICENSE)" file for more details.
-
-## Ports
-
-* Chinese port by Garry050 available [here](https://github.com/Garry050/nSkinz/tree/zh-CN)
