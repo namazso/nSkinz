@@ -27,29 +27,31 @@
 #include <cstring>
 #include <cassert>
 
+using proc_t = void(*)();
+
 class table_hook
 {
 public:
 	constexpr table_hook()
-		: m_new_vmt{nullptr}
-		, m_old_vmt{nullptr} {}
+		: m_new_vmt{ nullptr }
+		, m_old_vmt{ nullptr } {}
 
 	~table_hook()
 	{
-		if(m_new_vmt)
-			delete[] (m_new_vmt - 1);
+		if (m_new_vmt)
+			delete[](m_new_vmt - 1);
 	}
 
 protected:
-	auto initialize(void** original_table) -> void
+	auto initialize(proc_t* original_table) -> void
 	{
 		m_old_vmt = original_table;
 
 		size_t size = 0;
-		while(m_old_vmt[size] && platform::is_code_ptr(m_old_vmt[size]))
+		while (m_old_vmt[size] && platform::is_code_ptr(m_old_vmt[size]))
 			++size;
 
-		m_new_vmt = (new void*[size + 1]) + 1;
+		m_new_vmt = (new proc_t[size + 1]) + 1;
 		//std::copy(m_old_vmt - 1, m_old_vmt + size, m_new_vmt - 1);
 		memcpy(m_new_vmt - 1, m_old_vmt - 1, sizeof(void*) * (size + 1));
 	}
@@ -61,23 +63,23 @@ protected:
 
 	auto hook_instance(void* inst) const -> void
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		assert(vtbl == m_old_vmt || vtbl == m_new_vmt);
 		vtbl = m_new_vmt;
 	}
 
 	auto unhook_instance(void* inst) const -> void
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		assert(vtbl == m_old_vmt || vtbl == m_new_vmt);
 		vtbl = m_old_vmt;
 	}
 
 	auto initialize_and_hook_instance(void* inst) -> bool
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		auto initialized = false;
-		if(!m_old_vmt)
+		if (!m_old_vmt)
 		{
 			initialized = true;
 			initialize(vtbl);
@@ -89,8 +91,8 @@ protected:
 	template <typename Fn>
 	auto hook_function(Fn hooked_fn, const std::size_t index) -> Fn
 	{
-		m_new_vmt[index] = (void*)(hooked_fn);
-		return static_cast<Fn>(m_old_vmt[index]);
+		m_new_vmt[index] = (proc_t)(hooked_fn);
+		return (Fn)(m_old_vmt[index]);
 	}
 
 	template<typename T>
@@ -102,19 +104,19 @@ protected:
 	template <typename Fn = uintptr_t>
 	auto get_original_function(const int index) -> Fn
 	{
-		return static_cast<Fn>(m_old_vmt[index]);
+		return (Fn)(m_old_vmt[index]);
 	}
 
 private:
-	void** m_new_vmt = nullptr;
-	void** m_old_vmt = nullptr;
+	proc_t* m_new_vmt = nullptr;
+	proc_t* m_old_vmt = nullptr;
 };
 
 class vmt_smart_hook : table_hook
 {
 public:
 	vmt_smart_hook(void* class_base)
-		: m_class{class_base}
+		: m_class{ class_base }
 	{
 		initialize_and_hook_instance(class_base);
 	}
