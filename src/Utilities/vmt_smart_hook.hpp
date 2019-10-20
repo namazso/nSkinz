@@ -27,6 +27,8 @@
 #include <cstring>
 #include <cassert>
 
+using proc_t = void(*)();
+
 class table_hook
 {
 public:
@@ -41,7 +43,7 @@ public:
 	}
 
 protected:
-	auto initialize(void** original_table) -> void
+	auto initialize(proc_t* original_table) -> void
 	{
 		m_old_vmt = original_table;
 
@@ -49,7 +51,7 @@ protected:
 		while(m_old_vmt[size] && platform::is_code_ptr(m_old_vmt[size]))
 			++size;
 
-		m_new_vmt = (new void*[size + 1]) + 1;
+		m_new_vmt = (new proc_t[size + 1]) + 1;
 		//std::copy(m_old_vmt - 1, m_old_vmt + size, m_new_vmt - 1);
 		memcpy(m_new_vmt - 1, m_old_vmt - 1, sizeof(void*) * (size + 1));
 	}
@@ -61,21 +63,21 @@ protected:
 
 	auto hook_instance(void* inst) const -> void
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		assert(vtbl == m_old_vmt || vtbl == m_new_vmt);
 		vtbl = m_new_vmt;
 	}
 
 	auto unhook_instance(void* inst) const -> void
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		assert(vtbl == m_old_vmt || vtbl == m_new_vmt);
 		vtbl = m_old_vmt;
 	}
 
 	auto initialize_and_hook_instance(void* inst) -> bool
 	{
-		auto& vtbl = *reinterpret_cast<void***>(inst);
+		auto& vtbl = *reinterpret_cast<proc_t**>(inst);
 		auto initialized = false;
 		if(!m_old_vmt)
 		{
@@ -89,7 +91,7 @@ protected:
 	template <typename Fn>
 	auto hook_function(Fn hooked_fn, const std::size_t index) -> Fn
 	{
-		m_new_vmt[index] = (void*)(hooked_fn);
+		m_new_vmt[index] = (proc_t)(hooked_fn);
 		return (Fn)(m_old_vmt[index]);
 	}
 
@@ -106,8 +108,8 @@ protected:
 	}
 
 private:
-	void** m_new_vmt = nullptr;
-	void** m_old_vmt = nullptr;
+	proc_t* m_new_vmt = nullptr;
+	proc_t* m_old_vmt = nullptr;
 };
 
 class vmt_smart_hook : table_hook
