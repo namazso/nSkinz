@@ -29,18 +29,23 @@
 
 using proc_t = void(*)();
 
-class table_hook
+class vmt_base_hook
 {
-public:
-	constexpr table_hook()
-		: m_new_vmt{nullptr}
-		, m_old_vmt{nullptr} {}
+protected:
+	constexpr vmt_base_hook() = default;
 
-	~table_hook()
+public:
+  ~vmt_base_hook()
 	{
 		if(m_new_vmt)
 			delete[] (m_new_vmt - 1);
 	}
+
+  vmt_base_hook(const vmt_base_hook&) = delete;
+  vmt_base_hook(vmt_base_hook&&) = delete;
+
+  vmt_base_hook& operator=(const vmt_base_hook&) = delete;
+  vmt_base_hook& operator=(vmt_base_hook&&) = delete;
 
 protected:
 	auto initialize(proc_t* original_table) -> void
@@ -112,7 +117,7 @@ private:
 	proc_t* m_old_vmt = nullptr;
 };
 
-class vmt_smart_hook : table_hook
+class vmt_smart_hook : vmt_base_hook
 {
 public:
 	vmt_smart_hook(void* class_base)
@@ -126,6 +131,12 @@ public:
 		unhook_instance(m_class);
 	}
 
+  vmt_smart_hook(const vmt_smart_hook&) = delete;
+  vmt_smart_hook(vmt_smart_hook&&) = delete;
+
+  vmt_smart_hook& operator=(const vmt_smart_hook&) = delete;
+  vmt_smart_hook& operator=(vmt_smart_hook&&) = delete;
+
 	auto rehook() const -> void
 	{
 		hook_instance(m_class);
@@ -136,29 +147,35 @@ public:
 		unhook_instance(m_class);
 	}
 
-	using table_hook::apply_hook;
-	using table_hook::get_original_function;
-	using table_hook::hook_function;
+	using vmt_base_hook::apply_hook;
+	using vmt_base_hook::get_original_function;
+	using vmt_base_hook::hook_function;
 
 private:
 	void* m_class = nullptr;
 };
 
-class vmt_multi_hook : table_hook
+class vmt_multi_hook : vmt_base_hook
 {
 public:
-	constexpr vmt_multi_hook() {}
+	constexpr vmt_multi_hook() = default;
 
-	~vmt_multi_hook()
+  ~vmt_multi_hook()
 	{
 		leak_table();
 	}
 
-	using table_hook::apply_hook;
-	using table_hook::get_original_function;
-	using table_hook::hook_function;
-	using table_hook::hook_instance;
-	using table_hook::unhook_instance;
-	using table_hook::initialize;
-	using table_hook::initialize_and_hook_instance;
+  vmt_multi_hook(const vmt_multi_hook&) = delete;
+  vmt_multi_hook(vmt_multi_hook&&) = delete;
+
+  vmt_multi_hook& operator=(const vmt_multi_hook&) = delete;
+  vmt_multi_hook& operator=(vmt_multi_hook&&) = delete;
+
+	using vmt_base_hook::apply_hook;
+	using vmt_base_hook::get_original_function;
+	using vmt_base_hook::hook_function;
+	using vmt_base_hook::hook_instance;
+	using vmt_base_hook::unhook_instance;
+	using vmt_base_hook::initialize;
+	using vmt_base_hook::initialize_and_hook_instance;
 };
