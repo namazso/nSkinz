@@ -150,6 +150,10 @@ static auto get_new_animation(const fnv::hash model, const int sequence) -> int
 			}
 		}
 	case FNV("models/weapons/v_knife_ursus.mdl"):
+	case FNV("models/weapons/v_knife_cord.mdl"):
+	case FNV("models/weapons/v_knife_canis.mdl"):
+	case FNV("models/weapons/v_knife_outdoor.mdl"):
+	case FNV("models/weapons/v_knife_skeleton.mdl"):
 		{
 			switch (sequence)
 			{
