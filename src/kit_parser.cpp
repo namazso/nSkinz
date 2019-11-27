@@ -213,7 +213,12 @@ auto game_data::initialize_kits() -> void
 			char sticker_name_if_valve_fucked_up_their_translations[64];
 
 			auto sticker_name_ptr = sticker_kit->item_name.buffer + 1;
-
+			
+			//if it is SprayKit - ignore, it can`t be installed same as StickerKit
+			if(strstr(sticker_name_ptr[1] == 'p'))
+			{
+				continue;
+			}
 			if(strstr(sticker_name_ptr, "StickerKit_dhw2014_dignitas"))
 			{
 				strcpy_s(sticker_name_if_valve_fucked_up_their_translations, "StickerKit_dhw2014_teamdignitas");
