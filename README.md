@@ -17,13 +17,11 @@ Although written from scratch, nSkinz was heavily influenced by [chameleon-ng](h
 
 ## Requirements for compiling
 
-* C++17 compilant compiler
-* Tested under: clang 5.0, MSVC 2017
-* [DirectX SDK](https://www.microsoft.com/en-ca/download/details.aspx?id=6812)
+* Visual Studio 2019
 
 ## Usage
 
-Currently only Windows is supported, however this may change ~~in the future~~ if you submit a PR because I'm lazy.
+Currently only Windows is supported, however this may change ~~in the future~~ ~~if you submit a PR because I'm lazy~~ never.
 
 * Clone the source with:
 ```git clone --recursive https://github.com/namazso/nSkinz.git```
