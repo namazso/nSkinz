@@ -26,6 +26,8 @@
     <ClCompile Include="src\Utilities\platform.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\Utilities\netvar_manager.cpp" />
+    <ClCompile Include="src\gui.cpp" />
+    <ClCompile Include="src\item_definitions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SDK\declarations.hpp" />
@@ -39,10 +41,6 @@
     <ClInclude Include="src\Utilities\fnv_hash.hpp" />
     <ClInclude Include="src\config.hpp" />
     <ClInclude Include="src\Hooks\hooks.hpp" />
-    <ClCompile Include="src\gui.cpp" />
-    <ClCompile Include="src\item_definitions.cpp">
-      <FileType>CppHeader</FileType>
-    </ClCompile>
     <ClInclude Include="src\Utilities\platform.hpp" />
     <ClInclude Include="src\recv_proxy_hook.hpp" />
     <ClInclude Include="src\render.hpp" />
@@ -113,8 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -133,11 +130,10 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;NSKINZ_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <CompileAs>Default</CompileAs>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <OmitFramePointers>true</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>

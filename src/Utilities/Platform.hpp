@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <utility>
 #include <array>
+#include <algorithm>
 
 namespace platform
 {
