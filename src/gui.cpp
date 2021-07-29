@@ -253,8 +253,6 @@ void draw_gui()
 		ImGui::Columns(1);
 
 		ImGui::Text("nSkinz by namazso");
-		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("https://skinchanger.download").x - 20);
-		ImGui::Text("https://skinchanger.download");
 
 		ImGui::End();
 	}
